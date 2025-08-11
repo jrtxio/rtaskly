@@ -509,13 +509,13 @@
 
 (define all-btn (new button%
                      [parent filter-row2]
-                     [label "所有"]
+                     [label "全部"]
                      [min-width 50]
                      [min-height 30]
                      [stretchable-width #t]
                      [callback (lambda (btn evt)
                                  (current-view "all")
-                                 (send title-label set-label "所有")
+                                 (send title-label set-label "全部")
                                  (refresh-task-list!))]))
 
 (define completed-btn (new button%
