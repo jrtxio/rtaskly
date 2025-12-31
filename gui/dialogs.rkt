@@ -1,0 +1,168 @@
+#lang racket/gui
+
+(require (prefix-in task: "../core/task.rkt")
+         (prefix-in core: "../core/list.rkt")
+         (prefix-in date: "../utils/date.rkt"))
+
+;; 添加任务对话框
+(define (show-add-task-dialog [list-id #f] [list-name #f] [callback (lambda () (void))])
+  ;; 如果没有指定列表，获取默认列表
+  (define default-list (if list-id
+                           (core:get-list-by-id list-id)
+                           (core:get-default-list)))
+  
+  (define default-list-id (if default-list (core:todo-list-id default-list) #f))
+  (define default-list-name (if default-list (core:todo-list-name default-list) ""))
+  
+  (define dialog (new dialog% 
+                      [label "添加新任务"]
+                      [width 400]
+                      [height 500]
+                      [stretchable-width #t]
+                      [stretchable-height #f]))
+  
+  (define dialog-panel (new vertical-panel% [parent dialog] [spacing 8] [border 12]))
+  
+  (new message% [parent dialog-panel] [label "任务描述:"] [stretchable-width #t])
+  (define text-field (new text-field% [parent dialog-panel] [label ""] [init-value ""]))
+  
+  (new message% [parent dialog-panel] [label "截止日期 (YYYY-MM-DD, 可选):"] [stretchable-width #t])
+  (define date-field (new text-field% [parent dialog-panel] [label ""] [init-value ""]))
+  
+  (new message% [parent dialog-panel] [label "列表:"] [stretchable-width #t])
+  
+  ;; 获取所有列表用于下拉选择
+  (define all-lists (core:get-all-lists))
+  (define list-names (map core:todo-list-name all-lists))
+  (define list-ids (map core:todo-list-id all-lists))
+  
+  (define list-choice (new choice% 
+                          [parent dialog-panel]
+                          [label ""]
+                          [choices list-names]
+                          [selection (if default-list-id
+                                         (index-of list-ids default-list-id)
+                                         0)]))
+  
+  (define button-panel (new horizontal-panel% [parent dialog-panel] [spacing 8]))
+  
+  (define (save-task)
+    (define text (send text-field get-value))
+    (define date (send date-field get-value))
+    (define selected-list-index (send list-choice get-selection))
+    
+    (when (and text (not (equal? (string-trim text) "")))
+      (define selected-list-id (list-ref list-ids selected-list-index))
+      
+      (define normalized-date
+        (if (not (equal? (string-trim date) ""))
+            (date:normalize-date-string (string-trim date))
+            #f))
+      
+      (if (or (not (string-trim date))
+              (equal? (string-trim date) "")
+              normalized-date)
+          (begin
+            (task:add-task selected-list-id text normalized-date)
+            (callback)
+            (send dialog show #f))
+          (message-box "日期格式错误" 
+                       "请输入正确的日期格式 (YYYY-MM-DD),例如: 2025-08-07"
+                       dialog
+                       '(ok)))))
+  
+  (new button% 
+       [parent button-panel]
+       [label "确定"]
+       [min-width 60]
+       [callback (lambda (btn evt) (save-task))])
+  
+  (new button% 
+       [parent button-panel]
+       [label "取消"]
+       [min-width 60]
+       [callback (lambda (btn evt) (send dialog show #f))])
+  
+  (send text-field focus)
+  (send dialog show #t))
+
+;; 编辑任务对话框
+(define (show-edit-task-dialog task-data [callback (lambda () (void))])
+  (define dialog (new dialog% 
+                      [label "编辑任务"]
+                      [width 400]
+                      [height 500]
+                      [stretchable-width #t]
+                      [stretchable-height #f]))
+  
+  (define dialog-panel (new vertical-panel% [parent dialog] [spacing 8] [border 12]))
+  
+  (new message% [parent dialog-panel] [label "任务描述:"] [stretchable-width #t])
+  (define text-field (new text-field% [parent dialog-panel] 
+                         [label ""] 
+                         [init-value (task:task-text task-data)]))
+  
+  (new message% [parent dialog-panel] [label "截止日期 (YYYY-MM-DD, 可选):"] [stretchable-width #t])
+  (define date-field (new text-field% [parent dialog-panel] 
+                         [label ""] 
+                         [init-value (if (task:task-due-date task-data) 
+                                         (task:task-due-date task-data) 
+                                         "")]))
+  
+  (new message% [parent dialog-panel] [label "列表:"] [stretchable-width #t])
+  
+  ;; 获取所有列表用于下拉选择
+  (define all-lists (core:get-all-lists))
+  (define list-names (map core:todo-list-name all-lists))
+  (define list-ids (map core:todo-list-id all-lists))
+  
+  (define list-choice (new choice% 
+                          [parent dialog-panel]
+                          [label ""]
+                          [choices list-names]
+                          [selection (index-of list-ids (task:task-list-id task-data))]))
+  
+  (define button-panel (new horizontal-panel% [parent dialog-panel] [spacing 8]))
+  
+  (define (save-task)
+    (define text (send text-field get-value))
+    (define date (send date-field get-value))
+    (define selected-list-index (send list-choice get-selection))
+    
+    (when (and text (not (equal? (string-trim text) "")))
+      (define selected-list-id (list-ref list-ids selected-list-index))
+      
+      (define normalized-date
+        (if (not (equal? (string-trim date) ""))
+            (date:normalize-date-string (string-trim date))
+            #f))
+      
+      (if (or (not (string-trim date))
+              (equal? (string-trim date) "")
+              normalized-date)
+          (begin
+            (task:edit-task (task:task-id task-data) selected-list-id text normalized-date)
+            (callback)
+            (send dialog show #f))
+          (message-box "日期格式错误" 
+                       "请输入正确的日期格式 (YYYY-MM-DD),例如: 2025-08-07"
+                       dialog
+                       '(ok)))))
+  
+  (new button% 
+       [parent button-panel]
+       [label "确定"]
+       [min-width 60]
+       [callback (lambda (btn evt) (save-task))])
+  
+  (new button% 
+       [parent button-panel]
+       [label "取消"]
+       [min-width 60]
+       [callback (lambda (btn evt) (send dialog show #f))])
+  
+  (send text-field focus)
+  (send dialog show #t))
+
+(provide show-add-task-dialog
+         show-edit-task-dialog)
