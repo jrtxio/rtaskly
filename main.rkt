@@ -57,13 +57,7 @@
   (send dialog show #t))
 
 ;; 运行应用
-(define (run-app db-path)
-  ;; 确保目录存在
-  (ensure-directory-exists (path-only (string->path db-path)))
-  
-  ;; 连接到数据库
-  (connect-to-database db-path)
-  
+(define (run-app [db-path #f])
   ;; 创建主窗口
   (set! app-frame (new main-frame% [db-path db-path]))
   
@@ -76,7 +70,7 @@
 
 ;; 主程序入口
 (define (main)
-  (show-db-file-dialog))
+  (run-app))
 
 ;; 启动应用
 (main)

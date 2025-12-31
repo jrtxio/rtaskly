@@ -13,13 +13,16 @@
 
 ;; 定义测试文件列表
 (define test-files
-  '("test-date.rkt"
+  '(
+    "test-date.rkt"
     "test-database.rkt"
     "test-list.rkt"
     "test-task.rkt"
     "test-path.rkt"
     "test-core-conversion.rkt"
-    "test-integration.rkt"))
+    "test-integration.rkt"
+    "test-additional-features.rkt"
+    ))
 
 ;; 运行单个测试文件并返回结果
 (define (run-test-file file)
