@@ -8,6 +8,7 @@
   (class vertical-panel% 
     (init parent 
           [on-view-change (lambda (view-type [list-id #f] [list-name #f]) (void))]
+          [on-search (lambda (keyword) (void))]
           [on-task-updated (lambda () (void))])
     
     (super-new [parent parent]
@@ -18,6 +19,7 @@
     
     ;; 回调函数
     (define view-change-callback on-view-change)
+    (define search-callback on-search)
     (define task-updated-callback on-task-updated)
     
     ;; 创建搜索面板
@@ -29,11 +31,15 @@
     
     (new message% [parent search-panel] [label "搜索"] [font (make-font #:weight 'bold #:family 'modern #:size 14)])
     
-    (new text-field% 
-         [parent search-panel]
-         [init-value ""]
-         [stretchable-width #t]
-         [label ""])
+    (define search-text-field
+      (new text-field% 
+           [parent search-panel]
+           [init-value ""]
+           [stretchable-width #t]
+           [label ""]
+           [callback (lambda (tf evt)
+                       (when (eq? (send evt get-event-type) 'text-field-enter)
+                         (search-callback (send tf get-value))))]))
     
     ;; 创建智能列表面板
     (define smart-lists-panel (new vertical-panel% 

@@ -12,9 +12,10 @@
                [min-height 650])
     
     ;; 全局状态
-    (define current-view (make-parameter "list")) ; "list", "today", "planned", "all", "completed"
+    (define current-view (make-parameter "list")) ; "list", "today", "planned", "all", "completed", "search"
     (define current-list-id (make-parameter #f))
     (define current-list-name (make-parameter ""))
+    (define current-search-keyword (make-parameter #f))
     
     ;; 创建主面板
     (define main-panel (new horizontal-panel% 
@@ -29,9 +30,14 @@
                                            (current-view view-type)
                                            (when list-id (current-list-id list-id))
                                            (when list-name (current-list-name list-name))
+                                           (current-search-keyword #f)
                                            (send task-panel update-tasks view-type list-id list-name))]
+                         [on-search (lambda (keyword)
+                                      (current-view "search")
+                                      (current-search-keyword keyword)
+                                      (send task-panel update-tasks "search" #f #f keyword))]
                          [on-task-updated (lambda ()
-                                            (send task-panel update-tasks (current-view) (current-list-id) (current-list-name)))]))
+                                            (send task-panel update-tasks (current-view) (current-list-id) (current-list-name) (current-search-keyword)))]))
     
     ;; 创建分隔线
     (define divider (new canvas% 
@@ -50,7 +56,7 @@
                             [parent main-panel]
                             [on-task-updated (lambda ()
                                                (send sidebar refresh-lists)
-                                               (send task-panel update-tasks (current-view) (current-list-id) (current-list-name)))]))
+                                               (send task-panel update-tasks (current-view) (current-list-id) (current-list-name) (current-search-keyword)))]))
     
     ;; 初始化应用
     (define/public (init-app)
@@ -61,6 +67,7 @@
     (define/public (get-current-view) (current-view))
     (define/public (get-current-list-id) (current-list-id))
     (define/public (get-current-list-name) (current-list-name))
+    (define/public (get-current-search-keyword) (current-search-keyword))
     
     (void)))
 

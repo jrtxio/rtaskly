@@ -162,6 +162,15 @@
   (define conn (current-db-connection))
   (query-exec conn "DELETE FROM task WHERE task_id = ?" task-id))
 
+;; 搜索任务
+(define (search-tasks keyword)
+  (define conn (current-db-connection))
+  (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
+                   FROM task
+                   WHERE task_text LIKE ?
+                   ORDER BY due_date NULLS LAST, created_at
+                   " (string-append "%" keyword "%")))
+
 (provide connect-to-database
          close-database
          get-all-lists
@@ -179,5 +188,6 @@
          update-task
          toggle-task-completed
          delete-task
+         search-tasks
          current-db-connection
          current-db-path)

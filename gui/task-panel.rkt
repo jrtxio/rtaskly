@@ -48,20 +48,26 @@
                      (show-add-task-dialog (current-list-id) (current-list-name) task-updated-callback))])
     
     ;; 更新任务列表
-    (define/public (update-tasks view-type [list-id #f] [list-name #f])
+    (define/public (update-tasks view-type [list-id #f] [list-name #f] [keyword #f])
       ;; 更新当前状态
       (current-view view-type)
       (when list-id (current-list-id list-id))
       (when list-name (current-list-name list-name))
       
       ;; 更新标题
-      (send title-label set-label (or list-name ""))
+      (cond
+        [(string=? view-type "search")
+         (send title-label set-label (if (and keyword (not (equal? keyword "")))
+                                         (string-append "搜索结果: \"" keyword "\"")
+                                         "搜索结果"))]
+        [else
+         (send title-label set-label (or list-name ""))])
       
       ;; 清空任务列表
       (send task-list-panel change-children (lambda (children) '()))
       
       ;; 获取任务
-      (define tasks (task:get-tasks-by-view view-type list-id))
+      (define tasks (task:get-tasks-by-view view-type list-id keyword))
       
       ;; 显示任务
       (for ([task-data tasks])

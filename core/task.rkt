@@ -74,14 +74,19 @@
 (define (delete-task task-id)
   (db:delete-task task-id))
 
+;; 搜索任务
+(define (search-tasks keyword)
+  (rows->tasks (db:search-tasks keyword)))
+
 ;; 根据视图类型获取任务
-(define (get-tasks-by-view view-type [list-id #f])
+(define (get-tasks-by-view view-type [list-id #f] [keyword #f])
   (cond
     [(string=? view-type "today") (get-today-tasks)]
     [(string=? view-type "planned") (get-planned-tasks)]
     [(string=? view-type "all") (get-all-incomplete-tasks)]
     [(string=? view-type "completed") (get-all-completed-tasks)]
     [(string=? view-type "list") (if list-id (get-tasks-by-list list-id) '())]
+    [(string=? view-type "search") (if keyword (search-tasks keyword) '())]
     [else '()]))
 
 ;; 按列表分组任务
@@ -106,6 +111,7 @@
          get-planned-tasks
          get-all-incomplete-tasks
          get-all-completed-tasks
+         search-tasks
          add-task
          edit-task
          toggle-task-completed
