@@ -185,6 +185,9 @@
       (db-connected? #t)
       (current-db-path db-path)
       
+      ;; 保存配置，记录上次选择的数据库路径
+      (set-config "last-db-path" db-path)
+      
       ;; 更新界面
       (send sidebar refresh-lists)
       (send task-panel update-tasks (current-view) (current-list-id) (current-list-name))

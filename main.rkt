@@ -70,7 +70,13 @@
 
 ;; 主程序入口
 (define (main)
-  (run-app))
+  ;; 读取上次选择的数据库路径
+  (define last-db-path (get-config "last-db-path"))
+  
+  ;; 如果有上次选择的路径，直接使用；否则显示选择对话框
+  (if (and last-db-path (file-exists? last-db-path))
+      (run-app last-db-path)
+      (show-db-file-dialog)))
 
 ;; 启动应用
 (main)

@@ -39,5 +39,9 @@
   
   (displayln "=== 清理完成 ===\n"))
 
-;; 运行清理
-(cleanup-temp-files)
+;; 导出函数
+(provide cleanup-temp-files)
+
+;; 运行清理（只有当直接运行该文件时才执行）
+(when (equal? (file-name-from-path (find-system-path 'run-file)) "cleanup-temp-files.rkt")
+  (cleanup-temp-files))
