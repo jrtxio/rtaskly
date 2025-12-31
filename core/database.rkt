@@ -140,7 +140,7 @@
   (define sql-due-date (if due-date due-date sql-null))
   (query-exec conn "INSERT INTO task (list_id, task_text, due_date, is_completed, created_at)
                    VALUES (?, ?, ?, 0, ?)
-                   " list-id task-text sql-due-date created-at))
+                   " list-id task-text sql-due-date (number->string created-at)))
 
 ;; 更新任务
 (define (update-task task-id list-id task-text due-date)

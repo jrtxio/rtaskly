@@ -14,10 +14,13 @@
   (define default-list-id (if default-list (core:todo-list-id default-list) #f))
   (define default-list-name (if default-list (core:todo-list-name default-list) ""))
   
+  ;; 根据是否有明确列表ID调整对话框高度
+  (define dialog-height (if list-id 400 500))
+  
   (define dialog (new dialog% 
                       [label "添加新任务"]
                       [width 400]
-                      [height 500]
+                      [height dialog-height]
                       [stretchable-width #t]
                       [stretchable-height #f]))
   
@@ -29,31 +32,41 @@
   (new message% [parent dialog-panel] [label "截止日期 (YYYY-MM-DD, 可选):"] [stretchable-width #t])
   (define date-field (new text-field% [parent dialog-panel] [label ""] [init-value ""]))
   
-  (new message% [parent dialog-panel] [label "列表:"] [stretchable-width #t])
+  ;; 仅当没有明确指定列表ID时，显示列表选择控件
+  (define selected-list-id default-list-id)
+  (unless list-id
+    (new message% [parent dialog-panel] [label "任务列表:"] [stretchable-width #t])
+    
+    ;; 获取所有列表用于下拉选择
+    (define all-lists (core:get-all-lists))
+    (define list-names (map core:todo-list-name all-lists))
+    (define list-ids (map core:todo-list-id all-lists))
+    
+    (define list-choice (new choice% 
+                            [parent dialog-panel]
+                            [label ""]
+                            [choices list-names]
+                            [selection (if default-list-id
+                                           (index-of list-ids default-list-id)
+                                           0)]))
+    
+    ;; 更新selected-list-id的获取方式
+    (set! selected-list-id (lambda ()
+                             (define idx (send list-choice get-selection))
+                             (list-ref list-ids idx))))
   
-  ;; 获取所有列表用于下拉选择
-  (define all-lists (core:get-all-lists))
-  (define list-names (map core:todo-list-name all-lists))
-  (define list-ids (map core:todo-list-id all-lists))
-  
-  (define list-choice (new choice% 
-                          [parent dialog-panel]
-                          [label ""]
-                          [choices list-names]
-                          [selection (if default-list-id
-                                         (index-of list-ids default-list-id)
-                                         0)]))
-  
-  (define button-panel (new horizontal-panel% [parent dialog-panel] [spacing 8]))
+  (define button-panel (new horizontal-panel% [parent dialog-panel] [spacing 8] [alignment '(center top)]))
   
   (define (save-task)
     (define text (send text-field get-value))
     (define date (send date-field get-value))
-    (define selected-list-index (send list-choice get-selection))
+    
+    ;; 根据selected-list-id的类型获取实际值
+    (define final-list-id (if (procedure? selected-list-id)
+                             (selected-list-id)
+                             selected-list-id))
     
     (when (and text (not (equal? (string-trim text) "")))
-      (define selected-list-id (list-ref list-ids selected-list-index))
-      
       (define normalized-date
         (if (not (equal? (string-trim date) ""))
             (date:normalize-date-string (string-trim date))
@@ -63,7 +76,7 @@
               (equal? (string-trim date) "")
               normalized-date)
           (begin
-            (task:add-task selected-list-id text normalized-date)
+            (task:add-task final-list-id text normalized-date)
             (callback)
             (send dialog show #f))
           (message-box "日期格式错误" 
@@ -109,7 +122,7 @@
                                          (task:task-due-date task-data) 
                                          "")]))
   
-  (new message% [parent dialog-panel] [label "列表:"] [stretchable-width #t])
+  (new message% [parent dialog-panel] [label "任务列表:"] [stretchable-width #t])
   
   ;; 获取所有列表用于下拉选择
   (define all-lists (core:get-all-lists))
@@ -122,7 +135,7 @@
                           [choices list-names]
                           [selection (index-of list-ids (task:task-list-id task-data))]))
   
-  (define button-panel (new horizontal-panel% [parent dialog-panel] [spacing 8]))
+  (define button-panel (new horizontal-panel% [parent dialog-panel] [spacing 8] [alignment '(center top)]))
   
   (define (save-task)
     (define text (send text-field get-value))

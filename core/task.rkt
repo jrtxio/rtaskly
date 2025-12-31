@@ -9,13 +9,16 @@
 
 ;; 将数据库查询结果转换为任务结构体
 (define (row->task row)
-  (define list-name (db:get-list-name (vector-ref row 1))) ; list_id
+  (define list-id (vector-ref row 1)) ; list_id
+  (define list-name 
+    (with-handlers ([exn:fail? (lambda (e) "未知列表")])
+      (db:get-list-name list-id)))
   (task (vector-ref row 0)  ; task_id
-        (vector-ref row 1)  ; list_id
+        list-id  ; list_id
         (vector-ref row 2)  ; task_text
         (vector-ref row 3)  ; due_date
         (= (vector-ref row 4) 1)  ; is_completed
-        (vector-ref row 5)  ; created_at
+        (string->number (vector-ref row 5))  ; created_at (转换为数字)
         list-name))
 
 ;; 将多个数据库查询结果转换为任务结构体列表
