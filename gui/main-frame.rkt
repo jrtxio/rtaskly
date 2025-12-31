@@ -187,7 +187,10 @@
       
       ;; 更新界面
       (send sidebar refresh-lists)
-      (send task-panel update-tasks (current-view) (current-list-id) (current-list-name)))
+      (send task-panel update-tasks (current-view) (current-list-id) (current-list-name))
+      
+      ;; 更新窗口标题
+      (update-title))
     
     ;; 关闭数据库
     (define (disconnect-database)
@@ -197,7 +200,20 @@
         (current-db-path #f)
         ;; 更新界面
         (send sidebar refresh-lists)
-        (send task-panel update-tasks (current-view) (current-list-id) (current-list-name))))
+        (send task-panel update-tasks (current-view) (current-list-id) (current-list-name))
+        
+        ;; 更新窗口标题
+        (update-title)))
+    
+    ;; 更新窗口标题
+    (define (update-title)
+      (define title
+        (if (current-db-path)
+            (let* ([db-path (string->path (current-db-path))]
+                   [file-name (path->string (file-name-from-path db-path))])
+              (format "~a (~a) - Taskly" file-name (current-db-path)))
+            "Taskly"))
+      (send this set-label title))
     
     ;; 显示关于对话框
     (define (show-about-dialog)
@@ -228,7 +244,10 @@
       (when init-db-path
         (connect-to-db init-db-path))
       (send sidebar refresh-lists)
-      (send task-panel update-tasks (current-view) (current-list-id) (current-list-name)))
+      (send task-panel update-tasks (current-view) (current-list-id) (current-list-name))
+      
+      ;; 更新窗口标题
+      (update-title))
     
     ;; 暴露一些方法供外部调用
     (define/public (get-current-view) (current-view))

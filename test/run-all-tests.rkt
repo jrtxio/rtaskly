@@ -22,6 +22,7 @@
     "test-core-conversion.rkt"
     "test-integration.rkt"
     "test-additional-features.rkt"
+    "test-edge-cases.rkt"
     ))
 
 ;; 运行单个测试文件并返回结果
