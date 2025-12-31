@@ -104,7 +104,7 @@
   (define dialog (new dialog% 
                       [label "编辑任务"]
                       [width 400]
-                      [height 500]
+                      [height 400]
                       [stretchable-width #t]
                       [stretchable-height #f]))
   
@@ -122,29 +122,13 @@
                                          (task:task-due-date task-data) 
                                          "")]))
   
-  (new message% [parent dialog-panel] [label "任务列表:"] [stretchable-width #t])
-  
-  ;; 获取所有列表用于下拉选择
-  (define all-lists (core:get-all-lists))
-  (define list-names (map core:todo-list-name all-lists))
-  (define list-ids (map core:todo-list-id all-lists))
-  
-  (define list-choice (new choice% 
-                          [parent dialog-panel]
-                          [label ""]
-                          [choices list-names]
-                          [selection (index-of list-ids (task:task-list-id task-data))]))
-  
   (define button-panel (new horizontal-panel% [parent dialog-panel] [spacing 8] [alignment '(center top)]))
   
   (define (save-task)
     (define text (send text-field get-value))
     (define date (send date-field get-value))
-    (define selected-list-index (send list-choice get-selection))
     
     (when (and text (not (equal? (string-trim text) "")))
-      (define selected-list-id (list-ref list-ids selected-list-index))
-      
       (define normalized-date
         (if (not (equal? (string-trim date) ""))
             (date:normalize-date-string (string-trim date))
@@ -154,7 +138,7 @@
               (equal? (string-trim date) "")
               normalized-date)
           (begin
-            (task:edit-task (task:task-id task-data) selected-list-id text normalized-date)
+            (task:edit-task (task:task-id task-data) (task:task-list-id task-data) text normalized-date)
             (callback)
             (send dialog show #f))
           (message-box "日期格式错误" 
