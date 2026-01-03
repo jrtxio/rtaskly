@@ -77,10 +77,13 @@
 
 ;; 将相对路径转换为绝对路径
 (define (get-absolute-path path)
-  (path->string 
-   (if (relative-path? path)
-       (build-path (current-directory) path)
-       path)))
+  (let ([path-obj (if (string? path)
+                      (string->path path)
+                      path)])
+    (path->string 
+     (if (relative-path? path-obj)
+         (build-path (current-directory) path-obj)
+         path-obj))))
 
 ;; 获取文件名（不带路径）
 (define (get-filename path)

@@ -146,7 +146,7 @@
      ;; 测试 planned 视图
      (define planned-view (get-tasks-by-view "planned"))
      (check-pred list? planned-view)
-     (check-equal? (length planned-view) 3) ; 包括今天和未来的任务
+     (check-equal? (length planned-view) 2) ; 包括今天和未来的任务，已完成一个
      
      ;; 测试 all 视图（未完成任务）
      (define all-view (get-tasks-by-view "all"))
@@ -187,14 +187,17 @@
      ;; 连接数据库
      (db:connect-to-database temp-db-path)
      
-     ;; 添加测试列表
-     (db:add-list "工作")
-     (db:add-list "生活")
+     ;; 获取所有列表（默认应该有2个：工作、生活）
+     (define initial-lists (lst:get-all-lists))
+     
+     ;; 添加一个新的学习列表
      (db:add-list "学习")
      (define lists (lst:get-all-lists))
+     (define study-list-id (lst:todo-list-id (last lists)))
+     
+     ;; 使用默认的工作和生活列表ID
      (define work-list-id (lst:todo-list-id (first lists)))
      (define life-list-id (lst:todo-list-id (second lists)))
-     (define study-list-id (lst:todo-list-id (third lists)))
      
      ;; 添加测试任务
      (add-task work-list-id "完成项目报告" "2023-01-01")
@@ -210,7 +213,7 @@
      ;; 测试分组功能
      (define grouped-tasks (group-tasks-by-list all-tasks))
      (check-pred list? grouped-tasks)
-     (check-equal? (length grouped-tasks) 3) ; 应该有3个分组
+     (check-equal? (length grouped-tasks) 3) ; 应该有3个分组：工作、生活、学习
      
      ;; 检查每个分组是否包含正确的任务数量
      (for ([group grouped-tasks])

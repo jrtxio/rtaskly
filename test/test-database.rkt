@@ -118,8 +118,8 @@
      (define list-id (vector-ref (first (get-all-lists)) 0))
      
      ;; 测试添加任务
-     (add-task list-id "测试任务1" "2023-01-01" "2023-01-01")
-     (add-task list-id "测试任务2" #f "2023-01-01")
+     (add-task list-id "测试任务1" "2023-01-01" (current-seconds))
+     (add-task list-id "测试任务2" #f (current-seconds))
      
      ;; 测试获取所有任务
      (define all-tasks (get-all-tasks))

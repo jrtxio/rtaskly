@@ -8,7 +8,6 @@
   (class vertical-panel% 
     (init parent 
           [on-view-change (lambda (view-type [list-id #f] [list-name #f]) (void))]
-          [on-search (lambda (keyword) (void))]
           [on-task-updated (lambda () (void))])
     
     (super-new [parent parent]
@@ -19,27 +18,7 @@
     
     ;; 回调函数
     (define view-change-callback on-view-change)
-    (define search-callback on-search)
     (define task-updated-callback on-task-updated)
-    
-    ;; 创建搜索面板
-    (define search-panel (new vertical-panel% 
-                              [parent this]
-                              [stretchable-height #f]
-                              [spacing 4]
-                              [border 4]))
-    
-    (new message% [parent search-panel] [label "搜索"] [font (make-font #:weight 'bold #:family 'modern #:size 14)])
-    
-    (define search-text-field
-      (new text-field% 
-           [parent search-panel]
-           [init-value ""]
-           [stretchable-width #t]
-           [label ""]
-           [callback (lambda (tf evt)
-                       (when (eq? (send evt get-event-type) 'text-field-enter)
-                         (search-callback (send tf get-value))))]))
     
     ;; 创建智能列表面板
     (define smart-lists-panel (new vertical-panel% 
@@ -48,55 +27,73 @@
                                    [spacing 4]
                                    [border 4]))
     
-    (new message% [parent smart-lists-panel] [label "智能列表"] [font (make-font #:weight 'bold #:family 'modern #:size 14)])
+    ;; 创建第一行水平面板（Today 和 Scheduled）
+    (define smart-lists-row1 (new horizontal-panel% 
+                                  [parent smart-lists-panel]
+                                  [stretchable-height #f]
+                                  [spacing 4]
+                                  [stretchable-width #t]))
     
     ;; 今天按钮
     (define today-btn
       (new button% 
-           [parent smart-lists-panel]
-           [label "今天"]
-           [min-width 140]
-           [min-height 28]
-           [callback (lambda (btn evt)
-                       (view-change-callback "today" #f "今天"))]))
+           [parent smart-lists-row1]
+           [label "今天"][min-width 60][min-height 40][callback (lambda (btn evt)(view-change-callback "today" #f "今天"))]))
     
     ;; 计划按钮
     (define planned-btn
       (new button% 
-           [parent smart-lists-panel]
-           [label "计划"]
-           [min-width 140]
-           [min-height 28]
-           [callback (lambda (btn evt)
-                       (view-change-callback "planned" #f "计划"))]))
+           [parent smart-lists-row1]
+           [label "计划"][min-width 60][min-height 40][callback (lambda (btn evt)(view-change-callback "planned" #f "计划"))]))
+    
+    ;; 创建第二行水平面板（All 和 Flagged）
+    (define smart-lists-row2 (new horizontal-panel% 
+                                  [parent smart-lists-panel]
+                                  [stretchable-height #f]
+                                  [spacing 4]
+                                  [stretchable-width #t]))
     
     ;; 全部按钮
     (define all-btn
       (new button% 
-           [parent smart-lists-panel]
-           [label "全部"]
-           [min-width 140]
-           [min-height 28]
-           [callback (lambda (btn evt)
-                       (view-change-callback "all" #f "全部"))]))
+           [parent smart-lists-row2]
+           [label "全部"][min-width 60][min-height 40][callback (lambda (btn evt)(view-change-callback "all" #f "全部"))]))
     
-    ;; 完成按钮
+    ;; 已完成按钮
     (define completed-btn
       (new button% 
-           [parent smart-lists-panel]
-           [label "完成"]
-           [min-width 140]
-           [min-height 28]
-           [callback (lambda (btn evt)
-                       (view-change-callback "completed" #f "完成"))]))
+           [parent smart-lists-row2]
+           [label "完成"][min-width 60][min-height 40][callback (lambda (btn evt)(view-change-callback "completed" #f "完成"))]))
     
     ;; 创建自定义列表面板
     (define my-lists-panel (new vertical-panel% [parent this] [spacing 2]))
+    
+    ;; 列表按钮列表
     (define list-buttons '())
     
     (new message% [parent my-lists-panel] [label "我的列表"] [font (make-font #:weight 'bold #:family 'modern #:size 14)])
     
     (define lists-container (new vertical-panel% [parent my-lists-panel] [spacing 2]))
+    
+    ;; 创建列表管理面板（左下角）
+    (define list-management-panel (new horizontal-panel% 
+                                      [parent my-lists-panel]
+                                      [stretchable-height #f]
+                                      [spacing 4]))
+    
+    ;; 添加列表按钮
+    (define add-list-btn
+      (new button% 
+           [parent list-management-panel]
+           [label "+ 新建列表"][min-width 65][min-height 32][callback (lambda (btn evt)(show-add-list-dialog))]))
+    
+    ;; 删除列表按钮
+    (define delete-list-btn
+      (new button% 
+           [parent list-management-panel]
+           [label "- 删除列表"][min-width 65][min-height 32][callback (lambda (btn evt)
+                                                                       ;; TODO: 实现删除列表功能
+                                                                       (void))]))
     
     ;; 刷新列表按钮
     (define/public (refresh-lists)
@@ -128,47 +125,16 @@
       (send planned-btn enable has-lists?)
       (send all-btn enable has-lists?)
       (send completed-btn enable has-lists?)
-      (send search-text-field enable has-lists?)
       (send add-list-btn enable has-lists?)
       (send delete-list-btn enable has-lists?))
-    
-    ;; 创建列表管理面板
-    (define list-management-panel (new horizontal-panel% 
-                                      [parent this]
-                                      [stretchable-height #f]
-                                      [spacing 4]))
-    
-    ;; 添加列表按钮
-    (define add-list-btn
-      (new button% 
-           [parent list-management-panel]
-           [label "+ 新建列表"]
-           [min-width 65]
-           [min-height 32]
-           [callback (lambda (btn evt)
-                       (show-add-list-dialog))]))
-    
-    ;; 删除列表按钮
-    (define delete-list-btn
-      (new button% 
-           [parent list-management-panel]
-           [label "- 删除列表"]
-           [min-width 65]
-           [min-height 32]
-           [callback (lambda (btn evt)
-                       ;; TODO: 实现删除列表功能
-                       (void))]))
-    
-    ;; 初始状态：禁用所有功能
-    (refresh-lists)
     
     ;; 添加列表对话框
     (define (show-add-list-dialog)
       (define dialog (new dialog% 
-                         [label "添加新列表"]
-                         [parent (send this get-top-level-window)]
-                         [width 320]
-                         [height 160]))
+                          [label "添加新列表"]
+                          [parent (send this get-top-level-window)]
+                          [width 320]
+                          [height 160]))
       
       (define dialog-panel (new vertical-panel% [parent dialog] [spacing 8] [border 12]))
       (new message% [parent dialog-panel] [label "列表名称:"])
@@ -198,6 +164,9 @@
       
       (send name-field focus)
       (send dialog show #t))
+    
+    ;; 初始状态：禁用所有功能
+    (refresh-lists)
     
     (void)))
 

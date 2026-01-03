@@ -15,6 +15,9 @@
   (current-db-connection conn)
   (current-db-path db-path)
   
+  ;; 启用外键约束
+  (query-exec conn "PRAGMA foreign_keys = ON")
+  
   ;; 初始化数据库表
   (initialize-database conn)
   conn)

@@ -10,9 +10,7 @@
   (class vertical-panel% 
     (init parent [on-task-updated (lambda () (void))])
     
-    (super-new [parent parent]
-               [spacing 4]
-               [border 4])
+    (super-new [parent parent][spacing 0][border 0])
     
     ;; 回调函数
     (define task-updated-callback on-task-updated)
@@ -22,12 +20,31 @@
     (define current-list-id (make-parameter #f))
     (define current-list-name (make-parameter ""))
     
+    ;; 创建顶部水平面板（标题、添加任务按钮）
+    (define top-panel (new horizontal-panel% 
+                           [parent this]
+                           [stretchable-height #f]
+                           [spacing 4]
+                           [border 4]
+                           [stretchable-width #t]))
+    
     ;; 创建标题标签
     (define title-label (new message% 
-                            [parent this]
-                            [label ""]
-                            [vert-margin 12]
-                            [font (make-font #:size 18 #:weight 'bold #:family 'modern)]))
+                            [parent top-panel]
+                            [label ""][vert-margin 10][font (make-font #:size 18 #:weight 'bold #:family 'modern)][stretchable-width #t]))
+    
+    ;; 创建右上角功能面板
+    (define top-right-panel (new horizontal-panel% 
+                                [parent top-panel]
+                                [stretchable-height #f]
+                                [spacing 4]
+                                [stretchable-width #f]))
+    
+    ;; 添加任务按钮（右上角）
+    (define add-task-btn
+      (new button% 
+           [parent top-right-panel]
+           [label "+"][min-width 30][min-height 30][callback (lambda (btn evt)(show-add-task-dialog (current-list-id) (current-list-name) task-updated-callback))]))
     
     ;; 创建任务滚动面板
     (define task-scroll (new panel% [parent this] [style '(vscroll)]))
@@ -38,15 +55,6 @@
                                 [stretchable-height #t]
                                 [stretchable-width #t]
                                 [spacing 2]))
-    
-    ;; 添加任务按钮
-    (define add-task-btn
-      (new button% 
-           [parent this]
-           [label "+ 新提醒事项"]
-           [min-height 32]
-           [callback (lambda (btn evt)
-                       (show-add-task-dialog (current-list-id) (current-list-name) task-updated-callback))]))
     
     ;; 显示欢迎信息
     (define (show-welcome-message)

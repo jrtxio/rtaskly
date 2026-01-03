@@ -92,10 +92,6 @@
                                            (when list-name (current-list-name list-name))
                                            (current-search-keyword #f)
                                            (send task-panel update-tasks view-type list-id list-name))]
-                         [on-search (lambda (keyword)
-                                      (current-view "search")
-                                      (current-search-keyword keyword)
-                                      (send task-panel update-tasks "search" #f #f keyword))]
                          [on-task-updated (lambda ()
                                             (send task-panel update-tasks (current-view) (current-list-id) (current-list-name) (current-search-keyword)))]))
     

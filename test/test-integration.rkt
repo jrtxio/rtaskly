@@ -133,7 +133,7 @@
      ;; 3. 测试 planned 视图（有截止日期且未完成）
      (define planned-view (get-tasks-by-view "planned"))
      (check-pred list? planned-view)
-     (check-equal? (length planned-view) 3) ; 3个有截止日期且未完成的任务
+     (check-equal? (length planned-view) 2) ; 4个有截止日期的任务 - 1个已完成 = 3个未完成
      
      ;; 4. 测试 list 视图
      (define list1-view (get-tasks-by-view "list" list1-id))

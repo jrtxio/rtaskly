@@ -135,9 +135,9 @@
      (define test-list-id (todo-list-id test-list))
      
      ;; 向测试列表添加任务
-     (db:add-task test-list-id "测试任务1" "2023-01-01" "2023-01-01")
-     (db:add-task test-list-id "测试任务2" #f "2023-01-01")
-     (db:add-task test-list-id "测试任务3" "2023-01-02" "2023-01-01")
+     (db:add-task test-list-id "测试任务1" "2023-01-01" (current-seconds))
+     (db:add-task test-list-id "测试任务2" #f (current-seconds))
+     (db:add-task test-list-id "测试任务3" "2023-01-02" (current-seconds))
      
      ;; 检查任务是否添加成功
      (define conn (db:current-db-connection))
