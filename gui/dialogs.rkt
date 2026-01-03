@@ -8,21 +8,23 @@
 
 ;; 添加任务对话框
 (define (show-add-task-dialog [list-id #f] [list-name #f] [callback (lambda () (void))])
-  ;; 如果没有指定列表，获取默认列表
-  (define default-list (if list-id
-                           (core:get-list-by-id list-id)
-                           (core:get-default-list)))
+  ;; 获取所有列表用于下拉选择
+  (define all-lists (core:get-all-lists))
+  (define list-names (map core:todo-list-name all-lists))
+  (define list-ids (map core:todo-list-id all-lists))
   
-  (define default-list-id (if default-list (core:todo-list-id default-list) #f))
-  (define default-list-name (if default-list (core:todo-list-name default-list) ""))
-  
-  ;; 根据是否有明确列表ID调整对话框高度
-  (define dialog-height (if list-id 500 600))
+  ;; 确定默认选择的列表索引
+  (define default-selection (if list-id
+                                (index-of list-ids list-id)
+                                (let ([default-list (core:get-default-list)])
+                                  (if default-list
+                                      (index-of list-ids (core:todo-list-id default-list))
+                                      0))))
   
   (define dialog (new dialog% 
                       [label (translate "添加新任务")]
                       [width 400]
-                      [height dialog-height]
+                      [height 600]
                       [stretchable-width #t]
                       [stretchable-height #f]))
   
@@ -56,39 +58,20 @@
                               [choices priority-choices]
                               [selection 1])) ; 默认中等优先级
   
-  ;; 仅当没有明确指定列表ID时，显示列表选择控件
-  (define selected-list-id default-list-id)
-  (unless list-id
-    (new message% [parent dialog-panel] [label (translate "任务列表:")] [stretchable-width #t])
-    
-    ;; 获取所有列表用于下拉选择
-    (define all-lists (core:get-all-lists))
-    (define list-names (map core:todo-list-name all-lists))
-    (define list-ids (map core:todo-list-id all-lists))
-    
-    (define list-choice (new choice% 
-                            [parent dialog-panel]
-                            [label ""]
-                            [choices list-names]
-                            [selection (if default-list-id
-                                           (index-of list-ids default-list-id)
-                                           0)]))
-    
-    ;; 更新selected-list-id的获取方式
-    (set! selected-list-id (lambda ()
-                             (define idx (send list-choice get-selection))
-                             (list-ref list-ids idx))))
+  ;; 添加列表选择
+  (new message% [parent dialog-panel] [label (translate "任务列表:")] [stretchable-width #t])
+  (define list-choice (new choice% 
+                          [parent dialog-panel]
+                          [label ""]
+                          [choices list-names]
+                          [selection default-selection]))
   
   (define button-panel (new horizontal-panel% [parent dialog-panel] [spacing 8] [alignment '(center top)]))
   
   (define (save-task)
     (define text (send text-editor get-text))
     (define date (send date-field get-value))
-    
-    ;; 根据selected-list-id的类型获取实际值
-    (define final-list-id (if (procedure? selected-list-id)
-                             (selected-list-id)
-                             selected-list-id))
+    (define selected-list-id (list-ref list-ids (send list-choice get-selection)))
     
     (when (and text (not (equal? (string-trim text) "")))
       (define parsed-date
@@ -100,7 +83,7 @@
               (equal? (string-trim date) "")
               parsed-date)
           (begin
-            (task:add-task final-list-id text parsed-date)
+            (task:add-task selected-list-id text parsed-date)
             (callback)
             (send dialog show #f))
           (message-box (translate "日期格式错误") 
@@ -128,7 +111,7 @@
   (define dialog (new dialog% 
                       [label (translate "编辑任务")]
                       [width 400]
-                      [height 500]
+                      [height 600]
                       [stretchable-width #t]
                       [stretchable-height #f]))
   
@@ -168,24 +151,43 @@
                               [choices priority-choices]
                               [selection (index-of priority-values current-priority)]))
   
+  ;; 添加列表选择
+  (new message% [parent dialog-panel] [label (translate "任务列表:")] [stretchable-width #t])
+  
+  ;; 获取所有列表用于下拉选择
+  (define all-lists (core:get-all-lists))
+  (define list-names (map core:todo-list-name all-lists))
+  (define list-ids (map core:todo-list-id all-lists))
+  
+  ;; 确定默认选择的列表索引
+  (define current-list-id (task:task-list-id task-data))
+  (define default-selection (index-of list-ids current-list-id))
+  
+  (define list-choice (new choice% 
+                          [parent dialog-panel]
+                          [label ""]
+                          [choices list-names]
+                          [selection default-selection]))
+  
   (define button-panel (new horizontal-panel% [parent dialog-panel] [spacing 8] [alignment '(center top)]))
   
   (define (save-task)
     (define text (send text-editor get-text))
     (define date (send date-field get-value))
+    (define selected-priority (list-ref priority-values (send priority-choice get-selection)))
+    (define selected-list-id (list-ref list-ids (send list-choice get-selection)))
     
     (when (and text (not (equal? (string-trim text) "")))
       (define parsed-date
         (if (not (equal? (string-trim date) ""))
             (date:parse-date-string (string-trim date))
             #f))
-      (define selected-priority (list-ref priority-values (send priority-choice get-selection)))
       
       (if (or (not (string-trim date))
               (equal? (string-trim date) "")
               parsed-date)
           (begin
-            (task:edit-task (task:task-id task-data) (task:task-list-id task-data) text parsed-date selected-priority)
+            (task:edit-task (task:task-id task-data) selected-list-id text parsed-date selected-priority)
             (callback)
             (send dialog show #f))
           (message-box (translate "日期格式错误") 

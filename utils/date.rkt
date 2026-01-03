@@ -151,7 +151,7 @@
                       (year final-year)
                       (month final-month)
                       (day final-day)))]
-      [else now])))
+      [else now]))) 
 
 ;; 解析精确时间格式
 (define (parse-exact-time hour minute am-pm day-spec)
@@ -194,36 +194,28 @@
   (let ([trimmed-str (string-trim date-str)])
     (if (equal? trimmed-str "")
         #f
-        (let ([relative-match (regexp-match #rx"^\\+([0-9]+)([dmhwM])$" trimmed-str)]
-              [exact-match (regexp-match #rx"^@([0-9]+)(:[0-9]+)?([ap]m)?\\s*(.*)$" trimmed-str)]
-              [legacy-match (regexp-match #rx"^\\d{4}-\\d{2}-\\d{2}$" trimmed-str)])
-          (cond
-            ;; 相对时间格式：+Nd, +Nm, +Nh, +Nw, +NM
-            [relative-match
-             (let ([num (second relative-match)]
-                   [unit (third relative-match)])
-               (let ([new-date (parse-relative-time num unit)])
-                 (format-datetime new-date)))]
-            
-            ;; 精确时间格式：@time 或 @time day
-            [exact-match
-             (let ([hour (second exact-match)]
-                   [minute (third exact-match)]
-                   [am-pm (fourth exact-match)]
-                   [day-spec (string-trim (fifth exact-match))])
-               (let ([new-date (parse-exact-time hour minute am-pm day-spec)])
-                 (format-datetime new-date)))]
-            
-            ;; 原有 YYYY-MM-DD 格式，添加默认时间 00:00
-            [legacy-match
-             (string-append trimmed-str " 00:00")]
-            
-            ;; 其他格式，使用原有函数处理
-            [else 
-             (let ([normalized (normalize-date-string trimmed-str)])
-               (if normalized
-                   (string-append normalized " 00:00")
-                   #f))])))))
+        (cond
+          ;; 现有日期时间格式 YYYY-MM-DD HH:MM
+          [(and (string-contains? trimmed-str " ")
+                (string-contains? trimmed-str ":"))
+           trimmed-str]
+          ;; 相对时间格式：+Nd, +Nm, +Nh, +Nw, +NM
+          [(regexp-match #rx"^\\+([0-9]+)([dmhwM])$" trimmed-str)
+           => (lambda (match)
+                (format-datetime (parse-relative-time (second match) (third match))))]
+          ;; 精确时间格式：@time 或 @time day
+          [(regexp-match #rx"^@([0-9]+)(:[0-9]+)?([ap]m)?\\s*(.*)$" trimmed-str)
+           => (lambda (match)
+                (format-datetime (parse-exact-time (second match) (third match) (fourth match) (string-trim (fifth match)))))]
+          ;; 原有 YYYY-MM-DD 格式，添加默认时间 00:00
+          [(regexp-match #rx"^[0-9]{4}-[0-9]{2}-[0-9]{2}$" trimmed-str)
+           (string-append trimmed-str " 00:00")]
+          ;; 其他格式，使用原有函数处理
+          [else
+           (let ([normalized (normalize-date-string trimmed-str)])
+             (if normalized
+                 (string-append normalized " 00:00")
+                 #f))]))))
 
 ;; 验证日期格式是否正确
 (define (valid-date? date-str)

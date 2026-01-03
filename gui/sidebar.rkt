@@ -137,7 +137,7 @@
       (define button-panel (new horizontal-panel% [parent dialog-panel] [spacing 8]))
       
       (new button% 
-           [parent button-panel]
+           [parent button-panel] 
            [label (translate "确定")]
            [min-width 60]
            [callback (lambda (btn evt)
@@ -146,16 +146,14 @@
                          (core:add-list name)
                          (refresh-lists)
                          (task-updated-callback)
-                         (send dialog show #f)))]
-           [parent button-panel])
+                         (send dialog show #f)))])
       
       (new button% 
-           [parent button-panel]
+           [parent button-panel] 
            [label (translate "取消")]
            [min-width 60]
            [callback (lambda (btn evt)
-                       (send dialog show #f))]
-           [parent button-panel])
+                       (send dialog show #f))])
       
       (send name-field focus)
       (send dialog show #t))
