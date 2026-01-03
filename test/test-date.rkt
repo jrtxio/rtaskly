@@ -135,6 +135,82 @@
      (check-false (valid-date? "01-01"))
      (check-false (valid-date? "2023"))
      )
+   
+   ;; 测试 parse-date-string 函数 - 相对时间
+   (test-case "测试相对时间格式解析" 
+     ;; 获取今天和明天的日期
+     (define today (get-current-date-string))
+     (define today-parts (string-split today "-"))
+     (define today-year (string->number (list-ref today-parts 0)))
+     (define today-month (string->number (list-ref today-parts 1)))
+     (define today-day (string->number (list-ref today-parts 2)))
+     
+     (define tomorrow-day (if (< today-day 31) (+ today-day 1) 1))
+     (define tomorrow-month (if (< today-day 31) today-month (+ today-month 1)))
+     (define tomorrow-year (if (< today-month 12) today-year (+ today-year 1)))
+     (define tomorrow (format "~a-~a-~a" 
+                               tomorrow-year
+                               (~r tomorrow-month #:min-width 2 #:pad-string "0")
+                               (~r tomorrow-day #:min-width 2 #:pad-string "0")))
+     
+     ;; 测试 +1d (1天后)
+     (check-equal? (parse-date-string "+1d") tomorrow)
+     
+     ;; 测试 +30m (30分钟后，应该还是今天)
+     (check-equal? (parse-date-string "+30m") today)
+     
+     ;; 测试 +2h (2小时后，应该还是今天)
+     (check-equal? (parse-date-string "+2h") today)
+     
+     ;; 测试 +1w (1周后)
+     (check-not-false (parse-date-string "+1w"))
+     
+     ;; 测试 +6M (6个月后)
+     (check-not-false (parse-date-string "+6M"))
+     )
+   
+   ;; 测试 parse-date-string 函数 - 精确时间
+   (test-case "测试精确时间格式解析" 
+     ;; 获取今天和明天的日期
+     (define today (get-current-date-string))
+     (define today-parts (string-split today "-"))
+     (define today-year (string->number (list-ref today-parts 0)))
+     (define today-month (string->number (list-ref today-parts 1)))
+     (define today-day (string->number (list-ref today-parts 2)))
+     
+     (define tomorrow-day (if (< today-day 31) (+ today-day 1) 1))
+     (define tomorrow-month (if (< today-day 31) today-month (+ today-month 1)))
+     (define tomorrow-year (if (< today-month 12) today-year (+ today-year 1)))
+     (define tomorrow (format "~a-~a-~a" 
+                               tomorrow-year
+                               (~r tomorrow-month #:min-width 2 #:pad-string "0")
+                               (~r tomorrow-day #:min-width 2 #:pad-string "0")))
+     
+     ;; 测试 @10am (应该返回今天或明天)
+     (check-not-false (parse-date-string "@10am"))
+     
+     ;; 测试 @10:30pm (应该返回今天或明天)
+     (check-not-false (parse-date-string "@10:30pm"))
+     
+     ;; 测试 @22:30 (应该返回今天或明天)
+     (check-not-false (parse-date-string "@22:30"))
+     
+     ;; 测试 @10am tomorrow (应该返回明天)
+     (check-equal? (parse-date-string "@10am tomorrow") tomorrow)
+     
+     ;; 测试 @10am tmw (应该返回明天，缩写形式)
+     (check-equal? (parse-date-string "@10am tmw") tomorrow)
+     
+     ;; 测试 @8pm mon (应该返回有效日期)
+     (check-not-false (parse-date-string "@8pm mon"))
+     )
+   
+   ;; 测试 parse-date-string 函数 - 兼容性
+   (test-case "测试日期格式兼容性" 
+     ;; 确保原有格式仍然有效
+     (check-equal? (parse-date-string "2025-08-07") "2025-08-07")
+     (check-equal? (parse-date-string "2025-01-01") "2025-01-01")
+     )
    ))
 
 ;; 运行测试套件

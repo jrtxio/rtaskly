@@ -90,21 +90,20 @@
                              selected-list-id))
     
     (when (and text (not (equal? (string-trim text) "")))
-      (define normalized-date
+      (define parsed-date
         (if (not (equal? (string-trim date) ""))
-            (date:normalize-date-string (string-trim date))
+            (date:parse-date-string (string-trim date))
             #f))
-      (define selected-priority (list-ref priority-values (send priority-choice get-selection)))
       
       (if (or (not (string-trim date))
               (equal? (string-trim date) "")
-              normalized-date)
+              parsed-date)
           (begin
-            (task:add-task final-list-id text normalized-date selected-priority)
+            (task:add-task final-list-id text parsed-date)
             (callback)
             (send dialog show #f))
           (message-box "日期格式错误" 
-                       "请输入正确的日期格式 (YYYY-MM-DD),例如: 2025-08-07"
+                       "请输入正确的日期格式，例如: +1d, @10am, 2025-08-07"
                        dialog
                        '(ok)))))
   
@@ -175,21 +174,21 @@
     (define date (send date-field get-value))
     
     (when (and text (not (equal? (string-trim text) "")))
-      (define normalized-date
+      (define parsed-date
         (if (not (equal? (string-trim date) ""))
-            (date:normalize-date-string (string-trim date))
+            (date:parse-date-string (string-trim date))
             #f))
       (define selected-priority (list-ref priority-values (send priority-choice get-selection)))
       
       (if (or (not (string-trim date))
               (equal? (string-trim date) "")
-              normalized-date)
+              parsed-date)
           (begin
-            (task:edit-task (task:task-id task-data) (task:task-list-id task-data) text normalized-date selected-priority)
+            (task:edit-task (task:task-id task-data) (task:task-list-id task-data) text parsed-date selected-priority)
             (callback)
             (send dialog show #f))
           (message-box "日期格式错误" 
-                       "请输入正确的日期格式 (YYYY-MM-DD),例如: 2025-08-07"
+                       "请输入正确的日期格式，例如: +1d, @10am, 2025-08-07"
                        dialog
                        '(ok)))))
   
