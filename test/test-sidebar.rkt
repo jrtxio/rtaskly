@@ -156,6 +156,220 @@
      ;; 关闭测试窗口
      (send frame show #f)
      )
+   
+   ;; 测试智能列表选中状态切换
+   (test-case "测试智能列表选中状态切换" 
+     ;; 创建唯一的临时数据库文件
+     (define temp-db-path (format "./test/temp-test-sidebar-selected-~a.db" (current-inexact-milliseconds)))
+     
+     ;; 确保临时文件不存在
+     (when (file-exists? temp-db-path)
+       (delete-file temp-db-path))
+     
+     ;; 确保数据库连接已关闭
+     (db:close-database)
+     
+     ;; 连接数据库
+     (db:connect-to-database temp-db-path)
+     
+     ;; 创建测试列表，确保智能列表按钮可用
+     (core:add-list "测试列表1")
+     
+     ;; 创建测试窗口和侧边栏
+     (define frame (new frame% [label "Test Frame"] [width 300] [height 400]))
+     
+     ;; 用于跟踪回调调用的变量
+     (define callback-called #f)
+     
+     ;; 定义测试回调函数
+     (define (test-view-change-callback view-type [list-id #f] [list-name #f])
+       (set! callback-called #t))
+     
+     (define sidebar (new sidebar% [parent frame] [on-view-change test-view-change-callback]))
+     
+     ;; 刷新列表
+     (send sidebar refresh-lists)
+     
+     ;; 获取智能列表按钮
+     (define smart-buttons (send sidebar get-smart-list-buttons))
+     (check-equal? (length smart-buttons) 4)
+     
+     ;; 获取今天按钮和计划按钮
+     (define today-btn (first smart-buttons))
+     (define planned-btn (second smart-buttons))
+     
+     ;; 检查初始状态：没有选中按钮
+     (check-false (send sidebar get-current-selected-btn))
+     (check-false (send sidebar get-current-selected-original-label))
+     (check-equal? (send today-btn get-label) "今天")
+     
+     ;; 直接调用set-selected-button方法来测试选中状态切换
+     (send sidebar set-selected-button today-btn)
+     
+     ;; 检查选中状态：今天按钮应该被选中
+     (check-equal? (send sidebar get-current-selected-btn) today-btn)
+     (check-equal? (send sidebar get-current-selected-original-label) "今天")
+     (check-equal? (send today-btn get-label) "→ 今天")
+     
+     ;; 测试选中另一个按钮
+     (send sidebar set-selected-button planned-btn)
+     
+     ;; 检查选中状态：计划按钮应该被选中，今天按钮应该恢复原状
+     (check-equal? (send sidebar get-current-selected-btn) planned-btn)
+     (check-equal? (send sidebar get-current-selected-original-label) "计划")
+     (check-equal? (send planned-btn get-label) "→ 计划")
+     (check-equal? (send today-btn get-label) "今天")
+     
+     ;; 关闭测试窗口
+     (send frame show #f)
+     
+     ;; 关闭数据库连接
+     (db:close-database)
+     
+     ;; 清理临时文件
+     (when (file-exists? temp-db-path)
+       (delete-file temp-db-path)))
+   
+   ;; 测试自定义列表选中状态切换
+   (test-case "测试自定义列表选中状态切换" 
+     ;; 创建唯一的临时数据库文件
+     (define temp-db-path (format "./test/temp-test-sidebar-custom-selected-~a.db" (current-inexact-milliseconds)))
+     
+     ;; 确保临时文件不存在
+     (when (file-exists? temp-db-path)
+       (delete-file temp-db-path))
+     
+     ;; 连接数据库
+     (db:connect-to-database temp-db-path)
+     
+     ;; 创建测试列表
+     (core:add-list "自定义列表1")
+     (core:add-list "自定义列表2")
+     
+     ;; 创建测试窗口和侧边栏
+     (define frame (new frame% [label "Test Frame"] [width 300] [height 400]))
+     
+     ;; 用于跟踪回调调用的变量
+     (define callback-called #f)
+     
+     ;; 定义测试回调函数
+     (define (test-view-change-callback view-type [list-id #f] [list-name #f])
+       (set! callback-called #t))
+     
+     (define sidebar (new sidebar% [parent frame] [on-view-change test-view-change-callback]))
+     
+     ;; 刷新列表
+     (send sidebar refresh-lists)
+     
+     ;; 获取自定义列表按钮
+     (define custom-buttons (send sidebar get-custom-list-buttons))
+     ;; 确保至少有2个按钮
+     (check >= (length custom-buttons) 2)
+     
+     ;; 获取第一个和第二个自定义列表按钮
+     (define custom-btn1 (first custom-buttons))
+     (define custom-btn2 (second custom-buttons))
+     
+     ;; 保存原始标签
+     (define original-label1 (send custom-btn1 get-label))
+     (define original-label2 (send custom-btn2 get-label))
+     
+     ;; 检查初始状态：没有选中按钮
+     (check-false (send sidebar get-current-selected-btn))
+     
+     ;; 直接调用set-selected-button方法来测试选中状态切换
+     (send sidebar set-selected-button custom-btn1)
+     
+     ;; 检查选中状态：第一个自定义列表按钮应该被选中
+     (check-equal? (send sidebar get-current-selected-btn) custom-btn1)
+     (check-equal? (string-prefix? (send custom-btn1 get-label) "→ ") #t)
+     
+     ;; 测试选中另一个自定义列表按钮
+     (send sidebar set-selected-button custom-btn2)
+     
+     ;; 检查选中状态：第二个自定义列表按钮应该被选中，第一个应该恢复原状
+     (check-equal? (send sidebar get-current-selected-btn) custom-btn2)
+     (check-equal? (string-prefix? (send custom-btn2 get-label) "→ ") #t)
+     (check-equal? (string-prefix? (send custom-btn1 get-label) "→ ") #f)
+     (check-equal? (send custom-btn1 get-label) original-label1)
+     
+     ;; 关闭测试窗口
+     (send frame show #f)
+     
+     ;; 关闭数据库连接
+     (db:close-database)
+     
+     ;; 清理临时文件
+     (when (file-exists? temp-db-path)
+       (delete-file temp-db-path)))
+   
+   ;; 测试多个列表之间的选中状态切换
+   (test-case "测试多个列表之间的选中状态切换" 
+     ;; 创建唯一的临时数据库文件
+     (define temp-db-path (format "./test/temp-test-sidebar-multi-selected-~a.db" (current-inexact-milliseconds)))
+     
+     ;; 确保临时文件不存在
+     (when (file-exists? temp-db-path)
+       (delete-file temp-db-path))
+     
+     ;; 连接数据库
+     (db:connect-to-database temp-db-path)
+     
+     ;; 创建测试列表
+     (core:add-list "测试列表1")
+     (core:add-list "测试列表2")
+     
+     ;; 创建测试窗口和侧边栏
+     (define frame (new frame% [label "Test Frame"] [width 300] [height 400]))
+     
+     ;; 用于跟踪回调调用的变量
+     (define callback-called #f)
+     
+     ;; 定义测试回调函数
+     (define (test-view-change-callback view-type [list-id #f] [list-name #f])
+       (set! callback-called #t))
+     
+     (define sidebar (new sidebar% [parent frame] [on-view-change test-view-change-callback]))
+     
+     ;; 刷新列表
+     (send sidebar refresh-lists)
+     
+     ;; 获取智能列表按钮和自定义列表按钮
+     (define smart-buttons (send sidebar get-smart-list-buttons))
+     (define custom-buttons (send sidebar get-custom-list-buttons))
+     
+     ;; 获取今天按钮和第一个自定义列表按钮
+     (define today-btn (first smart-buttons))
+     (define custom-btn1 (first custom-buttons))
+     
+     ;; 保存原始标签
+     (define today-original-label (send today-btn get-label))
+     
+     ;; 直接调用set-selected-button方法来测试选中状态切换
+     (send sidebar set-selected-button today-btn)
+     
+     ;; 检查选中状态：今天按钮应该被选中
+     (check-equal? (send sidebar get-current-selected-btn) today-btn)
+     (check-equal? (string-prefix? (send today-btn get-label) "→ ") #t)
+     
+     ;; 测试选中自定义列表按钮
+     (send sidebar set-selected-button custom-btn1)
+     
+     ;; 检查选中状态：第一个自定义列表按钮应该被选中，今天按钮应该恢复原状
+     (check-equal? (send sidebar get-current-selected-btn) custom-btn1)
+     (check-equal? (string-prefix? (send custom-btn1 get-label) "→ ") #t)
+     (check-equal? (string-prefix? (send today-btn get-label) "→ ") #f)
+     (check-equal? (send today-btn get-label) today-original-label)
+     
+     ;; 关闭测试窗口
+     (send frame show #f)
+     
+     ;; 关闭数据库连接
+     (db:close-database)
+     
+     ;; 清理临时文件
+     (when (file-exists? temp-db-path)
+       (delete-file temp-db-path)))
    ))
 
 ;; 运行测试套件
