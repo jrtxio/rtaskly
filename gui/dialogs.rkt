@@ -3,7 +3,8 @@
 (require racket/gui/base
          (prefix-in task: "../core/task.rkt")
          (prefix-in core: "../core/list.rkt")
-         (prefix-in date: "../utils/date.rkt"))
+         (prefix-in date: "../utils/date.rkt")
+         "language.rkt")
 
 ;; 添加任务对话框
 (define (show-add-task-dialog [list-id #f] [list-name #f] [callback (lambda () (void))])
@@ -19,7 +20,7 @@
   (define dialog-height (if list-id 500 600))
   
   (define dialog (new dialog% 
-                      [label "添加新任务"]
+                      [label (translate "添加新任务")]
                       [width 400]
                       [height dialog-height]
                       [stretchable-width #t]
@@ -27,7 +28,7 @@
   
   (define dialog-panel (new vertical-panel% [parent dialog] [spacing 8] [border 12]))
   
-  (new message% [parent dialog-panel] [label "任务描述:"] [stretchable-width #t])
+  (new message% [parent dialog-panel] [label (translate "任务描述:")] [stretchable-width #t])
   ;; 创建多行文本编辑器
   (define text-editor (new text%))
   (define text-field (new editor-canvas% 
@@ -39,15 +40,15 @@
                          [vertical-inset 2]))
   (send text-editor insert "")
   
-  (new message% [parent dialog-panel] [label "截止日期 (可选):"] [stretchable-width #t])
+  (new message% [parent dialog-panel] [label (translate "截止日期 (可选):")] [stretchable-width #t])
   
   ;; 日期输入面板，包含文本框
   (define date-input-panel (new horizontal-panel% [parent dialog-panel] [spacing 4] [stretchable-width #t]))
   (define date-field (new text-field% [parent date-input-panel] [label ""] [init-value ""] [stretchable-width #t] [vert-margin 2]))
   
   ;; 添加优先级选择
-  (new message% [parent dialog-panel] [label "优先级:"] [stretchable-width #t])
-  (define priority-choices '("低" "中" "高"))
+  (new message% [parent dialog-panel] [label (translate "优先级:")] [stretchable-width #t])
+  (define priority-choices (list (translate "低") (translate "中") (translate "高")))
   (define priority-values '(0 1 2))
   (define priority-choice (new choice% 
                               [parent dialog-panel]
@@ -58,7 +59,7 @@
   ;; 仅当没有明确指定列表ID时，显示列表选择控件
   (define selected-list-id default-list-id)
   (unless list-id
-    (new message% [parent dialog-panel] [label "任务列表:"] [stretchable-width #t])
+    (new message% [parent dialog-panel] [label (translate "任务列表:")] [stretchable-width #t])
     
     ;; 获取所有列表用于下拉选择
     (define all-lists (core:get-all-lists))
@@ -102,20 +103,20 @@
             (task:add-task final-list-id text parsed-date)
             (callback)
             (send dialog show #f))
-          (message-box "日期格式错误" 
-                       "请输入正确的日期格式，例如: +1d, @10am, 2025-08-07"
+          (message-box (translate "日期格式错误") 
+                       (translate "请输入正确的日期格式，例如: +1d, @10am, 2025-08-07")
                        dialog
                        '(ok)))))
   
   (new button% 
        [parent button-panel]
-       [label "确定"]
+       [label (translate "确定")]
        [min-width 60]
        [callback (lambda (btn evt) (save-task))])
   
   (new button% 
        [parent button-panel]
-       [label "取消"]
+       [label (translate "取消")]
        [min-width 60]
        [callback (lambda (btn evt) (send dialog show #f))])
   
@@ -125,7 +126,7 @@
 ;; 编辑任务对话框
 (define (show-edit-task-dialog task-data [callback (lambda () (void))])
   (define dialog (new dialog% 
-                      [label "编辑任务"]
+                      [label (translate "编辑任务")]
                       [width 400]
                       [height 500]
                       [stretchable-width #t]
@@ -133,7 +134,7 @@
   
   (define dialog-panel (new vertical-panel% [parent dialog] [spacing 8] [border 12]))
   
-  (new message% [parent dialog-panel] [label "任务描述:"] [stretchable-width #t])
+  (new message% [parent dialog-panel] [label (translate "任务描述:")] [stretchable-width #t])
   ;; 创建多行文本编辑器
   (define text-editor (new text%))
   (define text-field (new editor-canvas% 
@@ -145,7 +146,7 @@
                          [vertical-inset 2]))
   (send text-editor insert (task:task-text task-data))
   
-  (new message% [parent dialog-panel] [label "截止日期 (可选):"] [stretchable-width #t])
+  (new message% [parent dialog-panel] [label (translate "截止日期 (可选):")] [stretchable-width #t])
   
   ;; 日期输入面板，包含文本框
   (define date-input-panel (new horizontal-panel% [parent dialog-panel] [spacing 4] [stretchable-width #t]))
@@ -157,8 +158,8 @@
                          [stretchable-width #t] [vert-margin 2]))
   
   ;; 添加优先级选择
-  (new message% [parent dialog-panel] [label "优先级:"] [stretchable-width #t])
-  (define priority-choices '("低" "中" "高"))
+  (new message% [parent dialog-panel] [label (translate "优先级:")] [stretchable-width #t])
+  (define priority-choices (list (translate "低") (translate "中") (translate "高")))
   (define priority-values '(0 1 2))
   (define current-priority (task:task-priority task-data))
   (define priority-choice (new choice% 
@@ -187,20 +188,20 @@
             (task:edit-task (task:task-id task-data) (task:task-list-id task-data) text parsed-date selected-priority)
             (callback)
             (send dialog show #f))
-          (message-box "日期格式错误" 
-                       "请输入正确的日期格式，例如: +1d, @10am, 2025-08-07"
+          (message-box (translate "日期格式错误") 
+                       (translate "请输入正确的日期格式，例如: +1d, @10am, 2025-08-07")
                        dialog
                        '(ok)))))
   
   (new button% 
        [parent button-panel]
-       [label "确定"]
+       [label (translate "确定")]
        [min-width 60]
        [callback (lambda (btn evt) (save-task))])
   
   (new button% 
        [parent button-panel]
-       [label "取消"]
+       [label (translate "取消")]
        [min-width 60]
        [callback (lambda (btn evt) (send dialog show #f))])
   

@@ -2,6 +2,8 @@
 
 (require "sidebar.rkt"
          "task-panel.rkt"
+         "language.rkt"
+         "dialogs.rkt"
          "../core/database.rkt"
          "../utils/path.rkt")
 
@@ -9,7 +11,7 @@
 (define main-frame% 
   (class frame% 
     (init [db-path #f])
-    (super-new [label "Taskly"]
+    (super-new [label (translate "Taskly")]
                [min-width 850]
                [min-height 650])
     
@@ -28,12 +30,12 @@
     (define menubar (new menu-bar% [parent this]))
     
     ;; 创建文件菜单
-    (define file-menu (new menu% [parent menubar] [label "文件"]))
+    (define file-menu (new menu% [parent menubar] [label (translate "文件")]))
     
     ;; 新建数据库菜单项
     (new menu-item% 
          [parent file-menu] 
-         [label "新建数据库"] 
+         [label (translate "新建数据库")] 
          [shortcut #\n] ; n
          [shortcut-prefix '(ctl)]
          [callback (lambda (menu-item event) 
@@ -42,7 +44,7 @@
     ;; 打开数据库菜单项
     (new menu-item% 
          [parent file-menu] 
-         [label "打开数据库"] 
+         [label (translate "打开数据库")] 
          [shortcut #\o] ; o
          [shortcut-prefix '(ctl)]
          [callback (lambda (menu-item event) 
@@ -51,7 +53,7 @@
     ;; 关闭数据库菜单项
     (new menu-item% 
          [parent file-menu] 
-         [label "关闭数据库"] 
+         [label (translate "关闭数据库")] 
          [callback (lambda (menu-item event) 
                      (disconnect-database))])
     
@@ -61,19 +63,43 @@
     ;; 退出菜单项
     (new menu-item% 
          [parent file-menu] 
-         [label "退出"] 
+         [label (translate "退出")] 
          [shortcut #\q] ; q
          [shortcut-prefix '(ctl)]
          [callback (lambda (menu-item event) 
                      (exit))])
     
+    ;; 创建设置菜单
+    (define settings-menu (new menu% [parent menubar] [label (translate "设置")]))
+    
+    ;; 创建语言子菜单
+    (define language-menu (new menu% [parent settings-menu] [label (translate "语言")]))
+    
+    ;; 中文菜单项
+    (new menu-item% 
+         [parent language-menu] 
+         [label (translate "中文")] 
+         [callback (lambda (menu-item event) 
+                     (set-language! "zh")
+                     (save-language-setting)
+                     (refresh-interface))])
+    
+    ;; English菜单项
+    (new menu-item% 
+         [parent language-menu] 
+         [label (translate "English")] 
+         [callback (lambda (menu-item event) 
+                     (set-language! "en")
+                     (save-language-setting)
+                     (refresh-interface))])
+    
     ;; 创建帮助菜单
-    (define help-menu (new menu% [parent menubar] [label "帮助"]))
+    (define help-menu (new menu% [parent menubar] [label (translate "帮助")]))
     
     ;; 关于菜单项
     (new menu-item% 
          [parent help-menu] 
-         [label "关于"] 
+         [label (translate "关于")] 
          [callback (lambda (menu-item event) 
                      (show-about-dialog))])
     
@@ -101,7 +127,7 @@
                                            (when list-name (current-list-name list-name))
                                            (current-search-keyword #f)
                                            (send task-panel update-tasks view-type list-id list-name)
-                                           (show-status-message (string-append "已切换到\"" list-name "\"视图")))]
+                                           (show-status-message (translate "已切换到\"~a\"视图" list-name)))]
                          [on-task-updated (lambda ()
                                             (send task-panel update-tasks (current-view) (current-list-id) (current-list-name) (current-search-keyword)))]))
     
@@ -136,21 +162,21 @@
     ;; 创建状态消息标签
     (define status-message (new message% 
                                [parent status-bar]
-                               [label "就绪"]
+                               [label (translate "就绪")]
                                [font (make-font #:size 11 #:family 'modern)]
                                [stretchable-width #t]))
     
     ;; 显示新建数据库对话框
     (define (show-new-database-dialog)
       (define dialog (new dialog% 
-                          [label "新建数据库文件"]
+                          [label (translate "新建数据库文件")]
                           [parent this]
                           [width 500]
                           [height 300]))
       
       (define panel (new vertical-panel% [parent dialog] [spacing 10] [border 10]))
       
-      (new message% [parent panel] [label "请输入新数据库文件的路径和名称。"])
+      (new message% [parent panel] [label (translate "请输入新数据库文件的路径和名称。")])
       
       (define file-panel (new horizontal-panel% [parent panel] [spacing 10]))
       
@@ -161,12 +187,12 @@
       
       ;; 浏览按钮回调函数
       (define (browse-callback btn evt)
-        (define selected-file (put-file "保存数据库文件"))
+        (define selected-file (put-file (translate "保存数据库文件")))
         (when selected-file
           (send file-field set-value (path->string selected-file))))
       
       (new button% [parent file-panel] 
-           [label "浏览..."] 
+           [label (translate "浏览...")] 
            [callback browse-callback])
       
       (define button-panel (new horizontal-panel% [parent panel] [spacing 10] [alignment '(center center)]))
@@ -178,12 +204,12 @@
           (connect-to-db file-path)))
       
       (new button% [parent button-panel] 
-           [label "确定"] 
+           [label (translate "确定")] 
            [min-width 80]
            [callback (lambda (btn evt) (ok-callback))])
       
       (new button% [parent button-panel] 
-           [label "取消"] 
+           [label (translate "取消")] 
            [min-width 80]
            [callback (lambda (btn evt) (send dialog show #f))])
       
@@ -191,7 +217,7 @@
     
     ;; 显示打开数据库对话框
     (define (show-open-database-dialog)
-      (define selected-file (get-file "选择数据库文件"))
+      (define selected-file (get-file (translate "选择数据库文件")))
       (when selected-file
         (connect-to-db (path->string selected-file))))
     
@@ -218,7 +244,7 @@
       (update-title)
       
       ;; 显示状态消息
-      (show-status-message "数据库连接成功"))
+      (show-status-message (translate "数据库连接成功")))
     
     ;; 关闭数据库
     (define (disconnect-database)
@@ -234,7 +260,7 @@
         (update-title)
         
         ;; 显示状态消息
-        (show-status-message "数据库已关闭")))
+        (show-status-message (translate "数据库已关闭"))))
     
     ;; 更新窗口标题
     (define (update-title)
@@ -249,36 +275,77 @@
     ;; 显示关于对话框
     (define (show-about-dialog)
       (define dialog (new dialog% 
-                          [label "关于 Taskly"]
+                          [label (translate "关于 Taskly")]
                           [parent this]
                           [width 300]
                           [height 200]))
       
       (define panel (new vertical-panel% [parent dialog] [spacing 15] [border 20] [alignment '(center center)]))
       
-      (new message% [parent panel] [label "Taskly"] [font (make-font #:weight 'bold #:size 18)])
+      (new message% [parent panel] [label (translate "Taskly")] [font (make-font #:weight 'bold #:size 18)])
       (new message% [parent panel] [label "V1.0.0"])
-      (new message% [parent panel] [label "极简本地任务管理工具"])
-      (new message% [parent panel] [label "完全本地化，用户掌控数据"])
+      (new message% [parent panel] [label (translate "极简本地任务管理工具")])
+      (new message% [parent panel] [label (translate "完全本地化，用户掌控数据")])
       
       (define button-panel (new horizontal-panel% [parent panel] [spacing 10] [alignment '(center center)]))
       
       (new button% [parent button-panel] 
-           [label "确定"] 
+           [label (translate "确定")] 
            [min-width 80]
            [callback (lambda (btn evt) (send dialog show #f))])
       
       (send dialog show #t))
     
+    ;; 刷新界面语言
+    (define (refresh-interface)
+      ;; 更新窗口标题
+      (update-title)
+      
+      ;; 更新菜单标签
+      (send file-menu set-label (translate "文件"))
+      (send settings-menu set-label (translate "设置"))
+      (send language-menu set-label (translate "语言"))
+      (send help-menu set-label (translate "帮助"))
+      
+      ;; 更新菜单项目
+      (for ([item (send file-menu get-items)])
+        (when (is-a? item menu-item%)
+          (let ([original-label (send item get-label)])
+            ;; 根据原始标签更新翻译
+            (cond
+              [(equal? original-label (translate "新建数据库")) (void)]
+              [(equal? original-label (translate "打开数据库")) (void)]
+              [(equal? original-label (translate "关闭数据库")) (void)]
+              [(equal? original-label (translate "退出")) (void)]
+              [(equal? original-label (translate "关于")) (void)]
+              [(equal? original-label (translate "中文")) (void)]
+              [(equal? original-label (translate "English")) (void)]))))
+      
+      ;; 更新侧边栏
+      (send sidebar refresh-lists)
+      (send sidebar set-selected-button (send sidebar get-current-selected-btn))
+      
+      ;; 更新任务面板
+      (send task-panel update-tasks (current-view) (current-list-id) (current-list-name))
+      
+      ;; 更新状态栏
+      (show-status-message (translate "就绪")))
+    
     ;; 初始化应用
     (define/public (init-app)
+      ;; 加载语言设置
+      (load-language-setting)
+      
       (when init-db-path
         (connect-to-db init-db-path))
       (send sidebar refresh-lists)
       (send task-panel update-tasks (current-view) (current-list-id) (current-list-name))
       
       ;; 更新窗口标题
-      (update-title))
+      (update-title)
+      
+      ;; 刷新界面语言
+      (refresh-interface))
     
     ;; 暴露一些方法供外部调用
     (define/public (get-current-view) (current-view))
@@ -292,7 +359,7 @@
       (thread (lambda ()
                 (sleep (* duration 0.001))
                 ;; 直接更新状态消息，不需要queue-callback
-                (send status-message set-label "就绪"))))
+                (send status-message set-label (translate "就绪")))))
     
     (void)))
 

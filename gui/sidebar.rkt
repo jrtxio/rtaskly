@@ -1,7 +1,8 @@
 #lang racket/gui
 
 (require (prefix-in core: "../core/list.rkt")
-         (prefix-in task: "../core/task.rkt"))
+         (prefix-in task: "../core/task.rkt")
+         "language.rkt")
 
 ;; 侧边栏类
 (define sidebar% 
@@ -11,7 +12,7 @@
           [on-task-updated (lambda () (void))])
     
     (super-new [parent parent]
-               [min-width 150]
+               [min-width 250]
                [spacing 6]
                [border 6]
                [stretchable-width #f])
@@ -57,23 +58,23 @@
     (define today-btn
       (new button% 
            [parent smart-lists-row1]
-           [label "今天"]
-           [min-width 70]
+           [label (translate "今天")]
+           [min-width 100]
            [min-height 36]
            [callback (lambda (btn evt) 
                        (set-selected-button btn)
-                       (view-change-callback "today" #f "今天"))]))
+                       (view-change-callback "today" #f (translate "今天")))]))
     
     ;; 计划按钮
     (define planned-btn
       (new button% 
            [parent smart-lists-row1]
-           [label "计划"]
-           [min-width 70]
+           [label (translate "计划")]
+           [min-width 100]
            [min-height 36]
            [callback (lambda (btn evt) 
                        (set-selected-button btn)
-                       (view-change-callback "planned" #f "计划"))]))
+                       (view-change-callback "planned" #f (translate "计划")))]))
     
     ;; 创建第二行水平面板（All 和 Flagged）
     (define smart-lists-row2 (new horizontal-panel% 
@@ -87,34 +88,34 @@
     (define all-btn
       (new button% 
            [parent smart-lists-row2]
-           [label "全部"]
-           [min-width 70]
+           [label (translate "全部")]
+           [min-width 100]
            [min-height 36]
            [callback (lambda (btn evt) 
                        (set-selected-button btn)
-                       (view-change-callback "all" #f "全部"))]))
+                       (view-change-callback "all" #f (translate "全部")))]))
     
     ;; 已完成按钮
     (define completed-btn
       (new button% 
            [parent smart-lists-row2]
-           [label "完成"]
-           [min-width 70]
+           [label (translate "完成")]
+           [min-width 100]
            [min-height 36]
            [callback (lambda (btn evt) 
                        (set-selected-button btn)
-                       (view-change-callback "completed" #f "完成"))]))
+                       (view-change-callback "completed" #f (translate "完成")))]))
     
     ;; 创建自定义列表面板
     (define my-lists-panel (new vertical-panel% [parent this] [spacing 2]))
     
     ;; 列表标题
-    (new message% [parent my-lists-panel] [label "我的列表"] [font (make-font #:weight 'bold #:family 'modern #:size 14)])
+    (define my-lists-label (new message% [parent my-lists-panel] [label (translate "我的列表")] [font (make-font #:weight 'bold #:family 'modern #:size 14)] [stretchable-width #t]))
     
     ;; 列表容器
     (define lists-container (new vertical-panel% [parent my-lists-panel] [spacing 2]))
     
-    ;; 创建列表管理面板（左下角）
+    ;; 列表管理面板（左下角）
     (define list-management-panel (new horizontal-panel% 
                                       [parent my-lists-panel]
                                       [stretchable-height #f]
@@ -124,20 +125,20 @@
     ;; 添加列表按钮
     (define (show-add-list-dialog)
       (define dialog (new dialog% 
-                         [label "添加新列表"]
+                         [label (translate "添加新列表")]
                          [parent (send this get-top-level-window)]
                          [width 320]
                          [height 160]))
       
       (define dialog-panel (new vertical-panel% [parent dialog] [spacing 8] [border 12]))
-      (new message% [parent dialog-panel] [label "列表名称:"])
+      (new message% [parent dialog-panel] [label (translate "列表名称:")])
       (define name-field (new text-field% [parent dialog-panel] [label ""] [init-value ""]))
       
       (define button-panel (new horizontal-panel% [parent dialog-panel] [spacing 8]))
       
       (new button% 
            [parent button-panel]
-           [label "确定"]
+           [label (translate "确定")]
            [min-width 60]
            [callback (lambda (btn evt)
                        (define name (send name-field get-value))
@@ -150,7 +151,7 @@
       
       (new button% 
            [parent button-panel]
-           [label "取消"]
+           [label (translate "取消")]
            [min-width 60]
            [callback (lambda (btn evt)
                        (send dialog show #f))]
@@ -165,14 +166,14 @@
       (when (> (length all-lists) 0)
         ;; 创建删除列表对话框
         (define delete-dialog (new dialog% 
-                                  [label "删除列表"]
+                                  [label (translate "删除列表")]
                                   [width 400]
                                   [height 200]
                                   [stretchable-width #t]
                                   [stretchable-height #f]))
         
         (define delete-panel (new vertical-panel% [parent delete-dialog] [spacing 8] [border 12]))
-        (new message% [parent delete-panel] [label "选择要删除的列表:"] [stretchable-width #t])
+        (new message% [parent delete-panel] [label (translate "选择要删除的列表:")] [stretchable-width #t])
         
         ;; 创建列表选择下拉框
         (define list-names (map core:todo-list-name all-lists))
@@ -188,19 +189,17 @@
         
         (new button% 
              [parent delete-button-panel]
-             [label "删除"]
+             [label (translate "确定")]
              [callback (lambda (btn evt)
                          (define selected-idx (send list-choice get-selection))
                          (define selected-list-id (list-ref list-ids selected-idx))
                          (define selected-list-name (list-ref list-names selected-idx))
                          
                          ;; 显示确认对话框
-                         (define confirm-result (message-box "确认删除" 
-                                                          (string-append "确定要删除列表\"" 
-                                                                      selected-list-name 
-                                                                      "\"及其所有任务吗？")
+                         (define confirm-result (message-box (translate "确认删除") 
+                                                          (translate "确定要删除列表\"~a\"及其所有任务吗？" selected-list-name)
                                                           delete-dialog
-                                                          '(yes-no)))
+                                                          `(yes-no #:yes-label ,(translate "是") #:no-label ,(translate "否"))))
                          
                          (when (eq? confirm-result 'yes)
                            (core:delete-list selected-list-id)
@@ -211,7 +210,7 @@
         
         (new button% 
              [parent delete-button-panel]
-             [label "取消"]
+             [label (translate "取消")]
              [callback (lambda (btn evt) (send delete-dialog show #f))]
              [parent delete-button-panel])
         
@@ -253,6 +252,15 @@
       (send completed-btn enable has-lists?)
       (send add-list-btn enable has-lists?)
       (send delete-list-btn enable has-lists?)
+      
+      ;; 更新智能列表按钮标签
+      (send today-btn set-label (translate "今天"))
+      (send planned-btn set-label (translate "计划"))
+      (send all-btn set-label (translate "全部"))
+      (send completed-btn set-label (translate "完成"))
+      
+      ;; 更新"我的列表"标题
+      (send my-lists-label set-label (translate "我的列表"))
       
       ;; 添加自定义列表按钮
       (define new-buttons '())

@@ -3,7 +3,8 @@
 (require "dialogs.rkt"
          (prefix-in task: "../core/task.rkt")
          (prefix-in core: "../core/list.rkt")
-         (prefix-in date: "../utils/date.rkt"))
+         (prefix-in date: "../utils/date.rkt")
+         "language.rkt")
 
 ;; 任务面板类
 (define task-panel% 
@@ -70,26 +71,26 @@
       
       (new message% 
            [parent welcome-panel]
-           [label "欢迎使用 Taskly！"]
+           [label (translate "欢迎使用 Taskly！")]
            [font (make-font #:size 24 #:weight 'bold #:family 'modern)])
       
       (new message% 
            [parent welcome-panel]
-           [label "请创建或打开数据库文件以开始使用"]
+           [label (translate "请创建或打开数据库文件以开始使用")]
            [font (make-font #:size 14 #:family 'modern)])
       
       (new message% 
            [parent welcome-panel]
-           [label "操作指南："]
+           [label (translate "操作指南：")]
            [font (make-font #:size 14 #:weight 'bold #:family 'modern)])
       
       (new message% 
            [parent welcome-panel]
-           [label "1. 点击  文件 → 新建数据库  创建新的任务数据库"])
+           [label (translate "1. 点击  文件 → 新建数据库  创建新的任务数据库")])
       
       (new message% 
            [parent welcome-panel]
-           [label "2. 或点击  文件 → 打开数据库  使用现有数据库"])
+           [label (translate "2. 或点击  文件 → 打开数据库  使用现有数据库")])
       
       ;; 禁用添加任务按钮
       (send add-task-btn enable #f))
@@ -131,10 +132,10 @@
       
       (define (priority->text p)
         (case p
-          [(0) "低"]
-          [(1) "中"]
-          [(2) "高"]
-          [else "低"]))
+          [(0) (translate "低")]
+          [(1) (translate "中")]
+          [(2) (translate "高")]
+          [else (translate "低")]))
       
       (new message% 
            [parent task-item]
@@ -193,12 +194,11 @@
            [min-height 24]
            [callback (lambda (btn evt)
                        ;; 显示删除确认对话框
-                       (define result (message-box "确认删除" 
-                                                  (string-append "确定要删除任务\"" 
-                                                               (task:task-text task-data) 
-                                                               "\"吗？")
+                       (define result (message-box (translate "确认删除") 
+                                                  (translate "确定要删除任务\"~a\"吗？" 
+                                                               (task:task-text task-data))
                                                   (send btn get-top-level-window)
-                                                  '(yes-no)))
+                                                  `(yes-no #:yes-label ,(translate "是") #:no-label ,(translate "否"))))
                        (when (eq? result 'yes)
                          (task:delete-task (task:task-id task-data))
                          (task-updated-callback)))])
@@ -215,8 +215,8 @@
       (cond
         [(string=? view-type "search")
          (send title-label set-label (if (and keyword (not (equal? keyword "")))
-                                         (string-append "搜索结果: \"" keyword "\"")
-                                         "搜索结果"))]
+                                         (translate "搜索结果: \"~a\"" keyword)
+                                         (translate "搜索结果")))]
         [else
          (send title-label set-label (or list-name ""))])
       
