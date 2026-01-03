@@ -1,6 +1,7 @@
 #lang racket/gui
 
-(require (prefix-in task: "../core/task.rkt")
+(require racket/gui/base
+         (prefix-in task: "../core/task.rkt")
          (prefix-in core: "../core/list.rkt")
          (prefix-in date: "../utils/date.rkt"))
 
@@ -15,7 +16,7 @@
   (define default-list-name (if default-list (core:todo-list-name default-list) ""))
   
   ;; 根据是否有明确列表ID调整对话框高度
-  (define dialog-height (if list-id 400 500))
+  (define dialog-height (if list-id 500 600))
   
   (define dialog (new dialog% 
                       [label "添加新任务"]
@@ -27,10 +28,32 @@
   (define dialog-panel (new vertical-panel% [parent dialog] [spacing 8] [border 12]))
   
   (new message% [parent dialog-panel] [label "任务描述:"] [stretchable-width #t])
-  (define text-field (new text-field% [parent dialog-panel] [label ""] [init-value ""]))
+  ;; 创建多行文本编辑器
+  (define text-editor (new text%))
+  (define text-field (new editor-canvas% 
+                         [parent dialog-panel] 
+                         [editor text-editor]
+                         [min-height 80]
+                         [stretchable-height #t]
+                         [horizontal-inset 2]
+                         [vertical-inset 2]))
+  (send text-editor insert "")
   
-  (new message% [parent dialog-panel] [label "截止日期 (YYYY-MM-DD, 可选):"] [stretchable-width #t])
-  (define date-field (new text-field% [parent dialog-panel] [label ""] [init-value ""]))
+  (new message% [parent dialog-panel] [label "截止日期 (可选):"] [stretchable-width #t])
+  
+  ;; 日期输入面板，包含文本框
+  (define date-input-panel (new horizontal-panel% [parent dialog-panel] [spacing 4] [stretchable-width #t]))
+  (define date-field (new text-field% [parent date-input-panel] [label ""] [init-value ""] [stretchable-width #t] [vert-margin 2]))
+  
+  ;; 添加优先级选择
+  (new message% [parent dialog-panel] [label "优先级:"] [stretchable-width #t])
+  (define priority-choices '("低" "中" "高"))
+  (define priority-values '(0 1 2))
+  (define priority-choice (new choice% 
+                              [parent dialog-panel]
+                              [label ""]
+                              [choices priority-choices]
+                              [selection 1])) ; 默认中等优先级
   
   ;; 仅当没有明确指定列表ID时，显示列表选择控件
   (define selected-list-id default-list-id)
@@ -58,7 +81,7 @@
   (define button-panel (new horizontal-panel% [parent dialog-panel] [spacing 8] [alignment '(center top)]))
   
   (define (save-task)
-    (define text (send text-field get-value))
+    (define text (send text-editor get-text))
     (define date (send date-field get-value))
     
     ;; 根据selected-list-id的类型获取实际值
@@ -71,12 +94,13 @@
         (if (not (equal? (string-trim date) ""))
             (date:normalize-date-string (string-trim date))
             #f))
+      (define selected-priority (list-ref priority-values (send priority-choice get-selection)))
       
       (if (or (not (string-trim date))
               (equal? (string-trim date) "")
               normalized-date)
           (begin
-            (task:add-task final-list-id text normalized-date)
+            (task:add-task final-list-id text normalized-date selected-priority)
             (callback)
             (send dialog show #f))
           (message-box "日期格式错误" 
@@ -104,28 +128,50 @@
   (define dialog (new dialog% 
                       [label "编辑任务"]
                       [width 400]
-                      [height 400]
+                      [height 500]
                       [stretchable-width #t]
                       [stretchable-height #f]))
   
   (define dialog-panel (new vertical-panel% [parent dialog] [spacing 8] [border 12]))
   
   (new message% [parent dialog-panel] [label "任务描述:"] [stretchable-width #t])
-  (define text-field (new text-field% [parent dialog-panel] 
-                         [label ""] 
-                         [init-value (task:task-text task-data)]))
+  ;; 创建多行文本编辑器
+  (define text-editor (new text%))
+  (define text-field (new editor-canvas% 
+                         [parent dialog-panel] 
+                         [editor text-editor]
+                         [min-height 80]
+                         [stretchable-height #t]
+                         [horizontal-inset 2]
+                         [vertical-inset 2]))
+  (send text-editor insert (task:task-text task-data))
   
-  (new message% [parent dialog-panel] [label "截止日期 (YYYY-MM-DD, 可选):"] [stretchable-width #t])
-  (define date-field (new text-field% [parent dialog-panel] 
+  (new message% [parent dialog-panel] [label "截止日期 (可选):"] [stretchable-width #t])
+  
+  ;; 日期输入面板，包含文本框
+  (define date-input-panel (new horizontal-panel% [parent dialog-panel] [spacing 4] [stretchable-width #t]))
+  (define date-field (new text-field% [parent date-input-panel] 
                          [label ""] 
                          [init-value (if (task:task-due-date task-data) 
                                          (task:task-due-date task-data) 
-                                         "")]))
+                                         "")] 
+                         [stretchable-width #t] [vert-margin 2]))
+  
+  ;; 添加优先级选择
+  (new message% [parent dialog-panel] [label "优先级:"] [stretchable-width #t])
+  (define priority-choices '("低" "中" "高"))
+  (define priority-values '(0 1 2))
+  (define current-priority (task:task-priority task-data))
+  (define priority-choice (new choice% 
+                              [parent dialog-panel]
+                              [label ""]
+                              [choices priority-choices]
+                              [selection (index-of priority-values current-priority)]))
   
   (define button-panel (new horizontal-panel% [parent dialog-panel] [spacing 8] [alignment '(center top)]))
   
   (define (save-task)
-    (define text (send text-field get-value))
+    (define text (send text-editor get-text))
     (define date (send date-field get-value))
     
     (when (and text (not (equal? (string-trim text) "")))
@@ -133,12 +179,13 @@
         (if (not (equal? (string-trim date) ""))
             (date:normalize-date-string (string-trim date))
             #f))
+      (define selected-priority (list-ref priority-values (send priority-choice get-selection)))
       
       (if (or (not (string-trim date))
               (equal? (string-trim date) "")
               normalized-date)
           (begin
-            (task:edit-task (task:task-id task-data) (task:task-list-id task-data) text normalized-date)
+            (task:edit-task (task:task-id task-data) (task:task-list-id task-data) text normalized-date selected-priority)
             (callback)
             (send dialog show #f))
           (message-box "日期格式错误" 

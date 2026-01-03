@@ -10,7 +10,7 @@
   (class vertical-panel% 
     (init parent [on-task-updated (lambda () (void))])
     
-    (super-new [parent parent][spacing 0][border 0])
+    (super-new [parent parent] [spacing 0] [border 0])
     
     ;; 回调函数
     (define task-updated-callback on-task-updated)
@@ -44,7 +44,7 @@
     (define add-task-btn
       (new button% 
            [parent top-right-panel]
-           [label "+"][min-width 30][min-height 30][callback (lambda (btn evt)(show-add-task-dialog (current-list-id) (current-list-name) task-updated-callback))]))
+           [label "+"][min-width 30][min-height 30][callback (lambda (btn evt) (show-add-task-dialog (current-list-id) (current-list-name) task-updated-callback))]))
     
     ;; 创建任务滚动面板
     (define task-scroll (new panel% [parent this] [style '(vscroll)]))
@@ -98,6 +98,112 @@
     (define (enable-interface)
       (send add-task-btn enable #t))
     
+    ;; 创建单个任务项
+    (define (create-task-item task-data)
+      ;; 创建任务项面板
+      (define task-item (new horizontal-panel% 
+                           [parent task-list-panel]
+                           [stretchable-height #f]
+                           [stretchable-width #t]
+                           [style '(border)]
+                           [spacing 8]
+                           [border 5]))
+      
+      ;; 创建复选框
+      (new check-box% 
+           [parent task-item]
+           [label ""]
+           [min-width 30]
+           [stretchable-width #f]
+           [value (task:task-completed? task-data)]
+           [callback (lambda (cb evt)
+                       (task:toggle-task-completed (task:task-id task-data))
+                       (task-updated-callback))])
+      
+      ;; 创建优先级标签
+      (define priority (task:task-priority task-data))
+      (define (priority->color p)
+        (case p
+          [(0) "#888888"] ; 低优先级 - 灰色
+          [(1) "#FFA500"] ; 中优先级 - 橙色
+          [(2) "#FF4444"] ; 高优先级 - 红色
+          [else "#888888"]))
+      
+      (define (priority->text p)
+        (case p
+          [(0) "低"]
+          [(1) "中"]
+          [(2) "高"]
+          [else "低"]))
+      
+      (new message% 
+           [parent task-item]
+           [label (string-append "[" (priority->text priority) "]")]
+           [font (make-font #:weight 'bold)]
+           [color (priority->color priority)]
+           [min-width 30]
+           [stretchable-width #f])
+      
+      ;; 创建文本和日期面板
+      (define text-date-panel (new vertical-panel% 
+                                 [parent task-item]
+                                 [stretchable-width #t]
+                                 [alignment '(left top)]
+                                 [spacing 2]))
+      
+      ;; 创建任务文本消息
+      (new message% 
+           [parent text-date-panel]
+           [stretchable-width #t]
+           [label (task:task-text task-data)])
+      
+      ;; 创建截止日期标签
+      (when (task:task-due-date task-data)
+        (define due-date-str (task:task-due-date task-data))
+        (define today-str (date:get-current-date-string))
+        (define diff (date:date-diff due-date-str today-str))
+        
+        ;; 根据日期差设置不同颜色
+        (define date-color
+          (cond
+            [(date:is-today? due-date-str) "red"]
+            [(= diff 1) "orange"]
+            [(<= diff 3) "#FFD700"] ; 金色
+            [else "black"]))
+        
+        (new message% 
+             [parent text-date-panel]
+             [label (date:format-date-for-display due-date-str)]
+             [font (make-font #:size 9 #:family 'modern)]
+             [color date-color]))
+      
+      ;; 创建编辑按钮
+      (new button% 
+           [parent task-item]
+           [label "✎"]
+           [min-width 20]
+           [min-height 24]
+           [callback (lambda (btn evt) (show-edit-task-dialog task-data task-updated-callback))])
+      
+      ;; 创建删除按钮
+      (new button% 
+           [parent task-item]
+           [label "×"]
+           [min-width 20]
+           [min-height 24]
+           [callback (lambda (btn evt)
+                       ;; 显示删除确认对话框
+                       (define result (message-box "确认删除" 
+                                                  (string-append "确定要删除任务\"" 
+                                                               (task:task-text task-data) 
+                                                               "\"吗？")
+                                                  (send btn get-top-level-window)
+                                                  '(yes-no)))
+                       (when (eq? result 'yes)
+                         (task:delete-task (task:task-id task-data))
+                         (task-updated-callback)))])
+    )
+    
     ;; 更新任务列表
     (define/public (update-tasks view-type [list-id #f] [list-name #f] [keyword #f])
       ;; 更新当前状态
@@ -128,67 +234,12 @@
             (enable-interface)
             ;; 显示任务
             (for ([task-data tasks])
-              ;; 创建任务项
-              (define task-item (new horizontal-panel% 
-                                  [parent task-list-panel]
-                                  [stretchable-height #f]
-                                  [stretchable-width #t]
-                                  [style '(border)]
-                                  [spacing 8]
-                                  [border 5]))
-              
-              ;; 创建复选框
-              (new check-box% 
-                   [parent task-item]
-                   [label ""]
-                   [min-width 30]
-                   [stretchable-width #f]
-                   [value (task:task-completed? task-data)]
-                   [callback (lambda (cb evt)
-                               (task:toggle-task-completed (task:task-id task-data))
-                               (task-updated-callback))])
-              
-              ;; 创建文本和日期面板
-              (define text-date-panel (new vertical-panel% 
-                                           [parent task-item]
-                                           [stretchable-width #t]
-                                           [alignment '(left top)]
-                                           [spacing 2]))
-              
-              ;; 创建任务文本消息
-              (new message% 
-                   [parent text-date-panel]
-                   [stretchable-width #t]
-                   [label (task:task-text task-data)])
-              
-              ;; 创建截止日期标签
-              (when (task:task-due-date task-data)
-                (new message% 
-                     [parent text-date-panel]
-                     [label (date:format-date-for-display (task:task-due-date task-data))]
-                     [font (make-font #:size 9 #:family 'modern)]))
-              
-              ;; 创建编辑按钮
-              (new button% 
-                   [parent task-item]
-                   [label "✎"]
-                   [min-width 20]
-                   [min-height 24]
-                   [callback (lambda (btn evt)
-                               (show-edit-task-dialog task-data task-updated-callback))])
-              
-              ;; 创建删除按钮
-              (new button% 
-                   [parent task-item]
-                   [label "×"]
-                   [min-width 20]
-                   [min-height 24]
-                   [callback (lambda (btn evt)
-                               (task:delete-task (task:task-id task-data))
-                               (task-updated-callback))])))
+              (create-task-item task-data)))
           ;; 显示欢迎信息
-          (show-welcome-message)))
+          (show-welcome-message))
+    )
     
-    (void))) 
+    (void))
+  )
 
 (provide task-panel%)

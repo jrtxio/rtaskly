@@ -44,9 +44,20 @@
                      task_text TEXT NOT NULL,
                      due_date TEXT NULL,
                      is_completed INTEGER NOT NULL DEFAULT 0,
+                     priority INTEGER NOT NULL DEFAULT 0,
                      created_at TEXT NOT NULL,
                      FOREIGN KEY (list_id) REFERENCES list(list_id) ON DELETE CASCADE
                      )")
+  
+  ;; 检查并添加缺失的priority列（用于升级现有数据库）
+  (with-handlers ([exn:fail? (lambda (e) 
+                               ;; 忽略错误，继续执行
+                               #f)])
+    ;; 检查task表是否有priority列
+    (define has-priority (query-value conn "SELECT COUNT(*) FROM pragma_table_info('task') WHERE name = 'priority'"))
+    (when (= has-priority 0)
+      ;; 添加priority列，默认值为0
+      (query-exec conn "ALTER TABLE task ADD COLUMN priority INTEGER NOT NULL DEFAULT 0")))
   
   ;; 检查是否需要添加默认列表
   (define list-count (query-value conn "SELECT COUNT(*) FROM list"))
@@ -91,67 +102,72 @@
 ;; 获取所有任务
 (define (get-all-tasks)
   (define conn (current-db-connection))
-  (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
+  (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, priority, created_at
                    FROM task
-                   ORDER BY due_date NULLS LAST, created_at"))
+                   ORDER BY priority DESC, due_date NULLS LAST, created_at"))
 
 ;; 获取指定列表的任务
 (define (get-tasks-by-list list-id)
   (define conn (current-db-connection))
-  (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
+  (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, priority, created_at
                    FROM task
                    WHERE list_id = ?
-                   ORDER BY due_date NULLS LAST, created_at
+                   ORDER BY priority DESC, due_date NULLS LAST, created_at
                    " list-id))
 
 ;; 获取未完成的任务
 (define (get-incomplete-tasks)
   (define conn (current-db-connection))
-  (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
+  (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, priority, created_at
                    FROM task
                    WHERE is_completed = 0
-                   ORDER BY due_date NULLS LAST, created_at"))
+                   ORDER BY priority DESC, due_date NULLS LAST, created_at"))
 
 ;; 获取已完成的任务
 (define (get-completed-tasks)
   (define conn (current-db-connection))
-  (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
+  (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, priority, created_at
                    FROM task
                    WHERE is_completed = 1
-                   ORDER BY due_date NULLS LAST, created_at"))
+                   ORDER BY priority DESC, due_date NULLS LAST, created_at"))
 
 ;; 获取今天的任务
 (define (get-today-tasks today-str)
   (define conn (current-db-connection))
-  (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
+  (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, priority, created_at
                    FROM task
                    WHERE due_date = ? AND is_completed = 0
-                   ORDER BY due_date NULLS LAST, created_at
+                   ORDER BY priority DESC, due_date NULLS LAST, created_at
                    " today-str))
 
 ;; 获取有截止日期的任务
 (define (get-planned-tasks)
   (define conn (current-db-connection))
-  (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
+  (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, priority, created_at
                    FROM task
                    WHERE due_date IS NOT NULL AND due_date != '' AND is_completed = 0
-                   ORDER BY due_date NULLS LAST, created_at"))
+                   ORDER BY priority DESC, due_date NULLS LAST, created_at"))
 
-;; 添加任务
-(define (add-task list-id task-text due-date created-at)
+;; 添加任务 - 向后兼容版本
+(define (add-task list-id task-text due-date [priority 1] [created-at (number->string (current-seconds))])
   (define conn (current-db-connection))
   (define sql-due-date (if due-date due-date sql-null))
-  (query-exec conn "INSERT INTO task (list_id, task_text, due_date, is_completed, created_at)
-                   VALUES (?, ?, ?, 0, ?)
-                   " list-id task-text sql-due-date (number->string created-at)))
+  (define sql-priority (if priority priority 0))
+  (define actual-created-at (if (number? created-at)
+                               (number->string created-at)
+                               created-at))
+  (query-exec conn "INSERT INTO task (list_id, task_text, due_date, is_completed, priority, created_at)
+                   VALUES (?, ?, ?, 0, ?, ?)
+                   " list-id task-text sql-due-date sql-priority actual-created-at))
 
 ;; 更新任务
-(define (update-task task-id list-id task-text due-date)
+(define (update-task task-id list-id task-text due-date priority)
   (define conn (current-db-connection))
   (define sql-due-date (if due-date due-date sql-null))
-  (query-exec conn "UPDATE task SET list_id = ?, task_text = ?, due_date = ?
+  (define sql-priority (if priority priority 0))
+  (query-exec conn "UPDATE task SET list_id = ?, task_text = ?, due_date = ?, priority = ?
                    WHERE task_id = ?
-                   " list-id task-text sql-due-date task-id))
+                   " list-id task-text sql-due-date sql-priority task-id))
 
 ;; 切换任务完成状态
 (define (toggle-task-completed task-id)
@@ -168,10 +184,10 @@
 ;; 搜索任务
 (define (search-tasks keyword)
   (define conn (current-db-connection))
-  (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
+  (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, priority, created_at
                    FROM task
                    WHERE task_text LIKE ?
-                   ORDER BY due_date NULLS LAST, created_at
+                   ORDER BY priority DESC, due_date NULLS LAST, created_at
                    " (string-append "%" keyword "%")))
 
 (provide connect-to-database

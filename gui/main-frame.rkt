@@ -77,11 +77,20 @@
          [callback (lambda (menu-item event) 
                      (show-about-dialog))])
     
+    ;; 创建主垂直面板，包含主面板和状态栏
+    (define main-vertical-panel (new vertical-panel% 
+                                     [parent this] 
+                                     [spacing 0] 
+                                     [border 0]
+                                     [stretchable-width #t]
+                                     [stretchable-height #t]))
+    
     ;; 创建主面板
     (define main-panel (new horizontal-panel% 
-                            [parent this] 
+                            [parent main-vertical-panel] 
                             [spacing 0] 
-                            [border 0]))
+                            [border 0]
+                            [stretchable-height #t]))
     
     ;; 创建侧边栏
     (define sidebar (new sidebar% 
@@ -91,7 +100,8 @@
                                            (when list-id (current-list-id list-id))
                                            (when list-name (current-list-name list-name))
                                            (current-search-keyword #f)
-                                           (send task-panel update-tasks view-type list-id list-name))]
+                                           (send task-panel update-tasks view-type list-id list-name)
+                                           (show-status-message (string-append "已切换到\"" list-name "\"视图")))]
                          [on-task-updated (lambda ()
                                             (send task-panel update-tasks (current-view) (current-list-id) (current-list-name) (current-search-keyword)))]))
     
@@ -113,6 +123,22 @@
                             [on-task-updated (lambda ()
                                                (send sidebar refresh-lists)
                                                (send task-panel update-tasks (current-view) (current-list-id) (current-list-name) (current-search-keyword)))]))
+    
+    ;; 创建状态栏
+    (define status-bar (new horizontal-panel% 
+                           [parent main-vertical-panel]
+                           [stretchable-height #f]
+                           [stretchable-width #t]
+                           [spacing 4]
+                           [border 2]
+                           [style '(border)]))
+    
+    ;; 创建状态消息标签
+    (define status-message (new message% 
+                               [parent status-bar]
+                               [label "就绪"]
+                               [font (make-font #:size 11 #:family 'modern)]
+                               [stretchable-width #t]))
     
     ;; 显示新建数据库对话框
     (define (show-new-database-dialog)
@@ -189,7 +215,10 @@
       (send task-panel update-tasks (current-view) (current-list-id) (current-list-name))
       
       ;; 更新窗口标题
-      (update-title))
+      (update-title)
+      
+      ;; 显示状态消息
+      (show-status-message "数据库连接成功"))
     
     ;; 关闭数据库
     (define (disconnect-database)
@@ -202,7 +231,10 @@
         (send task-panel update-tasks (current-view) (current-list-id) (current-list-name))
         
         ;; 更新窗口标题
-        (update-title)))
+        (update-title)
+        
+        ;; 显示状态消息
+        (show-status-message "数据库已关闭")))
     
     ;; 更新窗口标题
     (define (update-title)
@@ -254,6 +286,13 @@
     (define/public (get-current-list-name) (current-list-name))
     (define/public (get-current-search-keyword) (current-search-keyword))
     (define/public (is-db-connected?) (db-connected?))
+    (define/public (show-status-message msg [duration 3000])
+      (send status-message set-label msg)
+      ;; 3秒后恢复默认状态
+      (thread (lambda ()
+                (sleep (* duration 0.001))
+                ;; 直接更新状态消息，不需要queue-callback
+                (send status-message set-label "就绪"))))
     
     (void)))
 

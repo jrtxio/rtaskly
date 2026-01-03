@@ -66,6 +66,28 @@
 (define (is-today? date-str)
   (equal? date-str (get-current-date-string)))
 
+;; 计算两个日期之间的天数差
+(define (date-diff date-str1 date-str2)
+  (define (date-string->seconds date-str)
+    (let ([parts (string-split date-str "-")])
+      (if (= (length parts) 3)
+          (let* ([year (string->number (list-ref parts 0))]
+                 [month (string->number (list-ref parts 1))]
+                 [day (string->number (list-ref parts 2))]
+                 [date-struct (seconds->date 0 #f)])
+            (date->seconds (struct-copy date date-struct
+                                         [year year]
+                                         [month month]
+                                         [day day]
+                                         [hour 0]
+                                         [minute 0]
+                                         [second 0])))
+          0)))
+  
+  (define seconds1 (date-string->seconds date-str1))
+  (define seconds2 (date-string->seconds date-str2))
+  (quotient (abs (- seconds1 seconds2)) (* 60 60 24)))
+
 ;; 验证日期格式是否正确
 (define (valid-date? date-str)
   (if (and date-str (string? date-str) (not (equal? date-str "")))
@@ -77,4 +99,5 @@
          get-current-date-string
          format-date-for-display
          is-today?
-         valid-date?)
+         valid-date?
+         date-diff)
