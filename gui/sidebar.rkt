@@ -11,9 +11,9 @@
           [on-task-updated (lambda () (void))])
     
     (super-new [parent parent]
-               [min-width 120]
-               [spacing 4]
-               [border 4]
+               [min-width 150]
+               [spacing 6]
+               [border 6]
                [stretchable-width #f])
     
     ;; 回调函数
@@ -50,15 +50,16 @@
                                   [parent smart-lists-panel]
                                   [stretchable-height #f]
                                   [spacing 4]
-                                  [stretchable-width #t]))
+                                  [stretchable-width #t]
+                                  [alignment '(center center)]))
     
     ;; 今天按钮
     (define today-btn
       (new button% 
            [parent smart-lists-row1]
            [label "今天"]
-           [min-width 60]
-           [min-height 40]
+           [min-width 70]
+           [min-height 36]
            [callback (lambda (btn evt) 
                        (set-selected-button btn)
                        (view-change-callback "today" #f "今天"))]))
@@ -68,8 +69,8 @@
       (new button% 
            [parent smart-lists-row1]
            [label "计划"]
-           [min-width 60]
-           [min-height 40]
+           [min-width 70]
+           [min-height 36]
            [callback (lambda (btn evt) 
                        (set-selected-button btn)
                        (view-change-callback "planned" #f "计划"))]))
@@ -79,15 +80,16 @@
                                   [parent smart-lists-panel]
                                   [stretchable-height #f]
                                   [spacing 4]
-                                  [stretchable-width #t]))
+                                  [stretchable-width #t]
+                                  [alignment '(center center)]))
     
     ;; 全部按钮
     (define all-btn
       (new button% 
            [parent smart-lists-row2]
            [label "全部"]
-           [min-width 60]
-           [min-height 40]
+           [min-width 70]
+           [min-height 36]
            [callback (lambda (btn evt) 
                        (set-selected-button btn)
                        (view-change-callback "all" #f "全部"))]))
@@ -97,8 +99,8 @@
       (new button% 
            [parent smart-lists-row2]
            [label "完成"]
-           [min-width 60]
-           [min-height 40]
+           [min-width 70]
+           [min-height 36]
            [callback (lambda (btn evt) 
                        (set-selected-button btn)
                        (view-change-callback "completed" #f "完成"))]))
@@ -116,7 +118,8 @@
     (define list-management-panel (new horizontal-panel% 
                                       [parent my-lists-panel]
                                       [stretchable-height #f]
-                                      [spacing 4]))
+                                      [spacing 4]
+                                      [alignment '(center center)]))
     
     ;; 添加列表按钮
     (define (show-add-list-dialog)
@@ -218,8 +221,8 @@
     (define add-list-btn
       (new button% 
            [parent list-management-panel]
-           [label "+ 新建列表"]
-           [min-width 60]
+           [label "+"]
+           [min-width 40]
            [min-height 32]
            [callback (lambda (btn evt) (show-add-list-dialog))]))
     
@@ -227,8 +230,8 @@
     (define delete-list-btn
       (new button% 
            [parent list-management-panel]
-           [label "- 删除列表"]
-           [min-width 60]
+           [label "-"]
+           [min-width 40]
            [min-height 32]
            [callback (lambda (btn evt) (show-delete-list-dialog))]))
     
@@ -260,8 +263,8 @@
         (define btn (new button% 
                         [parent lists-container]
                         [label list-name]
-                        [min-width 140]
-                        [min-height 28]
+                        [min-width 100]
+                        [min-height 32]
                         [callback (lambda (btn evt) 
                                     (set-selected-button btn)
                                     (view-change-callback "list" list-id list-name))]))
