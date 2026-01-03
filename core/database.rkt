@@ -134,11 +134,12 @@
 ;; 获取今天的任务
 (define (get-today-tasks today-str)
   (define conn (current-db-connection))
+  ;; 使用 LIKE 匹配日期部分，支持带时间的日期字符串
   (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, priority, created_at
                    FROM task
-                   WHERE due_date = ? AND is_completed = 0
+                   WHERE due_date LIKE ? AND is_completed = 0
                    ORDER BY priority DESC, due_date NULLS LAST, created_at
-                   " today-str))
+                   " (string-append today-str "%")))
 
 ;; 获取有截止日期的任务
 (define (get-planned-tasks)

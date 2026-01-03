@@ -12,8 +12,8 @@
     [(= month 2)
      ;; 检查是否为闰年
      (let ([leap-year? (and (zero? (remainder year 4))
-                           (or (not (zero? (remainder year 100)))
-                               (zero? (remainder year 400))))])
+                           (or (not (zero? (remainder year 100))
+                               (zero? (remainder year 400)))))])
        (<= 1 day (if leap-year? 29 28)))]
     [else #f]))
 
@@ -51,156 +51,179 @@
 ;; 格式化日期显示 (YYYY-MM-DD -> MM月DD日)
 (define (format-date-for-display date-str)
   (if (and date-str (string? date-str) (not (equal? date-str "")))
-      (let ([parts (string-split date-str "-")])
-        (if (= (length parts) 3)
-            (let ([month (string->number (list-ref parts 1))]
-                  [day (string->number (list-ref parts 2))])
-              (if (and month day)
-                  (format "~a月~a日" month day)
-                  date-str))
-            date-str))
+      (let ([date-part (if (string-contains? date-str " ")
+                           (first (string-split date-str " "))
+                           date-str)]
+            [time-part (if (string-contains? date-str " ")
+                           (second (string-split date-str " "))
+                           #f)])
+        (let ([parts (string-split date-part "-")])
+          (if (= (length parts) 3)
+              (let ([month (string->number (list-ref parts 1))]
+                    [day (string->number (list-ref parts 2))])
+                (if (and month day)
+                    (if time-part
+                        (format "~a月~a日 ~a" month day time-part)
+                        (format "~a月~a日" month day))
+                    date-str))
+              date-str))) 
       ""))
 
 ;; 检查日期是否为今天
 (define (is-today? date-str)
-  (equal? date-str (get-current-date-string)))
+  (if (not date-str) #f
+      (let ([date-part (if (string-contains? date-str " ")
+                           (first (string-split date-str " "))
+                           date-str)])
+        (equal? date-part (get-current-date-string))))) 
 
 ;; 计算两个日期之间的天数差
 (define (date-diff date-str1 date-str2)
   (define (date-string->seconds date-str)
     (if (and (string? date-str) (not (equal? date-str "")))
-        (let ([parts (string-split date-str "-")])
-          (if (= (length parts) 3)
-              (let* ([year (string->number (list-ref parts 0))]
-                     [month (string->number (list-ref parts 1))]
-                     [day (string->number (list-ref parts 2))]
-                     [date-struct (seconds->date 0 #f)])
-                (if (and year month day)
-                    (date->seconds (struct-copy date date-struct
-                                               [year year]
-                                               [month month]
-                                               [day day]
-                                               [hour 0]
-                                               [minute 0]
-                                               [second 0]))
-                    0))
-              0))
+        (let ([date-part (if (string-contains? date-str " ")
+                             (first (string-split date-str " "))
+                             date-str)]
+              [time-part (if (string-contains? date-str " ")
+                             (second (string-split date-str " "))
+                             "00:00")])
+          (let ([date-parts (string-split date-part "-")]
+                [time-parts (string-split time-part ":")])
+            (if (and (= (length date-parts) 3) (= (length time-parts) 2))
+                (let* ([year (string->number (list-ref date-parts 0))]
+                       [month (string->number (list-ref date-parts 1))]
+                       [day (string->number (list-ref date-parts 2))]
+                       [hour (string->number (list-ref time-parts 0))]
+                       [minute (string->number (list-ref time-parts 1))]
+                       [date-struct (seconds->date 0 #f)])
+                  (if (and year month day hour minute)
+                      (date->seconds (struct-copy date date-struct
+                                                 (year year)
+                                                 (month month)
+                                                 (day day)
+                                                 (hour hour)
+                                                 (minute minute)
+                                                 (second 0)))
+                      0))
+                0)))
         0))
   
   (define seconds1 (date-string->seconds date-str1))
   (define seconds2 (date-string->seconds date-str2))
   (quotient (abs (- seconds1 seconds2)) (* 60 60 24)))
 
+;; 获取月份的最大天数
+(define (get-month-max-day year month)
+  (cond
+    [(member month '(1 3 5 7 8 10 12)) 31]
+    [(member month '(4 6 9 11)) 30]
+    [(and (zero? (remainder year 4))
+          (or (not (zero? (remainder year 100)))
+              (zero? (remainder year 400)))) 29]
+    [else 28]))
+
+;; 解析相对时间格式
+(define (parse-relative-time num unit)
+  (let ([now (current-date)]
+        [num (string->number num)])
+    (cond
+      [(string=? unit "m")
+       ;; 分钟
+       (seconds->date (+ (date->seconds now) (* num 60)))]
+      [(string=? unit "h")
+       ;; 小时
+       (seconds->date (+ (date->seconds now) (* num 3600)))]
+      [(string=? unit "d")
+       ;; 天
+       (seconds->date (+ (date->seconds now) (* num 86400)))]
+      [(string=? unit "w")
+       ;; 周
+       (seconds->date (+ (date->seconds now) (* num 604800)))]
+      [(string=? unit "M")
+       ;; 月
+       (let* ([new-month (+ (date-month now) num)]
+              [year-offset (quotient (- new-month 1) 12)]
+              [final-year (+ (date-year now) year-offset)]
+              [final-month (+ 1 (remainder (- new-month 1) 12))]
+              [max-day (get-month-max-day final-year final-month)]
+              [final-day (min (date-day now) max-day)])
+         (struct-copy date now
+                      (year final-year)
+                      (month final-month)
+                      (day final-day)))]
+      [else now])))
+
+;; 解析精确时间格式
+(define (parse-exact-time hour minute am-pm day-spec)
+  (let ([now (current-date)]
+        [hour (string->number hour)]
+        [minute (if minute (string->number (substring minute 1)) 0)])
+    ;; 处理上午/下午
+    (let ([final-hour
+           (cond
+             [(and am-pm (string=? am-pm "am"))
+              (if (= hour 12) 0 hour)]
+             [(and am-pm (string=? am-pm "pm"))
+              (if (= hour 12) 12 (+ hour 12))]
+             [else hour])])
+      ;; 计算目标日期
+      (let ([target-date
+             (cond
+               [(or (equal? day-spec "tomorrow") (equal? day-spec "tmw"))
+                ;; 明天
+                (seconds->date (+ (date->seconds now) 86400))]
+               [else
+                ;; 今天
+                now])])
+        (struct-copy date target-date
+                     (hour final-hour)
+                     (minute minute)
+                     (second 0))))))
+
+;; 格式化日期时间为字符串
+(define (format-datetime datetime)
+  (format "~a-~a-~a ~a:~a" 
+          (date-year datetime)
+          (~r (date-month datetime) #:min-width 2 #:pad-string "0")
+          (~r (date-day datetime) #:min-width 2 #:pad-string "0")
+          (~r (date-hour datetime) #:min-width 2 #:pad-string "0")
+          (~r (date-minute datetime) #:min-width 2 #:pad-string "0")))
+
 ;; 解析日期字符串，支持相对时间和精确时间格式
 (define (parse-date-string date-str)
   (let ([trimmed-str (string-trim date-str)])
     (if (equal? trimmed-str "")
         #f
-        (cond
-          ;; 相对时间格式：+Nd, +Nm, +Nh, +Nw, +NM
-          [(regexp-match #rx"^\\+([0-9]+)([dmhwM])$" trimmed-str)
-           => (lambda (match)
-                (define num (string->number (second match)))
-                (define unit (third match))
-                (define now (current-date))
-                
-                (define new-date
-                  (case unit
-                    [("m") ; 分钟
-                     (seconds->date (+ (date->seconds now) (* num 60)))]
-                    [("h") ; 小时
-                     (seconds->date (+ (date->seconds now) (* num 3600)))]
-                    [("d") ; 天
-                     (seconds->date (+ (date->seconds now) (* num 86400)))]
-                    [("w") ; 周
-                     (seconds->date (+ (date->seconds now) (* num 604800)))]
-                    [("M") ; 月
-                     (define new-month (+ (date-month now) num))
-                     (define year-offset (quotient (- new-month 1) 12))
-                     (define final-month (+ 1 (remainder (- new-month 1) 12)))
-                     (define final-year (+ (date-year now) year-offset))
-                     ;; 处理月份天数问题，确保日期有效
-                     (define final-day (min (date-day now) 
-                                           (if (member final-month '(1 3 5 7 8 10 12)) 31
-                                               (if (member final-month '(4 6 9 11)) 30
-                                                   ;; 二月
-                                                   (if (and (zero? (remainder final-year 4))
-                                                            (or (not (zero? (remainder final-year 100)))
-                                                                (zero? (remainder final-year 400))))
-                                                       29
-                                                       28)))))
-                     (struct-copy date now
-                                  (year final-year)
-                                  (month final-month)
-                                  (day final-day))]
-                    [else now]))
-                
-                ;; 格式化为 YYYY-MM-DD
-                (format "~a-~a-~a" 
-                        (date-year new-date)
-                        (~r (date-month new-date) #:min-width 2 #:pad-string "0")
-                        (~r (date-day new-date) #:min-width 2 #:pad-string "0")))]
-          
-          ;; 精确时间格式：@time 或 @time day
-          [(regexp-match #rx"^@([0-9]+)(:[0-9]+)?([ap]m)?(.*)$" trimmed-str)
-           => (lambda (match)
-                (define hour (string->number (second match)))
-                (define minute (if (third match) (string->number (substring (third match) 1)) 0))
-                (define am-pm (fourth match))
-                (define day-spec (string-trim (fifth match)))
-                (define now (current-date))
-                
-                ;; 处理上午/下午
-                (define final-hour
-                  (cond
-                    [(and am-pm (string=? am-pm "am"))
-                     (if (= hour 12) 0 hour)]
-                    [(and am-pm (string=? am-pm "pm"))
-                     (if (= hour 12) 12 (+ hour 12))]
-                    [else hour]))
-                
-                ;; 计算目标日期
-                (define target-date
-                  (cond
-                    [(or (equal? day-spec "tomorrow") (equal? day-spec "tmw"))
-                     ;; 明天
-                     (seconds->date (+ (date->seconds now) 86400))]
-                    [(and (not (equal? day-spec ""))
-                          (member (string-downcase day-spec) '("mon" "tue" "wed" "thu" "fri" "sat" "sun")))
-                     ;; 本周的某一天
-                     (define day-names '("mon" "tue" "wed" "thu" "fri" "sat" "sun"))
-                     (define target-day-index (index-of day-names (string-downcase day-spec)))
-                     (define current-day-index (date-week-day now))
-                     (define day-diff (+ (- target-day-index current-day-index) 
-                                        (if (<= target-day-index current-day-index) 7 0)))
-                     (seconds->date (+ (date->seconds now) (* day-diff 86400)))]
-                    [else
-                     ;; 今天
-                     now]))
-                
-                ;; 检查时间是否已过，如果已过则使用明天
-                (define final-date
-                  (if (and (= (date-year target-date) (date-year now))
-                           (= (date-month target-date) (date-month now))
-                           (= (date-day target-date) (date-day now))
-                           (> (date->seconds now) 
-                              (date->seconds (struct-copy date now
-                                                         (hour final-hour)
-                                                         (minute minute)
-                                                         (second 0)))))
-                      ;; 时间已过，使用明天
-                      (seconds->date (+ (date->seconds target-date) 86400))
-                      ;; 时间未过，使用今天
-                      target-date))
-                
-                ;; 格式化为 YYYY-MM-DD
-                (format "~a-~a-~a" 
-                        (date-year final-date)
-                        (~r (date-month final-date) #:min-width 2 #:pad-string "0")
-                        (~r (date-day final-date) #:min-width 2 #:pad-string "0")))]
-          
-          ;; 其他格式，使用原有函数处理
-          [else (normalize-date-string trimmed-str)]))))
+        (let ([relative-match (regexp-match #rx"^\\+([0-9]+)([dmhwM])$" trimmed-str)]
+              [exact-match (regexp-match #rx"^@([0-9]+)(:[0-9]+)?([ap]m)?\\s*(.*)$" trimmed-str)]
+              [legacy-match (regexp-match #rx"^\\d{4}-\\d{2}-\\d{2}$" trimmed-str)])
+          (cond
+            ;; 相对时间格式：+Nd, +Nm, +Nh, +Nw, +NM
+            [relative-match
+             (let ([num (second relative-match)]
+                   [unit (third relative-match)])
+               (let ([new-date (parse-relative-time num unit)])
+                 (format-datetime new-date)))]
+            
+            ;; 精确时间格式：@time 或 @time day
+            [exact-match
+             (let ([hour (second exact-match)]
+                   [minute (third exact-match)]
+                   [am-pm (fourth exact-match)]
+                   [day-spec (string-trim (fifth exact-match))])
+               (let ([new-date (parse-exact-time hour minute am-pm day-spec)])
+                 (format-datetime new-date)))]
+            
+            ;; 原有 YYYY-MM-DD 格式，添加默认时间 00:00
+            [legacy-match
+             (string-append trimmed-str " 00:00")]
+            
+            ;; 其他格式，使用原有函数处理
+            [else 
+             (let ([normalized (normalize-date-string trimmed-str)])
+               (if normalized
+                   (string-append normalized " 00:00")
+                   #f))])))))
 
 ;; 验证日期格式是否正确
 (define (valid-date? date-str)

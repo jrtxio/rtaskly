@@ -153,14 +153,17 @@
                                (~r tomorrow-month #:min-width 2 #:pad-string "0")
                                (~r tomorrow-day #:min-width 2 #:pad-string "0")))
      
-     ;; 测试 +1d (1天后)
-     (check-equal? (parse-date-string "+1d") tomorrow)
+     ;; 测试 +1d (1天后) - 只检查日期部分，忽略时间
+     (define plus-1d-result (parse-date-string "+1d"))
+     (check-true (string-prefix? plus-1d-result tomorrow))
      
-     ;; 测试 +30m (30分钟后，应该还是今天)
-     (check-equal? (parse-date-string "+30m") today)
+     ;; 测试 +30m (30分钟后，应该还是今天) - 只检查日期部分，忽略时间
+     (define plus-30m-result (parse-date-string "+30m"))
+     (check-true (string-prefix? plus-30m-result today))
      
-     ;; 测试 +2h (2小时后，应该还是今天)
-     (check-equal? (parse-date-string "+2h") today)
+     ;; 测试 +2h (2小时后，应该还是今天) - 只检查日期部分，忽略时间
+     (define plus-2h-result (parse-date-string "+2h"))
+     (check-true (string-prefix? plus-2h-result today))
      
      ;; 测试 +1w (1周后)
      (check-not-false (parse-date-string "+1w"))
@@ -186,30 +189,35 @@
                                (~r tomorrow-month #:min-width 2 #:pad-string "0")
                                (~r tomorrow-day #:min-width 2 #:pad-string "0")))
      
-     ;; 测试 @10am (应该返回今天或明天)
-     (check-not-false (parse-date-string "@10am"))
+     ;; 测试 @10am (应该返回今天，带时间)
+     (define at-10am-result (parse-date-string "@10am"))
+     (check-true (string-prefix? at-10am-result today))
      
-     ;; 测试 @10:30pm (应该返回今天或明天)
-     (check-not-false (parse-date-string "@10:30pm"))
+     ;; 测试 @10:30pm (应该返回今天，带时间)
+     (define at-1030pm-result (parse-date-string "@10:30pm"))
+     (check-true (string-prefix? at-1030pm-result today))
      
-     ;; 测试 @22:30 (应该返回今天或明天)
-     (check-not-false (parse-date-string "@22:30"))
+     ;; 测试 @22:30 (应该返回今天，带时间)
+     (define at-2230-result (parse-date-string "@22:30"))
+     (check-true (string-prefix? at-2230-result today))
      
-     ;; 测试 @10am tomorrow (应该返回明天)
-     (check-equal? (parse-date-string "@10am tomorrow") tomorrow)
+     ;; 测试 @10am tomorrow (应该返回明天，带时间)
+     (define at-10am-tomorrow-result (parse-date-string "@10am tomorrow"))
+     (check-true (string-prefix? at-10am-tomorrow-result tomorrow))
      
-     ;; 测试 @10am tmw (应该返回明天，缩写形式)
-     (check-equal? (parse-date-string "@10am tmw") tomorrow)
+     ;; 测试 @10am tmw (应该返回明天，带时间，缩写形式)
+     (define at-10am-tmw-result (parse-date-string "@10am tmw"))
+     (check-true (string-prefix? at-10am-tmw-result tomorrow))
      
-     ;; 测试 @8pm mon (应该返回有效日期)
+     ;; 测试 @8pm mon (应该返回有效日期，带时间)
      (check-not-false (parse-date-string "@8pm mon"))
      )
    
    ;; 测试 parse-date-string 函数 - 兼容性
    (test-case "测试日期格式兼容性" 
-     ;; 确保原有格式仍然有效
-     (check-equal? (parse-date-string "2025-08-07") "2025-08-07")
-     (check-equal? (parse-date-string "2025-01-01") "2025-01-01")
+     ;; 确保原有格式仍然有效，现在会添加默认时间 00:00
+     (check-equal? (parse-date-string "2025-08-07") "2025-08-07 00:00")
+     (check-equal? (parse-date-string "2025-01-01") "2025-01-01 00:00")
      )
    ))
 
