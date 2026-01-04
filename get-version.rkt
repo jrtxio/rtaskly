@@ -8,7 +8,7 @@
 
 ;; 解析版本号
 (define (extract-version str)
-  (define version-regex #px"define version \"([0-9]+\\.[0-9]+\\.[0-9]+)\"")
+  (define version-regex #px"define version \"([0-9]+(\\.[0-9]+)+)\"")
   (define match (regexp-match version-regex str))
   (if match
       (cadr match)
