@@ -11,12 +11,16 @@
 <body>
     <header class="bg-primary text-white text-center py-5">
         <div class="container">
+            <div class="language-switcher">
+                <button id="lang-en" class="lang-btn active">English</button>
+                <button id="lang-zh" class="lang-btn">中文</button>
+            </div>
             <img src="taskly.svg" alt="Taskly Logo" class="mb-3" width="128">
-            <h1 class="display-4">Taskly</h1>
-            <p class="lead">A Simple and Intuitive Task Manager Built with Racket</p>
+            <h1 class="display-4" data-en="Taskly" data-zh="Taskly">Taskly</h1>
+            <p class="lead" data-en="A Simple and Intuitive Task Manager Built with Racket" data-zh="一个使用 Racket 构建的简单直观的任务管理器">A Simple and Intuitive Task Manager Built with Racket</p>
             <div class="mt-4">
-                <a href="https://github.com/jrtxio/taskly/releases" class="btn btn-light btn-lg me-2">Download</a>
-                <a href="https://github.com/jrtxio/taskly" class="btn btn-outline-light btn-lg">GitHub</a>
+                <a href="https://github.com/jrtxio/taskly/releases" class="btn btn-light btn-lg me-2" data-en="Download" data-zh="下载">Download</a>
+                <a href="https://github.com/jrtxio/taskly" class="btn btn-outline-light btn-lg" data-en="GitHub" data-zh="GitHub">GitHub</a>
             </div>
         </div>
     </header>
@@ -25,58 +29,58 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-8 offset-md-2">
-                    <h2 class="text-center mb-5">Overview</h2>
-                    <p class="text-center">Taskly is a simple and intuitive task management tool built with Racket. It provides a clean graphical interface for creating, organizing, and tracking your tasks efficiently.</p>
+                    <h2 class="text-center mb-5" data-en="Overview" data-zh="概述">Overview</h2>
+                    <p class="text-center" data-en="Taskly is a simple and intuitive task management tool built with Racket. It provides a clean graphical interface for creating, organizing, and tracking your tasks efficiently." data-zh="Taskly 是一个使用 Racket 构建的简单直观的任务管理工具。它提供了一个干净的图形界面，用于高效地创建、组织和跟踪您的任务。">Taskly is a simple and intuitive task management tool built with Racket. It provides a clean graphical interface for creating, organizing, and tracking your tasks efficiently.</p>
                 </div>
             </div>
 
             <div class="row mt-5">
-                <h2 class="text-center mb-5">Features</h2>
+                <h2 class="text-center mb-5" data-en="Features" data-zh="特性">Features</h2>
                 <div class="col-md-4 mb-4">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h3 class="card-title">📝 Create Tasks</h3>
-                            <p class="card-text">Easily create, edit, and delete tasks to manage your daily activities.</p>
+                            <h3 class="card-title" data-en="📝 Create Tasks" data-zh="📝 创建任务">📝 Create Tasks</h3>
+                            <p class="card-text" data-en="Easily create, edit, and delete tasks to manage your daily activities." data-zh="轻松创建、编辑和删除任务，管理您的日常活动。">Easily create, edit, and delete tasks to manage your daily activities.</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 mb-4">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h3 class="card-title">📋 Organize Lists</h3>
-                            <p class="card-text">Organize your tasks into different lists for better categorization.</p>
+                            <h3 class="card-title" data-en="📋 Organize Lists" data-zh="📋 组织列表">📋 Organize Lists</h3>
+                            <p class="card-text" data-en="Organize your tasks into different lists for better categorization." data-zh="将任务组织成不同的列表，以便更好地分类。">Organize your tasks into different lists for better categorization.</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 mb-4">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h3 class="card-title">📅 Set Due Dates</h3>
-                            <p class="card-text">Set due dates for your tasks to stay on top of your deadlines.</p>
+                            <h3 class="card-title" data-en="📅 Set Due Dates" data-zh="📅 设置截止日期">📅 Set Due Dates</h3>
+                            <p class="card-text" data-en="Set due dates for your tasks to stay on top of your deadlines." data-zh="为任务设置截止日期，以便及时完成任务。">Set due dates for your tasks to stay on top of your deadlines.</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 mb-4">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h3 class="card-title">🎯 Mark Complete</h3>
-                            <p class="card-text">Easily mark tasks as complete to track your progress.</p>
+                            <h3 class="card-title" data-en="🎯 Mark Complete" data-zh="🎯 标记完成">🎯 Mark Complete</h3>
+                            <p class="card-text" data-en="Easily mark tasks as complete to track your progress." data-zh="轻松将任务标记为完成，跟踪您的进度。">Easily mark tasks as complete to track your progress.</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 mb-4">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h3 class="card-title">💾 Data Persistence</h3>
-                            <p class="card-text">Automatic data persistence with SQLite ensures your tasks are always saved.</p>
+                            <h3 class="card-title" data-en="💾 Data Persistence" data-zh="💾 数据持久化">💾 Data Persistence</h3>
+                            <p class="card-text" data-en="Automatic data persistence with SQLite ensures your tasks are always saved." data-zh="使用 SQLite 自动数据持久化，确保您的任务始终被保存。">Automatic data persistence with SQLite ensures your tasks are always saved.</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4 mb-4">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h3 class="card-title">🌐 Cross-platform</h3>
-                            <p class="card-text">Compatible with Windows, macOS, and Linux for seamless usage across devices.</p>
+                            <h3 class="card-title" data-en="🌐 Cross-platform" data-zh="🌐 跨平台">🌐 Cross-platform</h3>
+                            <p class="card-text" data-en="Compatible with Windows, macOS, and Linux for seamless usage across devices." data-zh="兼容 Windows、macOS 和 Linux，可在不同设备上无缝使用。">Compatible with Windows, macOS, and Linux for seamless usage across devices.</p>
                         </div>
                     </div>
                 </div>
@@ -84,25 +88,25 @@
 
             <div class="row mt-5">
                 <div class="col-md-8 offset-md-2">
-                    <h2 class="text-center mb-5">Download</h2>
-                    <p class="text-center">Choose the appropriate version for your operating system:</p>
+                    <h2 class="text-center mb-5" data-en="Download" data-zh="下载">Download</h2>
+                    <p class="text-center" data-en="Choose the appropriate version for your operating system:" data-zh="选择适合您操作系统的版本：">Choose the appropriate version for your operating system:</p>
                     <div class="text-center mt-4">
-                        <a href="https://github.com/jrtxio/taskly/releases" class="btn btn-primary btn-lg">View All Releases</a>
+                        <a href="https://github.com/jrtxio/taskly/releases" class="btn btn-primary btn-lg" data-en="View All Releases" data-zh="查看所有版本">View All Releases</a>
                     </div>
                     <div class="mt-5">
-                        <h3>Supported Platforms</h3>
+                        <h3 data-en="Supported Platforms" data-zh="支持的平台">Supported Platforms</h3>
                         <ul class="list-group mt-3">
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Windows
-                                <span class="badge bg-success">Supported</span>
+                                <span data-en="Windows" data-zh="Windows">Windows</span>
+                                <span class="badge bg-success" data-en="Supported" data-zh="支持">Supported</span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                macOS
-                                <span class="badge bg-success">Supported</span>
+                                <span data-en="macOS" data-zh="macOS">macOS</span>
+                                <span class="badge bg-success" data-en="Supported" data-zh="支持">Supported</span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Linux
-                                <span class="badge bg-success">Supported</span>
+                                <span data-en="Linux" data-zh="Linux">Linux</span>
+                                <span class="badge bg-success" data-en="Supported" data-zh="支持">Supported</span>
                             </li>
                         </ul>
                     </div>
@@ -111,25 +115,25 @@
 
             <div class="row mt-5">
                 <div class="col-md-8 offset-md-2">
-                    <h2 class="text-center mb-5">Usage</h2>
+                    <h2 class="text-center mb-5" data-en="Usage" data-zh="使用方法">Usage</h2>
                     <div class="mb-4">
-                        <h3>Getting Started</h3>
+                        <h3 data-en="Getting Started" data-zh="入门指南">Getting Started</h3>
                         <ol class="list-group list-group-numbered mt-3">
-                            <li class="list-group-item">Download the appropriate version for your operating system</li>
-                            <li class="list-group-item">Extract the archive to your desired location</li>
-                            <li class="list-group-item">Run the Taskly executable</li>
-                            <li class="list-group-item">If it's your first time, you'll be prompted to select or create a database file</li>
-                            <li class="list-group-item">Once the main window opens, you can start creating tasks</li>
+                            <li class="list-group-item" data-en="Download the appropriate version for your operating system" data-zh="下载适合您操作系统的版本">Download the appropriate version for your operating system</li>
+                            <li class="list-group-item" data-en="Extract the archive to your desired location" data-zh="将压缩包解压到您想要的位置">Extract the archive to your desired location</li>
+                            <li class="list-group-item" data-en="Run the Taskly executable" data-zh="运行 Taskly 可执行文件">Run the Taskly executable</li>
+                            <li class="list-group-item" data-en="If it's your first time, you'll be prompted to select or create a database file" data-zh="如果是第一次使用，系统会提示您选择或创建数据库文件">If it's your first time, you'll be prompted to select or create a database file</li>
+                            <li class="list-group-item" data-en="Once the main window opens, you can start creating tasks" data-zh="主窗口打开后，您就可以开始创建任务了">Once the main window opens, you can start creating tasks</li>
                         </ol>
                     </div>
                     <div class="mb-4">
-                        <h3>Creating Tasks</h3>
+                        <h3 data-en="Creating Tasks" data-zh="创建任务">Creating Tasks</h3>
                         <ol class="list-group list-group-numbered mt-3">
-                            <li class="list-group-item">Click on the "New Task" button</li>
-                            <li class="list-group-item">Enter the task title and description</li>
-                            <li class="list-group-item">Optionally set a due date</li>
-                            <li class="list-group-item">Select the list you want to add the task to</li>
-                            <li class="list-group-item">Click "Save" to create the task</li>
+                            <li class="list-group-item" data-en="Click on the \"New Task\" button" data-zh="点击 \"新建任务\" 按钮">Click on the "New Task" button</li>
+                            <li class="list-group-item" data-en="Enter the task title and description" data-zh="输入任务标题和描述">Enter the task title and description</li>
+                            <li class="list-group-item" data-en="Optionally set a due date" data-zh="可选：设置截止日期">Optionally set a due date</li>
+                            <li class="list-group-item" data-en="Select the list you want to add the task to" data-zh="选择要添加任务的列表">Select the list you want to add the task to</li>
+                            <li class="list-group-item" data-en="Click \"Save\" to create the task" data-zh="点击 \"保存\" 创建任务">Click "Save" to create the task</li>
                         </ol>
                     </div>
                 </div>
@@ -137,15 +141,15 @@
 
             <div class="row mt-5">
                 <div class="col-md-8 offset-md-2">
-                    <h2 class="text-center mb-5">Architecture</h2>
-                    <p class="text-center">Taskly follows a modular architecture with the following main components:</p>
+                    <h2 class="text-center mb-5" data-en="Architecture" data-zh="架构">Architecture</h2>
+                    <p class="text-center" data-en="Taskly follows a modular architecture with the following main components:" data-zh="Taskly 采用模块化架构，包含以下主要组件：">Taskly follows a modular architecture with the following main components:</p>
                     <div class="mt-4">
                         <div class="row">
                             <div class="col-md-4 mb-3">
                                 <div class="card h-100 bg-light">
                                     <div class="card-body">
                                         <h3 class="card-title">core/</h3>
-                                        <p class="card-text">Core functionality including task management, list management, and database operations</p>
+                                        <p class="card-text" data-en="Core functionality including task management, list management, and database operations" data-zh="核心功能，包括任务管理、列表管理和数据库操作">Core functionality including task management, list management, and database operations</p>
                                     </div>
                                 </div>
                             </div>
@@ -153,7 +157,7 @@
                                 <div class="card h-100 bg-light">
                                     <div class="card-body">
                                         <h3 class="card-title">gui/</h3>
-                                        <p class="card-text">Graphical user interface components</p>
+                                        <p class="card-text" data-en="Graphical user interface components" data-zh="图形用户界面组件">Graphical user interface components</p>
                                     </div>
                                 </div>
                             </div>
@@ -161,7 +165,7 @@
                                 <div class="card h-100 bg-light">
                                     <div class="card-body">
                                         <h3 class="card-title">utils/</h3>
-                                        <p class="card-text">Utility functions for date handling, path management, etc.</p>
+                                        <p class="card-text" data-en="Utility functions for date handling, path management, etc." data-zh="工具函数，用于日期处理、路径管理等">Utility functions for date handling, path management, etc.</p>
                                     </div>
                                 </div>
                             </div>
@@ -172,10 +176,10 @@
 
             <div class="row mt-5">
                 <div class="col-md-8 offset-md-2">
-                    <h2 class="text-center mb-5">Contributing</h2>
-                    <p class="text-center">Contributions are welcome! Please feel free to submit issues, feature requests, or pull requests.</p>
+                    <h2 class="text-center mb-5" data-en="Contributing" data-zh="贡献">Contributing</h2>
+                    <p class="text-center" data-en="Contributions are welcome! Please feel free to submit issues, feature requests, or pull requests." data-zh="欢迎贡献！请随时提交问题、功能请求或拉取请求。">Contributions are welcome! Please feel free to submit issues, feature requests, or pull requests.</p>
                     <div class="text-center mt-4">
-                        <a href="https://github.com/jrtxio/taskly" class="btn btn-outline-primary btn-lg">View on GitHub</a>
+                        <a href="https://github.com/jrtxio/taskly" class="btn btn-outline-primary btn-lg" data-en="View on GitHub" data-zh="在 GitHub 上查看">View on GitHub</a>
                     </div>
                 </div>
             </div>
@@ -186,13 +190,14 @@
         <div class="container text-center">
             <p>&copy; 2024 Taskly. Licensed under the MIT License.</p>
             <div class="mt-2">
-                <a href="https://github.com/jrtxio/taskly" class="text-white me-3">GitHub</a>
-                <a href="https://github.com/jrtxio/taskly/releases" class="text-white me-3">Releases</a>
-                <a href="https://github.com/jrtxio/taskly/blob/main/LICENSE" class="text-white">License</a>
+                <a href="https://github.com/jrtxio/taskly" class="text-white me-3" data-en="GitHub" data-zh="GitHub">GitHub</a>
+                <a href="https://github.com/jrtxio/taskly/releases" class="text-white me-3" data-en="Releases" data-zh="版本">Releases</a>
+                <a href="https://github.com/jrtxio/taskly/blob/main/LICENSE" class="text-white" data-en="License" data-zh="许可证">License</a>
             </div>
         </div>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
