@@ -73,6 +73,16 @@ function initTimeShortcutDemo() {
             applyTimeShortcut(input, result);
         }
     });
+    
+    // Add click listeners to shortcut buttons
+    const shortcutButtons = document.querySelectorAll('.shortcut-btn');
+    shortcutButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const shortcut = btn.getAttribute('data-shortcut');
+            input.value = shortcut;
+            applyTimeShortcut(input, result);
+        });
+    });
 }
 
 // Apply time shortcut and show result
