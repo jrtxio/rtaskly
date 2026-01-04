@@ -9,18 +9,22 @@
     <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
-    <header class="bg-primary text-white text-center py-5">
+    <header class="bg-gradient-to-br from-primary to-primary-dark text-white py-8">
         <div class="container">
             <div class="language-switcher">
                 <button id="lang-en" class="lang-btn active">English</button>
                 <button id="lang-zh" class="lang-btn">中文</button>
             </div>
-            <img src="taskly.svg" alt="Taskly Logo" class="mb-3" width="128">
-            <h1 class="display-4" data-en="Taskly" data-zh="Taskly">Taskly</h1>
-            <p class="lead" data-en="A Simple and Intuitive Task Manager Built with Racket" data-zh="一个使用 Racket 构建的简单直观的任务管理器">A Simple and Intuitive Task Manager Built with Racket</p>
-            <div class="mt-4">
-                <a href="https://github.com/jrtxio/taskly/releases" class="btn btn-light btn-lg me-2" data-en="Download" data-zh="下载">Download</a>
-                <a href="https://github.com/jrtxio/taskly" class="btn btn-outline-light btn-lg" data-en="GitHub" data-zh="GitHub">GitHub</a>
+            <div class="row justify-content-center align-items-center">
+                <div class="col-md-6 text-center">
+                    <img src="taskly.svg" alt="Taskly Logo" class="mb-4" width="150">
+                    <h1 class="display-3 font-bold mb-3" data-en="Taskly" data-zh="Taskly">Taskly</h1>
+                    <p class="lead mb-5" data-en="A Simple and Intuitive Task Manager Built with Racket" data-zh="一个使用 Racket 构建的简单直观的任务管理器">A Simple and Intuitive Task Manager Built with Racket</p>
+                    <div class="mt-4 d-flex justify-content-center gap-3">
+                        <a href="https://github.com/jrtxio/taskly/releases" class="btn btn-white btn-lg text-primary font-medium" data-en="Download Now" data-zh="立即下载">Download Now</a>
+                        <a href="https://github.com/jrtxio/taskly" class="btn btn-outline-white btn-lg font-medium" data-en="Learn More" data-zh="了解更多">Learn More</a>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -252,41 +256,49 @@
                 </div>
             </div>
 
-            <div class="row mt-5">
-                <div class="col-md-8 offset-md-2">
-                    <h2 class="text-center mb-5" data-en="Download" data-zh="下载">Download</h2>
-                    <p class="text-center" data-en="Get started with Taskly today, available for all major platforms." data-zh="今天就开始使用 Taskly，适用于所有主要平台。">Get started with Taskly today, available for all major platforms.</p>
-                    <div class="text-center mt-4">
-                        <a href="https://github.com/jrtxio/taskly/releases" class="btn btn-primary btn-lg" data-en="View All Releases" data-zh="查看所有版本">View All Releases</a>
-                    </div>
-                    <div class="mt-5">
-                        <h3 data-en="Supported Platforms" data-zh="支持的平台">Supported Platforms</h3>
-                        <ul class="list-group mt-3">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span data-en="Windows" data-zh="Windows">Windows</span>
-                                <span class="badge bg-success" data-en="Supported" data-zh="支持">Supported</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span data-en="macOS" data-zh="macOS">macOS</span>
-                                <span class="badge bg-success" data-en="Supported" data-zh="支持">Supported</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span data-en="Linux" data-zh="Linux">Linux</span>
-                                <span class="badge bg-success" data-en="Supported" data-zh="支持">Supported</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row mt-5">
-                <div class="col-md-8 offset-md-2">
-                    <h2 class="text-center mb-5" data-en="Get Started" data-zh="开始使用">Get Started</h2>
-                    <div class="text-center">
-                        <p data-en="Ready to boost your productivity? Download Taskly today!" data-zh="准备好提高您的工作效率了吗？今天就下载 Taskly！">Ready to boost your productivity? Download Taskly today!</p>
-                        <div class="mt-4">
-                            <a href="https://github.com/jrtxio/taskly/releases" class="btn btn-primary btn-lg me-2" data-en="Download Now" data-zh="立即下载">Download Now</a>
-                            <a href="https://github.com/jrtxio/taskly" class="btn btn-outline-primary btn-lg" data-en="Learn More" data-zh="了解更多">Learn More</a>
+            <div class="row mt-5 mb-8">
+                <div class="col-lg-8 offset-lg-2 text-center">
+                    <div class="p-0">
+                            <h2 class="mb-3" data-en="Download Taskly" data-zh="下载 Taskly">Download Taskly</h2>
+                            <p class="mb-5 text-secondary" data-en="Get started with Taskly today, available for all major platforms." data-zh="今天就开始使用 Taskly，适用于所有主要平台。">Get started with Taskly today, available for all major platforms.</p>
+                            
+                            <div class="mb-6">
+                                <h3 class="text-lg font-semibold mb-3" data-en="Supported Platforms" data-zh="支持的平台">Supported Platforms</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    <div class="platform-card p-4 bg-light rounded-md text-center">
+                                        <div class="platform-icon mb-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="bi bi-windows" viewBox="0 0 16 16">
+                                                <path d="M6.555 1.379L0 2.236v5.47l6.555-1.084v-4.58zM0 13.763l6.555.894V8.268L0 9.34z"/>
+                                                <path d="m7.278 16 8.085-1.235V8.382L7.278 7.19v8.81zM7.278 1.236v5.47L15.363 7.19V1.951L7.278 1.235z"/>
+                                            </svg>
+                                        </div>
+                                        <h4 class="font-medium text-sm" data-en="Windows" data-zh="Windows">Windows</h4>
+                                        <span class="badge bg-success text-xs mt-1" data-en="Supported" data-zh="支持">Supported</span>
+                                    </div>
+                                    <div class="platform-card p-4 bg-light rounded-md text-center">
+                                        <div class="platform-icon mb-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="bi bi-apple" viewBox="0 0 16 16">
+                                                <path d="M11.182.008C11.148-.03 9.923.023 8.857.732c-1.066.709-1.807 1.872-2.207 2.987C6.187 4.399 5.134 5.53 4.168 6.898c-.966 1.368-1.548 2.911-1.548 4.166 0 1.438.707 2.409 1.7 2.887.994.478 2.278.545 3.142.318 1.143-.3 1.976-1.16 2.564-2.063.59-.903.925-2.141.925-3.5.008-1.778-.776-3.255-1.957-4.039-.955-.623-2.06-.765-3.127-.487-.945.232-1.58.82-1.855 1.48-.275.66-.32 1.364-.32 1.659 0 .309.073.678.172 1.009.098.327.229.72.396 1.098.18.406.458.789.828 1.097a4.986 4.986 0 0 0 1.009.624c.67.213 1.38.198 2.002-.049.652-.263 1.159-.705 1.515-1.268a6.43 6.43 0 0 0 .798-1.482c.217-.653.338-1.39.338-2.175 0-1.655-1.152-2.91-2.886-3.305-.46-.115-1.077-.011-1.654.145-.577.156-1.103.43-1.503.902-.4.472-.666 1.135-.748 1.906-.094.857-.066 1.768.258 2.669.356 1.026.982 2.048 1.779 2.85C14.81 6.782 16 5.073 16 3.151c0-1.85-1.567-3.297-3.516-3.441C12.572.189 11.809.025 11.182.007ZM11.285 1h-.034c-.048 1.735.094 3.457.68 4.994.581 1.52 1.523 2.575 2.81 3.133-1.289.547-2.906.977-4.725 1.048-.653.021-1.35.005-1.999-.058-.979-.09-1.87-.528-2.48-.967-.61-.439-.996-1.097-1.108-1.997-.125-1.141.375-2.093.972-2.686.597-.592 1.538-.935 2.637-.935.668.002 1.39.247 1.98.635.605.39.995 1.063 1.098 1.899.103.806.041 1.517-.213 2.153-.252.636-.714 1.084-1.303 1.319-.587.233-1.258.33-1.929.251-.66-.079-1.263-.37-1.754-.797-.49-.426-.783-1.05-.783-1.827 0-.917.432-1.75.968-2.311.536-.561 1.313-.747 2.11-.583.807.164 1.416.738 1.772 1.564.36.83.355 1.794.28 2.776-.073.98-.37 1.903-.79 2.629-.418.725-1.039 1.235-1.779 1.473.787.18 1.608.07 2.319-.184.713-.254 1.312-.74 1.802-1.364.49-.624.852-1.364 1.085-2.187.233-.824.342-1.657.342-2.465 0-1.836-1.08-3.324-2.943-3.649-.66-.108-1.352-.023-1.958.165-.6.188-1.106.465-1.516.833-.41.368-.672.84-.751 1.377-.08.537-.026 1.07.135 1.588.162.519.435.943.807 1.24.372.297.865.45 1.39.45.688-.002 1.319-.204 1.884-.567.565-.363.994-.956 1.158-1.667.164-.712.086-1.437-.182-2.099-.269-.662-.842-1.18-1.555-1.437a6.4 6.4 0 0 0-2.53-.495Z"/>
+                                            </svg>
+                                        </div>
+                                        <h4 class="font-medium text-sm" data-en="macOS" data-zh="macOS">macOS</h4>
+                                        <span class="badge bg-success text-xs mt-1" data-en="Supported" data-zh="支持">Supported</span>
+                                    </div>
+                                    <div class="platform-card p-4 bg-light rounded-md text-center">
+                                        <div class="platform-icon mb-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="bi bi-linux" viewBox="0 0 16 16">
+                                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0V8a.5.5 0 0 0 1 0V4.5zm2 0a.5.5 0 0 0-1 0V8a.5.5 0 0 0 1 0V4.5zm-4 0a.5.5 0 0 0-1 0V8a.5.5 0 0 0 1 0V4.5zm2 3a.5.5 0 0 0-1 0v3.5a.5.5 0 0 0 1 0V7.5zm2 0a.5.5 0 0 0-1 0v3.5a.5.5 0 0 0 1 0V7.5zm-4 0a.5.5 0 0 0-1 0v3.5a.5.5 0 0 0 1 0V7.5z"/>
+                                            </svg>
+                                        </div>
+                                        <h4 class="font-medium text-sm" data-en="Linux" data-zh="Linux">Linux</h4>
+                                        <span class="badge bg-success text-xs mt-1" data-en="Supported" data-zh="支持">Supported</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <a href="https://github.com/jrtxio/taskly/releases" class="btn btn-primary btn-md font-medium px-6 py-2" data-en="Download Now" data-zh="立即下载">Download Now</a>
+                            </div>
                         </div>
                     </div>
                 </div>
