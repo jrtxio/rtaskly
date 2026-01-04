@@ -1,6 +1,8 @@
 #lang racket
 
-(require (prefix-in db: "database.rkt")
+(require db
+         (only-in db sql-null?)
+         (prefix-in db: "database.rkt")
          (prefix-in lst: "list.rkt")
          "../utils/date.rkt")
 
@@ -28,7 +30,7 @@
   (task (vector-ref row 0)  ; task_id
         list-id  ; list_id
         (vector-ref row 2)  ; task_text
-        (vector-ref row 3)  ; due_date
+        (if (sql-null? (vector-ref row 3)) #f (vector-ref row 3))  ; due_date
         (= (vector-ref row 4) 1)  ; is_completed
         (get-priority)  ; priority
         (get-created-at)  ; created_at (转换为数字)

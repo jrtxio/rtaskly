@@ -6,7 +6,8 @@
          "../core/task.rkt"
          (prefix-in lst: "../core/list.rkt")
          (prefix-in db: "../core/database.rkt")
-         "../utils/date.rkt")
+         "../utils/date.rkt"
+         "utils/test-utils.rkt")
 
 ;; 定义测试套件
 (define task-tests
@@ -14,16 +15,9 @@
    "任务管理测试"
    
    ;; 测试任务管理功能
-   (test-case "测试任务管理功能" 
-     ;; 创建唯一的临时数据库文件，使用更精确的时间戳
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
-     
-     ;; 确保临时文件不存在
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path))
-     
-     ;; 连接数据库
-     (db:connect-to-database temp-db-path)
+   (test-case "任务管理功能" 
+     ;; 使用测试工具函数
+     (define temp-db-path (setup-db "task-test"))
      
      ;; 添加测试列表
      (db:add-list "工作")
@@ -89,22 +83,13 @@
      (define tasks-after-delete (get-all-tasks))
      (check-equal? (length tasks-after-delete) 2)
      
-     ;; 关闭连接并清理
-     (db:close-database)
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path)))
+     ;; 清理资源
+     (teardown-db temp-db-path))
    
    ;; 测试任务视图功能
-   (test-case "测试任务视图功能" 
-     ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
-     
-     ;; 确保临时文件不存在
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path))
-     
-     ;; 连接数据库
-     (db:connect-to-database temp-db-path)
+   (test-case "任务视图功能" 
+     ;; 使用测试工具函数
+     (define temp-db-path (setup-db "task-view-test"))
      
      ;; 添加测试列表
      (db:add-list "工作")
@@ -171,22 +156,13 @@
      (check-pred list? invalid-view)
      (check-equal? (length invalid-view) 0)
      
-     ;; 关闭连接并清理
-     (db:close-database)
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path)))
+     ;; 清理资源
+     (teardown-db temp-db-path))
    
    ;; 测试任务分组功能
-   (test-case "测试任务分组功能" 
-     ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
-     
-     ;; 确保临时文件不存在
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path))
-     
-     ;; 连接数据库
-     (db:connect-to-database temp-db-path)
+   (test-case "任务分组功能" 
+     ;; 使用测试工具函数
+     (define temp-db-path (setup-db "task-group-test"))
      
      ;; 获取所有列表（默认应该有2个：工作、生活）
      (define initial-lists (lst:get-all-lists))
@@ -238,22 +214,13 @@
      (check-pred list? empty-grouped)
      (check-equal? (length empty-grouped) 0)
      
-     ;; 关闭连接并清理
-     (db:close-database)
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path)))
+     ;; 清理资源
+     (teardown-db temp-db-path))
    
    ;; 测试任务创建时间
-   (test-case "测试任务创建时间" 
-     ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
-     
-     ;; 确保临时文件不存在
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path))
-     
-     ;; 连接数据库
-     (db:connect-to-database temp-db-path)
+   (test-case "任务创建时间" 
+     ;; 使用测试工具函数
+     (define temp-db-path (setup-db "task-create-time-test"))
      
      ;; 添加测试列表
      (db:add-list "测试列表")
@@ -278,22 +245,13 @@
      ;; 检查创建时间是否在合理范围内
      (check-true (<= before-create created-at (current-seconds)))
      
-     ;; 关闭连接并清理
-     (db:close-database)
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path)))
+     ;; 清理资源
+     (teardown-db temp-db-path))
      
    ;; 测试任务优先级功能
-   (test-case "测试任务优先级功能" 
-     ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
-     
-     ;; 确保临时文件不存在
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path))
-     
-     ;; 连接数据库
-     (db:connect-to-database temp-db-path)
+   (test-case "任务优先级功能" 
+     ;; 使用测试工具函数
+     (define temp-db-path (setup-db "task-priority-test"))
      
      ;; 添加测试列表
      (db:add-list "优先级测试")
@@ -337,19 +295,14 @@
      (define sorted-tasks (get-tasks-by-view "list" list-id))
      (check-pred list? sorted-tasks)
      
-     ;; 关闭连接并清理
-     (db:close-database)
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path)))
+     ;; 清理资源
+     (teardown-db temp-db-path))
      
    ;; 测试数据库升级功能（添加priority列）
-   (test-case "测试数据库升级功能" 
-     ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
-     
-     ;; 确保临时文件不存在
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path))
+   (test-case "数据库升级功能" 
+     ;; 使用测试工具函数
+     (define temp-db-path (create-temp-db-path "db-upgrade-test"))
+     (ensure-file-not-exists temp-db-path)
      
      ;; 1. 创建一个旧版本的数据库（没有priority列）
      (define conn (sqlite3-connect #:database temp-db-path #:mode 'create))
@@ -396,10 +349,9 @@
        (check-true (>= priority 0))
        (check-true (<= priority 2)))
      
-     ;; 关闭连接并清理
+     ;; 清理资源
      (db:close-database)
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path)))
+     (cleanup-temp-file temp-db-path))
   ))
 
 ;; 运行测试套件

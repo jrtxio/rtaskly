@@ -198,7 +198,7 @@
                                                   (translate "确定要删除任务\"~a\"吗？" 
                                                                (task:task-text task-data))
                                                   (send btn get-top-level-window)
-                                                  `(yes-no #:yes-label ,(translate "是") #:no-label ,(translate "否"))))
+                                                  '(yes-no)))
                        (when (eq? result 'yes)
                          (task:delete-task (task:task-id task-data))
                          (task-updated-callback)))])

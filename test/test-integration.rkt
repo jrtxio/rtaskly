@@ -293,6 +293,83 @@
      (db:close-database)
      (when (file-exists? temp-db-path)
        (delete-file temp-db-path)))
+   
+   ;; 测试空日期任务的完整生命周期
+   (test-case "测试空日期任务的完整生命周期" 
+     ;; 创建唯一的临时数据库文件
+     (define temp-db-path (format "./test/temp-null-date-integration-~a.db" (current-inexact-milliseconds)))
+     
+     ;; 确保临时文件不存在
+     (when (file-exists? temp-db-path)
+       (delete-file temp-db-path))
+     
+     ;; 连接数据库
+     (db:connect-to-database temp-db-path)
+     
+     ;; 1. 创建测试列表
+     (add-list "空日期测试列表")
+     (define lists (get-all-lists))
+     (define test-list (last lists))
+     (define test-list-id (todo-list-id test-list))
+     
+     ;; 2. 测试添加多个空日期任务
+     (add-task test-list-id "空日期任务1" #f)
+     (add-task test-list-id "空日期任务2" #f)
+     (add-task test-list-id "空日期任务3" #f)
+     
+     ;; 3. 测试获取所有任务
+     (define all-tasks (get-all-tasks))
+     (check-equal? (length all-tasks) 3)
+     
+     ;; 4. 测试所有任务都是空日期
+     (for ([task all-tasks])
+       (check-false (task-due-date task)))
+     
+     ;; 5. 测试按列表获取空日期任务
+     (define list-tasks (get-tasks-by-list test-list-id))
+     (check-equal? (length list-tasks) 3)
+     
+     ;; 6. 测试编辑空日期任务
+     (define first-task (first list-tasks))
+     (edit-task (task-id first-task) test-list-id "更新后的空日期任务" #f)
+     
+     ;; 7. 测试编辑后的任务仍然是空日期
+     (define updated-task (findf (lambda (t) (= (task-id t) (task-id first-task))) (get-all-tasks)))
+     (check-equal? (task-text updated-task) "更新后的空日期任务")
+     (check-false (task-due-date updated-task))
+     
+     ;; 8. 测试空日期任务在不同视图中的显示
+     (define all-view (get-tasks-by-view "all"))
+     (check-equal? (length all-view) 3)
+     
+     (define planned-view (get-tasks-by-view "planned"))
+     (check-equal? (length planned-view) 0) ; 空日期任务不应该出现在计划视图中
+     
+     ;; 9. 测试删除空日期任务
+     (delete-task (task-id updated-task))
+     (define tasks-after-delete (get-all-tasks))
+     (check-equal? (length tasks-after-delete) 2)
+     
+     ;; 10. 测试切换空日期任务的完成状态
+     (define second-task (first tasks-after-delete))
+     (toggle-task-completed (task-id second-task))
+     
+     (define updated-task2 (findf (lambda (t) (= (task-id t) (task-id second-task))) (get-all-tasks)))
+     (check-true (task-completed? updated-task2))
+     (check-false (task-due-date updated-task2))
+     
+     ;; 11. 测试获取已完成的空日期任务
+     (define completed-view (get-tasks-by-view "completed"))
+     (check-equal? (length completed-view) 1)
+     
+     ;; 12. 测试获取未完成的空日期任务
+     (define incomplete-view (get-all-incomplete-tasks))
+     (check-equal? (length incomplete-view) 1)
+     
+     ;; 关闭连接并清理
+     (db:close-database)
+     (when (file-exists? temp-db-path)
+       (delete-file temp-db-path)))
    ))
 
 ;; 运行测试套件

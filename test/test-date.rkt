@@ -2,6 +2,7 @@
 
 (require rackunit
          rackunit/text-ui
+         db
          "../utils/date.rkt")
 
 ;; 定义测试套件
@@ -82,6 +83,7 @@
      ;; 特殊情况
      (check-equal? (format-date-for-display "") "")
      (check-equal? (format-date-for-display #f) "")
+     (check-equal? (format-date-for-display sql-null) "")
      (check-equal? (format-date-for-display "invalid-date") "invalid-date")
      (check-equal? (format-date-for-display "2023") "2023")
      (check-equal? (format-date-for-display "2023-01") "2023-01")
@@ -108,6 +110,7 @@
      ;; 无效日期
      (check-false (is-today? ""))
      (check-false (is-today? #f))
+     (check-false (is-today? sql-null))
      (check-false (is-today? "invalid-date"))
      )
    
@@ -218,6 +221,25 @@
      ;; 确保原有格式仍然有效，现在会添加默认时间 00:00
      (check-equal? (parse-date-string "2025-08-07") "2025-08-07 00:00")
      (check-equal? (parse-date-string "2025-01-01") "2025-01-01 00:00")
+     )
+   
+   ;; 测试 date-diff 函数
+   (test-case "测试日期差异计算" 
+     ;; 正常情况
+     (check-equal? (date-diff "2023-01-01" "2023-01-01") 0)
+     (check-equal? (date-diff "2023-01-01" "2023-01-02") 1)
+     (check-equal? (date-diff "2023-01-02" "2023-01-01") 1)
+     
+     ;; 处理 sql-null 值
+     (check-equal? (date-diff sql-null "2023-01-01") 0)
+     (check-equal? (date-diff "2023-01-01" sql-null) 0)
+     (check-equal? (date-diff sql-null sql-null) 0)
+     
+     ;; 处理其他无效值
+     (check-equal? (date-diff #f "2023-01-01") 0)
+     (check-equal? (date-diff "2023-01-01" #f) 0)
+     (check-equal? (date-diff "" "2023-01-01") 0)
+     (check-equal? (date-diff "2023-01-01" "") 0)
      )
    ))
 

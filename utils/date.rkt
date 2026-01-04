@@ -1,6 +1,8 @@
 #lang racket
 
-(require racket/date)
+(require racket/date
+         db
+         (only-in db sql-null?))
 
 ;; 检查日期是否有效（考虑月份的实际天数）
 (define (valid-day? year month day)
@@ -12,8 +14,8 @@
     [(= month 2)
      ;; 检查是否为闰年
      (let ([leap-year? (and (zero? (remainder year 4))
-                           (or (not (zero? (remainder year 100))
-                               (zero? (remainder year 400)))))])
+                           (or (not (zero? (remainder year 100)))
+                               (zero? (remainder year 400))))])
        (<= 1 day (if leap-year? 29 28)))]
     [else #f]))
 
@@ -39,7 +41,8 @@
                             (~r month-num #:min-width 2 #:pad-string "0")
                             (~r day-num #:min-width 2 #:pad-string "0"))
                     #f))
-              #f)))))    
+              #f))))) 
+
 ;; 获取当前日期的字符串表示 (YYYY-MM-DD)
 (define (get-current-date-string)
   (let ([today (current-date)])
@@ -50,7 +53,7 @@
 
 ;; 格式化日期显示 (YYYY-MM-DD -> MM月DD日)
 (define (format-date-for-display date-str)
-  (if (and date-str (string? date-str) (not (equal? date-str "")))
+  (if (and date-str (not (sql-null? date-str)) (string? date-str) (not (equal? date-str "")))
       (let ([date-part (if (string-contains? date-str " ")
                            (first (string-split date-str " "))
                            date-str)]
@@ -66,51 +69,55 @@
                         (format "~a月~a日 ~a" month day time-part)
                         (format "~a月~a日" month day))
                     date-str))
-              date-str))) 
+              date-str)))
       ""))
 
 ;; 检查日期是否为今天
 (define (is-today? date-str)
-  (if (not date-str) #f
+  (if (or (not date-str) (sql-null? date-str))
+      #f
       (let ([date-part (if (string-contains? date-str " ")
                            (first (string-split date-str " "))
                            date-str)])
-        (equal? date-part (get-current-date-string))))) 
+        (equal? date-part (get-current-date-string)))))
+
+;; 日期字符串转换为秒数的辅助函数
+(define (date-string->seconds date-str)
+  (if (and date-str (string? date-str) (not (equal? date-str "")))
+      (let ([date-part (if (string-contains? date-str " ")
+                           (first (string-split date-str " "))
+                           date-str)]
+            [time-part (if (string-contains? date-str " ")
+                           (second (string-split date-str " "))
+                           "00:00")])
+        (let ([date-parts (string-split date-part "-")]
+              [time-parts (string-split time-part ":")])
+          (if (and (= (length date-parts) 3) (= (length time-parts) 2))
+              (let* ([year (string->number (list-ref date-parts 0))]
+                     [month (string->number (list-ref date-parts 1))]
+                     [day (string->number (list-ref date-parts 2))]
+                     [hour (string->number (list-ref time-parts 0))]
+                     [minute (string->number (list-ref time-parts 1))]
+                     [date-struct (seconds->date 0 #f)])
+                (if (and year month day hour minute)
+                    (date->seconds (struct-copy date date-struct
+                                               (year year)
+                                               (month month)
+                                               (day day)
+                                               (hour hour)
+                                               (minute minute)
+                                               (second 0)))
+                    0))
+              0)))
+      0))
 
 ;; 计算两个日期之间的天数差
 (define (date-diff date-str1 date-str2)
-  (define (date-string->seconds date-str)
-    (if (and (string? date-str) (not (equal? date-str "")))
-        (let ([date-part (if (string-contains? date-str " ")
-                             (first (string-split date-str " "))
-                             date-str)]
-              [time-part (if (string-contains? date-str " ")
-                             (second (string-split date-str " "))
-                             "00:00")])
-          (let ([date-parts (string-split date-part "-")]
-                [time-parts (string-split time-part ":")])
-            (if (and (= (length date-parts) 3) (= (length time-parts) 2))
-                (let* ([year (string->number (list-ref date-parts 0))]
-                       [month (string->number (list-ref date-parts 1))]
-                       [day (string->number (list-ref date-parts 2))]
-                       [hour (string->number (list-ref time-parts 0))]
-                       [minute (string->number (list-ref time-parts 1))]
-                       [date-struct (seconds->date 0 #f)])
-                  (if (and year month day hour minute)
-                      (date->seconds (struct-copy date date-struct
-                                                 (year year)
-                                                 (month month)
-                                                 (day day)
-                                                 (hour hour)
-                                                 (minute minute)
-                                                 (second 0)))
-                      0))
-                0)))
-        0))
-  
-  (define seconds1 (date-string->seconds date-str1))
-  (define seconds2 (date-string->seconds date-str2))
-  (quotient (abs (- seconds1 seconds2)) (* 60 60 24)))
+  (if (or (sql-null? date-str1) (sql-null? date-str2) (not date-str1) (not date-str2) (equal? date-str1 "") (equal? date-str2 ""))
+      0
+      (let ([seconds1 (date-string->seconds date-str1)]
+            [seconds2 (date-string->seconds date-str2)])
+        (quotient (abs (- seconds1 seconds2)) (* 60 60 24)))))
 
 ;; 获取月份的最大天数
 (define (get-month-max-day year month)
@@ -230,4 +237,5 @@
          format-date-for-display
          is-today?
          valid-date?
-         date-diff)
+         date-diff
+         date-string->seconds)
