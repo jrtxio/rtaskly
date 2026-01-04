@@ -98,8 +98,8 @@
      (define temp-file1 (build-path test-dir "temp-test-123.txt"))
      (with-output-to-file temp-file1 (lambda () (display "test content")) #:exists 'replace)
      
-     ;; 创建不符合前缀的文件
-     (define temp-file2 (build-path test-dir "temp-not-test-123.txt"))
+     ;; 创建不符合前缀的文件（注意：不要以'temp-'开头）
+     (define temp-file2 (build-path test-dir "not-temp-test-123.txt"))
      (with-output-to-file temp-file2 (lambda () (display "test content")) #:exists 'replace)
      
      ;; 验证文件已创建
