@@ -59,12 +59,14 @@ jobs:
               raco distribute taskly-dist taskly.exe
               # 清理重复文件和目录，减小包体积
               cd taskly-dist
-              # 删除重复的ert目录（这些包含重复的DLL文件）
+              # 删除重复的ert目录（包含重复的DLL文件）
               rm -rf ert exts lib/plt/taskly/exts plt/taskly/exts taskly/exts
               # 删除重复的r0和r1目录
               rm -rf r0 r1
               # 删除重复的bundles目录
               rm -rf bundles
+              # 删除空目录
+              find . -type d -empty -delete
               # 使用PowerShell的Get-ChildItem命令获取所有文件，然后压缩
               powershell "Get-ChildItem -Path . -Recurse | Compress-Archive -DestinationPath ../taskly-${{ env.VERSION }}-windows.zip -Force"
               cd ..
