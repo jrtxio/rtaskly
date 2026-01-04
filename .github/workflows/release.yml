@@ -61,6 +61,23 @@ jobs:
         run: |
           ls -la
       
+      - name: Get CHANGELOG content
+        id: get_changelog
+        run: |
+          # 提取CHANGELOG.md中当前版本的内容
+          if grep -q "## [${{ env.VERSION }}]" CHANGELOG.md; then
+            # 使用sed提取当前版本的变更日志
+            CHANGELOG_CONTENT=$(sed -n "/## [${{ env.VERSION }}]/,/## \[/p" CHANGELOG.md | head -n -1)
+          else
+            # 如果找不到当前版本，使用默认内容
+            CHANGELOG_CONTENT="## Release v${{ env.VERSION }}\n\nNo changes listed in CHANGELOG.md."
+          fi
+          # 将内容输出到环境变量，保留换行符
+          echo "CHANGELOG_CONTENT<<EOF" >> $GITHUB_ENV
+          echo "$CHANGELOG_CONTENT" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+        shell: bash
+      
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -68,9 +85,12 @@ jobs:
             taskly-*.zip
             taskly-*.tar.gz
           name: Release v${{ env.VERSION }}
+          generate_release_notes: true
           body: |
-            ## Release v${{ env.VERSION }}
+            ${{ env.CHANGELOG_CONTENT }}
             
-            See CHANGELOG.md for details.
+            --- 
+            
+            ## Automatic Release Notes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
