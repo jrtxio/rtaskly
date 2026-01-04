@@ -28,7 +28,7 @@ jobs:
             runner: macos-latest
           - os: macos
             arch: arm64
-            runner: macos-latest
+            runner: macos-14-arm64
           # Windows builds
           - os: windows
             arch: x86_64
@@ -79,7 +79,12 @@ jobs:
               cd ..
               ;;
             macos)
-              raco exe -o taskly taskly.rkt
+              # For macOS, use --arch flag to specify target architecture
+              if [ "$ARCH" = "x86_64" ]; then
+                raco exe --arch x86_64 -o taskly taskly.rkt
+              else
+                raco exe --arch aarch64 -o taskly taskly.rkt
+              fi
               raco distribute taskly-dist taskly
               cd taskly-dist
               zip -r ../taskly-${VERSION}-${OS}-${ARCH}.zip .
