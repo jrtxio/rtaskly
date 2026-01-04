@@ -109,8 +109,6 @@ jobs:
           body: |
             ${{ env.CHANGELOG_CONTENT }}
             
-            --- 
-            
-            ## Automatic Release Notes
+            ---
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
