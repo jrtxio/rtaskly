@@ -55,7 +55,7 @@ jobs:
               ;;
             Windows) 
               # 使用--embed-dlls选项将DLLs嵌入到可执行文件中，减小包体积
-              raco exe --gui --embed-dlls -o taskly.exe taskly.rkt
+              raco exe --gui --embed-dlls --ico icons/48x48.ico -o taskly.exe taskly.rkt
               raco distribute taskly-dist taskly.exe
               # 清理重复文件和目录，减小包体积
               cd taskly-dist
