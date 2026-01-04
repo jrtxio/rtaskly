@@ -1,0 +1,65 @@
+name: Release Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install Racket
+        uses: Bogdanp/setup-racket@v1.10
+        with:
+          version: '8.12'
+      
+      - name: Run tests
+        run: racket ./test/run-all-tests.rkt
+      
+      - name: Get version
+        id: get_version
+        run: |
+          VERSION=$(racket get-version.rkt)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+        shell: bash
+      
+      - name: Build executable
+        shell: bash
+        run: |
+          case ${{ runner.os }} in
+            Linux) 
+              raco exe -o taskly taskly.rkt 
+              tar -czf taskly-${{ env.VERSION }}-linux.tar.gz taskly 
+              ;;
+            macOS) 
+              raco exe -o taskly taskly.rkt 
+              zip taskly-${{ env.VERSION }}-macos.zip taskly 
+              ;;
+            Windows) 
+              raco exe -o taskly.exe taskly.rkt 
+              powershell Compress-Archive -Path taskly.exe -DestinationPath taskly-${{ env.VERSION }}-windows.zip 
+              ;;
+          esac
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            taskly-*.zip
+            taskly-*.tar.gz
+          name: Release v${{ env.VERSION }}
+          body: |
+            ## Release v${{ env.VERSION }}
+            
+            See CHANGELOG.md for details.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
