@@ -8,8 +8,8 @@ $VERSION = racket get-version.rkt
 
 switch ($Platform) {
     "windows" {
-        raco exe -o taskly.exe taskly.rkt
-        Compress-Archive -Path taskly.exe -DestinationPath taskly-$VERSION-windows.zip
+        raco exe --gui --ico icons/48x48.ico -o taskly.exe taskly.rkt
+        Compress-Archive -Path taskly.exe -DestinationPath taskly-$VERSION-windows.zip -Force
     }
     "macos" {
         Write-Host "macOS build not supported on Windows"
@@ -18,7 +18,7 @@ switch ($Platform) {
         Write-Host "Linux build not supported on Windows"
     }
     "all" {
-        raco exe -o taskly.exe taskly.rkt
-        Compress-Archive -Path taskly.exe -DestinationPath taskly-$VERSION-windows.zip
+        raco exe --gui --ico icons/48x48.ico -o taskly.exe taskly.rkt
+        Compress-Archive -Path taskly.exe -DestinationPath taskly-$VERSION-windows.zip -Force
     }
 }

@@ -15,6 +15,28 @@
                       [width 500]
                       [height 300]))
   
+  ;; 尝试为对话框设置图标
+  (define (set-dialog-icon)
+    ;; 尝试使用不同尺寸的图标，优先使用适合标题栏的小尺寸图标
+    (define icon-paths
+      (list
+       (build-path (current-directory) "icons" "16x16.png")
+       (build-path (current-directory) "icons" "32x32.png")
+       (build-path (current-directory) "icons" "taskly.png")))
+    
+    (define (try-set-icon paths)
+      (when (not (null? paths))
+        (define icon-path (car paths))
+        (if (file-exists? icon-path)
+            (let ([icon-bitmap (make-object bitmap% icon-path)])
+              (send dialog set-icon icon-bitmap))
+            (try-set-icon (cdr paths)))))
+    
+    (try-set-icon icon-paths))
+  
+  ;; 设置对话框图标
+  (set-dialog-icon)
+  
   (define panel (new vertical-panel% [parent dialog] [spacing 10] [border 10]))
   
   (new message% [parent panel] [label "请选择一个SQLite数据库文件，或输入新文件路径创建。"])
