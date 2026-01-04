@@ -5,7 +5,8 @@
          db
          "../gui/sidebar.rkt"
          (prefix-in core: "../core/list.rkt")
-         (prefix-in db: "../core/database.rkt"))
+         (prefix-in db: "../core/database.rkt")
+         (prefix-in lang: "../gui/language.rkt"))
 
 ;; 定义测试套件
 (define sidebar-tests
@@ -399,6 +400,79 @@
      
      ;; 关闭测试窗口
      (send frame show #f))
+   
+   ;; 测试语言切换时智能列表按钮选中状态
+   (test-case "测试语言切换时智能列表按钮选中状态" 
+     ;; 创建唯一的临时数据库文件
+     (define temp-db-path (format "./temp-test-sidebar-language-~a.db" (current-inexact-milliseconds)))
+     
+     ;; 确保临时文件不存在
+     (when (file-exists? temp-db-path)
+       (delete-file temp-db-path))
+     
+     ;; 确保数据库连接已关闭
+     (db:close-database)
+     
+     ;; 连接数据库
+     (db:connect-to-database temp-db-path)
+     
+     ;; 创建测试列表，确保智能列表按钮可用
+     (core:add-list "测试列表1")
+     
+     ;; 创建测试窗口和侧边栏
+     (define frame (new frame% [label "Test Frame"] [width 300] [height 400]))
+     
+     (define sidebar (new sidebar% [parent frame]))
+     
+     ;; 刷新列表
+     (send sidebar refresh-lists)
+     
+     ;; 获取智能列表按钮
+     (define smart-buttons (send sidebar get-smart-list-buttons))
+     (check-equal? (length smart-buttons) 4)
+     
+     ;; 获取今天按钮
+     (define today-btn (first smart-buttons))
+     
+     ;; 设置中文
+     (lang:set-language! "zh")
+     (send sidebar refresh-lists)
+     
+     ;; 选中今天按钮
+     (send sidebar set-selected-button today-btn)
+     (check-equal? (send sidebar get-current-selected-btn) today-btn)
+     (check-equal? (send today-btn get-label) "→ 今天")
+     
+     ;; 切换到英文
+     (lang:set-language! "en")
+     (send sidebar refresh-lists)
+     (send sidebar set-selected-button today-btn)
+     
+     ;; 检查选中状态：今天按钮应该被选中，标签应为英文
+     (check-equal? (send sidebar get-current-selected-btn) today-btn)
+     (check-equal? (send today-btn get-label) "→ Today")
+     
+     ;; 切换回中文
+     (lang:set-language! "zh")
+     (send sidebar refresh-lists)
+     (send sidebar set-selected-button today-btn)
+     
+     ;; 检查选中状态：今天按钮应该被选中，标签应为中文
+     (check-equal? (send sidebar get-current-selected-btn) today-btn)
+     (check-equal? (send today-btn get-label) "→ 今天")
+     
+     ;; 关闭测试窗口
+     (send frame show #f)
+     
+     ;; 关闭数据库连接
+     (db:close-database)
+     
+     ;; 清理临时文件
+     (when (file-exists? temp-db-path)
+       (delete-file temp-db-path))
+     
+     ;; 恢复中文
+     (lang:set-language! "zh"))
    
    ;; 测试删除列表功能的间接测试
    (test-case "测试删除列表功能的间接测试" 

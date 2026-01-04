@@ -34,16 +34,22 @@
     
     ;; 设置选中按钮
     (define/public (set-selected-button btn [list-id #f] [list-name #f])
-      ;; 恢复之前选中按钮的原始标签
+      ;; 恢复之前选中按钮的原始标签（从当前标签中去除箭头前缀）
       (when current-selected-btn
-        (send current-selected-btn set-label current-selected-original-label))
+        (define current-label (send current-selected-btn get-label))
+        (when (string-prefix? current-label "→ ")
+          (send current-selected-btn set-label (substring current-label 2))))
       ;; 设置当前选中按钮的标签（添加箭头）
       (set! current-selected-btn btn)
       (set! current-selected-list-id list-id)
       (set! current-selected-list-name list-name)
       (when btn
-        (set! current-selected-original-label (send btn get-label))
-        (send btn set-label (string-append "→ " current-selected-original-label))))
+        (define original-label (send btn get-label))
+        ;; 如果标签已经包含箭头，先去除
+        (when (string-prefix? original-label "→ ")
+          (set! original-label (substring original-label 2)))
+        (set! current-selected-original-label original-label)
+        (send btn set-label (string-append "→ " original-label))))
     
     ;; 创建智能列表面板
     (define smart-lists-panel (new vertical-panel% 
