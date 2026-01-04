@@ -36,7 +36,7 @@
   (define result
     (with-output-to-string
       (lambda ()
-        (system (format "racket test/~a" file)))))  
+        (system (format "racket ~a" file)))))  
   (define end-time (current-inexact-milliseconds))
   (define duration (- end-time start-time))
   
@@ -118,7 +118,7 @@
   (show-summary results)
   
   ;; 清理临时文件
-  (system "racket test/cleanup-temp-files.rkt"))
+  (system "racket cleanup-temp-files.rkt"))
 
 ;; 运行主函数
 (main)

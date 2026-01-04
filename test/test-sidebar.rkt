@@ -31,7 +31,7 @@
    ;; 测试列表刷新功能
    (test-case "测试列表刷新功能" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-sidebar-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./temp-test-sidebar-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -99,7 +99,7 @@
    ;; 测试列表管理功能的间接测试
    (test-case "测试列表管理功能" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-sidebar-lists-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./temp-test-sidebar-lists-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -160,7 +160,7 @@
    ;; 测试智能列表选中状态切换
    (test-case "测试智能列表选中状态切换" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-sidebar-selected-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./temp-test-sidebar-selected-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -233,7 +233,7 @@
    ;; 测试自定义列表选中状态切换
    (test-case "测试自定义列表选中状态切换" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-sidebar-custom-selected-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./temp-test-sidebar-custom-selected-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -306,7 +306,7 @@
    ;; 测试多个列表之间的选中状态切换
    (test-case "测试多个列表之间的选中状态切换" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-sidebar-multi-selected-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./temp-test-sidebar-multi-selected-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -370,6 +370,62 @@
      ;; 清理临时文件
      (when (file-exists? temp-db-path)
        (delete-file temp-db-path)))
+   
+   ;; 测试set-selected-button方法的参数传递
+   (test-case "测试set-selected-button方法的参数传递" 
+     ;; 创建测试窗口和侧边栏
+     (define frame (new frame% [label "Test Frame"] [width 300] [height 400]))
+     (define sidebar (new sidebar% [parent frame]))
+     
+     ;; 创建一个测试按钮
+     (define test-btn (new button% [parent frame] [label "Test Button"]))
+     
+     ;; 测试1：只传递按钮参数
+     (send sidebar set-selected-button test-btn)
+     ;; 验证按钮是否被选中
+     (check-equal? (send sidebar get-current-selected-btn) test-btn)
+     
+     ;; 测试2：传递按钮、列表ID和名称
+     (define test-list-id 123)
+     (define test-list-name "测试列表")
+     (send sidebar set-selected-button test-btn test-list-id test-list-name)
+     ;; 验证按钮是否被选中
+     (check-equal? (send sidebar get-current-selected-btn) test-btn)
+     
+     ;; 测试3：传递智能列表参数
+     (send sidebar set-selected-button test-btn #f "智能列表")
+     ;; 验证按钮是否被选中
+     (check-equal? (send sidebar get-current-selected-btn) test-btn)
+     
+     ;; 关闭测试窗口
+     (send frame show #f))
+   
+   ;; 测试删除列表功能的间接测试
+   (test-case "测试删除列表功能的间接测试" 
+     ;; 确保数据库连接已关闭
+     (db:close-database)
+     
+     ;; 创建测试窗口和侧边栏
+     (define frame (new frame% [label "Test Frame"] [width 300] [height 400]))
+     (define sidebar (new sidebar% [parent frame]))
+     
+     ;; 刷新列表
+     (send sidebar refresh-lists)
+     
+     ;; 获取智能列表按钮和自定义列表按钮
+     (define smart-buttons (send sidebar get-smart-list-buttons))
+     (define custom-buttons (send sidebar get-custom-list-buttons))
+     
+     ;; 测试侧边栏组件的基本功能
+     ;; 验证组件不会崩溃
+     (check-not-exn (lambda () (send sidebar refresh-lists)))
+     
+     ;; 验证智能列表按钮获取功能
+     (check-pred list? smart-buttons)
+     (check-not-false (not (null? smart-buttons)))
+     
+     ;; 关闭测试窗口
+     (send frame show #f))
    ))
 
 ;; 运行测试套件

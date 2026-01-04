@@ -221,7 +221,7 @@
 (define (valid-date? date-str)
   (if (and date-str (string? date-str) (not (equal? date-str "")))
       (let ([normalized (parse-date-string date-str)])
-        (not (boolean? normalized)))
+        (if (boolean? normalized) #f #t))
       #t)) ; 空字符串也是有效的
 
 (provide normalize-date-string

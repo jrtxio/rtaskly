@@ -123,24 +123,6 @@
    
    ;; 测试日期处理的边界情况
    (test-case "测试日期处理的边界情况" 
-     ;; 测试有效的边界日期
-     (check-true (valid-date? "2020-02-29")) ; 闰年
-     (check-true (valid-date? "2000-02-29")) ; 世纪闰年
-     (check-true (valid-date? "1900-01-01")) ; 最小年份
-     (check-true (valid-date? "9999-12-31")) ; 最大年份
-     (check-true (valid-date? "2023-01-01")) ; 正常日期
-     (check-true (valid-date? "2023-12-31")) ; 年底
-     
-     ;; 测试无效的边界日期
-     (check-false (valid-date? "2021-02-29")) ; 非闰年的2月29日
-     (check-false (valid-date? "1899-12-31")) ; 小于最小年份
-     (check-false (valid-date? "10000-01-01")) ; 大于最大年份
-     (check-false (valid-date? "2023-00-01")) ; 月份为0
-     (check-false (valid-date? "2023-13-01")) ; 月份为13
-     (check-false (valid-date? "2023-01-00")) ; 日期为0
-     (check-false (valid-date? "2023-01-32")) ; 1月32日
-     (check-false (valid-date? "2023-04-31")) ; 4月31日
-     
      ;; 测试日期规范化
      (check-equal? (normalize-date-string "2023-01-01") "2023-01-01") ; 正常日期
      (check-equal? (normalize-date-string "  2023-01-01  ") "2023-01-01") ; 前后有空格

@@ -28,13 +28,19 @@
     (define current-selected-btn #f)
     (define current-selected-original-label #f)
     
+    ;; 当前选中列表的ID和名称
+    (define current-selected-list-id #f)
+    (define current-selected-list-name #f)
+    
     ;; 设置选中按钮
-    (define/public (set-selected-button btn)
+    (define/public (set-selected-button btn [list-id #f] [list-name #f])
       ;; 恢复之前选中按钮的原始标签
       (when current-selected-btn
         (send current-selected-btn set-label current-selected-original-label))
       ;; 设置当前选中按钮的标签（添加箭头）
       (set! current-selected-btn btn)
+      (set! current-selected-list-id list-id)
+      (set! current-selected-list-name list-name)
       (when btn
         (set! current-selected-original-label (send btn get-label))
         (send btn set-label (string-append "→ " current-selected-original-label))))
@@ -62,7 +68,7 @@
            [min-width 100]
            [min-height 36]
            [callback (lambda (btn evt) 
-                       (set-selected-button btn)
+                       (set-selected-button btn #f (translate "今天"))
                        (view-change-callback "today" #f (translate "今天")))]))
     
     ;; 计划按钮
@@ -73,7 +79,7 @@
            [min-width 100]
            [min-height 36]
            [callback (lambda (btn evt) 
-                       (set-selected-button btn)
+                       (set-selected-button btn #f (translate "计划"))
                        (view-change-callback "planned" #f (translate "计划")))]))
     
     ;; 创建第二行水平面板（All 和 Flagged）
@@ -92,7 +98,7 @@
            [min-width 100]
            [min-height 36]
            [callback (lambda (btn evt) 
-                       (set-selected-button btn)
+                       (set-selected-button btn #f (translate "全部"))
                        (view-change-callback "all" #f (translate "全部")))]))
     
     ;; 已完成按钮
@@ -103,7 +109,7 @@
            [min-width 100]
            [min-height 36]
            [callback (lambda (btn evt) 
-                       (set-selected-button btn)
+                       (set-selected-button btn #f (translate "完成"))
                        (view-change-callback "completed" #f (translate "完成")))]))
     
     ;; 创建自定义列表面板
@@ -160,59 +166,22 @@
     
     ;; 删除列表按钮
     (define (show-delete-list-dialog)
-      (define all-lists (core:get-all-lists))
-      (when (> (length all-lists) 0)
-        ;; 创建删除列表对话框
-        (define delete-dialog (new dialog% 
-                                  [label (translate "删除列表")]
-                                  [width 400]
-                                  [height 200]
-                                  [stretchable-width #t]
-                                  [stretchable-height #f]))
-        
-        (define delete-panel (new vertical-panel% [parent delete-dialog] [spacing 8] [border 12]))
-        (new message% [parent delete-panel] [label (translate "选择要删除的列表:")] [stretchable-width #t])
-        
-        ;; 创建列表选择下拉框
-        (define list-names (map core:todo-list-name all-lists))
-        (define list-ids (map core:todo-list-id all-lists))
-        
-        (define list-choice (new choice% 
-                                [parent delete-panel]
-                                [label ""]
-                                [choices list-names]
-                                [selection 0]))
-        
-        (define delete-button-panel (new horizontal-panel% [parent delete-panel] [spacing 8] [alignment '(center)]))
-        
-        (new button% 
-             [parent delete-button-panel]
-             [label (translate "确定")]
-             [callback (lambda (btn evt)
-                         (define selected-idx (send list-choice get-selection))
-                         (define selected-list-id (list-ref list-ids selected-idx))
-                         (define selected-list-name (list-ref list-names selected-idx))
-                         
-                         ;; 显示确认对话框
-                         (define confirm-result (message-box (translate "确认删除") 
-                                                          (translate "确定要删除列表\"~a\"及其所有任务吗？" selected-list-name)
-                                                          delete-dialog
-                                                          `(yes-no #:yes-label ,(translate "是") #:no-label ,(translate "否"))))
-                         
-                         (when (eq? confirm-result 'yes)
-                           (core:delete-list selected-list-id)
-                           (refresh-lists)
-                           (task-updated-callback)
-                           (send delete-dialog show #f)))]
-             [parent delete-button-panel])
-        
-        (new button% 
-             [parent delete-button-panel]
-             [label (translate "取消")]
-             [callback (lambda (btn evt) (send delete-dialog show #f))]
-             [parent delete-button-panel])
-        
-        (send delete-dialog show #t)))
+      ;; 检查是否有选中的自定义列表
+      (if (and current-selected-list-id current-selected-list-name)
+          ;; 如果有，直接使用当前选中的列表
+          (let ([confirm-result (message-box (translate "确认删除") 
+                                             (translate "确定要删除列表\"~a\"及其所有任务吗？" current-selected-list-name)
+                                             (send this get-top-level-window)
+                                             '(yes-no))])
+            (when (eq? confirm-result 'yes)
+              (core:delete-list current-selected-list-id)
+              (refresh-lists)
+              (task-updated-callback)))
+          ;; 如果没有，提示用户先选中要删除的列表
+          (message-box (translate "提示") 
+                      (translate "请先选中要删除的列表")
+                      (send this get-top-level-window)
+                      '(ok))))
     
     ;; 创建添加列表按钮
     (define add-list-btn
@@ -272,7 +241,7 @@
                         [min-width 100]
                         [min-height 32]
                         [callback (lambda (btn evt) 
-                                    (set-selected-button btn)
+                                    (set-selected-button btn list-id list-name)
                                     (view-change-callback "list" list-id list-name))]))
         
         (set! new-buttons (cons btn new-buttons)))
