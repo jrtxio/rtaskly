@@ -89,7 +89,7 @@ function initTimeShortcutDemo() {
 function applyTimeShortcut(input, resultElement) {
     const shortcut = input.value.trim();
     if (!shortcut) {
-        resultElement.innerHTML = '<div class="alert alert-info">Please enter a shortcut like +1d, +1w, or +1m</div>';
+        resultElement.innerHTML = '<div class="alert alert-info">Please enter a shortcut like +30m, +1h, +1d, +1w, or +1M</div>';
         return;
     }
     
@@ -100,26 +100,60 @@ function applyTimeShortcut(input, resultElement) {
     let description = '';
     
     // Check for different shortcut formats
-    const shortcuts = [
-        { regex: /^\+?(\d+)d$/i, days: 1, desc: 'day' },
-        { regex: /^\+?(\d+)w$/i, days: 7, desc: 'week' },
-        { regex: /^\+?(\d+)m$/i, days: 30, desc: 'month' }
-    ];
+    const match = shortcut.match(/^\+?([0-9]+)([dmhwM])$/i);
     
-    for (const s of shortcuts) {
-        const match = shortcut.match(s.regex);
-        if (match) {
-            const count = parseInt(match[1], 10);
-            calculatedDate.setDate(now.getDate() + count * s.days);
-            description = `${count} ${s.desc}${count > 1 ? 's' : ''}`;
-            isValid = true;
-            break;
+    if (match) {
+        const count = parseInt(match[1], 10);
+        const unit = match[2].toLowerCase();
+        const unitUpper = match[2];
+        
+        switch (unitUpper) {
+            case 'm':
+                // Minutes
+                calculatedDate.setMinutes(now.getMinutes() + count);
+                description = `${count} minute${count > 1 ? 's' : ''}`;
+                isValid = true;
+                break;
+            case 'h':
+                // Hours
+                calculatedDate.setHours(now.getHours() + count);
+                description = `${count} hour${count > 1 ? 's' : ''}`;
+                isValid = true;
+                break;
+            case 'd':
+                // Days
+                calculatedDate.setDate(now.getDate() + count);
+                description = `${count} day${count > 1 ? 's' : ''}`;
+                isValid = true;
+                break;
+            case 'w':
+                // Weeks
+                calculatedDate.setDate(now.getDate() + (count * 7));
+                description = `${count} week${count > 1 ? 's' : ''}`;
+                isValid = true;
+                break;
+            case 'M':
+                // Months
+                const currentMonth = now.getMonth();
+                const newMonth = currentMonth + count;
+                const yearOffset = Math.floor(newMonth / 12);
+                const finalMonth = newMonth % 12;
+                const finalYear = now.getFullYear() + yearOffset;
+                
+                // Set to same day or last day of month if day doesn't exist
+                const lastDay = new Date(finalYear, finalMonth + 1, 0).getDate();
+                const finalDay = Math.min(now.getDate(), lastDay);
+                
+                calculatedDate = new Date(finalYear, finalMonth, finalDay, now.getHours(), now.getMinutes());
+                description = `${count} month${count > 1 ? 's' : ''}`;
+                isValid = true;
+                break;
         }
     }
     
     if (isValid) {
         // Format the date
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
         const formattedDate = calculatedDate.toLocaleDateString(document.documentElement.lang === 'zh' ? 'zh-CN' : 'en-US', options);
         
         // Show result
@@ -131,6 +165,6 @@ function applyTimeShortcut(input, resultElement) {
         `;
     } else {
         // Invalid shortcut
-        resultElement.innerHTML = '<div class="alert alert-danger">Invalid shortcut. Please use +1d, +1w, or +1m format.</div>';
+        resultElement.innerHTML = '<div class="alert alert-danger">Invalid shortcut. Please use +30m, +1h, +1d, +1w, or +1M format.</div>';
     }
 }
