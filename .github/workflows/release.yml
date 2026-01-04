@@ -6,6 +6,9 @@ on:
       - 'v*'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -49,6 +52,11 @@ jobs:
               powershell Compress-Archive -Path taskly.exe -DestinationPath taskly-${{ env.VERSION }}-windows.zip 
               ;;
           esac
+      
+      - name: List build artifacts
+        shell: bash
+        run: |
+          ls -la
       
       - name: Create Release
         uses: softprops/action-gh-release@v1
