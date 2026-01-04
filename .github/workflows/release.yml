@@ -42,17 +42,23 @@ jobs:
             Linux) 
               raco exe -o taskly taskly.rkt
               raco distribute taskly-dist taskly
-              tar -czf taskly-${{ env.VERSION }}-linux.tar.gz taskly-dist
+              cd taskly-dist
+              tar -czf ../taskly-${{ env.VERSION }}-linux.tar.gz .
+              cd ..
               ;;
             macOS) 
               raco exe -o taskly taskly.rkt
               raco distribute taskly-dist taskly
-              zip -r taskly-${{ env.VERSION }}-macos.zip taskly-dist
+              cd taskly-dist
+              zip -r ../taskly-${{ env.VERSION }}-macos.zip .
+              cd ..
               ;;
             Windows) 
               raco exe --gui -o taskly.exe taskly.rkt
               raco distribute taskly-dist taskly.exe
-              powershell Compress-Archive -Path taskly-dist -DestinationPath taskly-${{ env.VERSION }}-windows.zip
+              cd taskly-dist
+              powershell Compress-Archive -Path . -DestinationPath ../taskly-${{ env.VERSION }}-windows.zip
+              cd ..
               ;;
           esac
       
