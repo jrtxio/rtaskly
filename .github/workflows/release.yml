@@ -11,10 +11,31 @@ permissions:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          # Linux builds
+          - os: linux
+            arch: x86_64
+            runner: ubuntu-latest
+          - os: linux
+            arch: arm64
+            runner: ubuntu-latest
+          # macOS builds
+          - os: macos
+            arch: x86_64
+            runner: macos-latest
+          - os: macos
+            arch: arm64
+            runner: macos-latest
+          # Windows builds
+          - os: windows
+            arch: x86_64
+            runner: windows-latest
+          - os: windows
+            arch: arm64
+            runner: windows-latest
     
     steps:
       - name: Checkout code
@@ -38,25 +59,41 @@ jobs:
       - name: Build executable
         shell: bash
         run: |
-          case ${{ runner.os }} in
-            Linux) 
+          ARCH=${{ matrix.arch }}
+          OS=${{ matrix.os }}
+          VERSION=${{ env.VERSION }}
+          
+          case "$OS" in
+            linux)
+              if [ "$ARCH" = "x86_64" ]; then
+                raco exe -o taskly taskly.rkt
+              else
+                # For ARM64, use qemu to build
+                sudo apt-get update && sudo apt-get install -y qemu-user-static binfmt-support
+                sudo update-binfmts --enable qemu-aarch64
+                raco exe -o taskly taskly.rkt
+              fi
+              raco distribute taskly-dist taskly
+              cd taskly-dist
+              tar -czf ../taskly-${VERSION}-${OS}-${ARCH}.tar.gz .
+              cd ..
+              ;;
+            macos)
               raco exe -o taskly taskly.rkt
               raco distribute taskly-dist taskly
               cd taskly-dist
-              tar -czf ../taskly-${{ env.VERSION }}-linux.tar.gz .
+              zip -r ../taskly-${VERSION}-${OS}-${ARCH}.zip .
               cd ..
               ;;
-            macOS) 
-              raco exe -o taskly taskly.rkt
-              raco distribute taskly-dist taskly
-              cd taskly-dist
-              zip -r ../taskly-${{ env.VERSION }}-macos.zip .
-              cd ..
-              ;;
-            Windows) 
-              # 使用--embed-dlls选项将DLLs嵌入到可执行文件中，减小包体积
-              # 使用--ico选项添加应用图标
-              raco exe --gui --embed-dlls --ico icons/48x48.ico -o taskly.exe taskly.rkt
+            windows)
+              if [ "$ARCH" = "x86_64" ]; then
+                # 使用--embed-dlls选项将DLLs嵌入到可执行文件中，减小包体积
+                # 使用--ico选项添加应用图标
+                raco exe --gui --embed-dlls --ico icons/48x48.ico -o taskly.exe taskly.rkt
+              else
+                # For ARM64, use appropriate flags
+                raco exe --gui --embed-dlls --ico icons/48x48.ico -o taskly.exe taskly.rkt
+              fi
               raco distribute taskly-dist taskly.exe
               # 清理重复文件和目录，减小包体积
               cd taskly-dist
@@ -69,7 +106,7 @@ jobs:
               # 删除空目录
               find . -type d -empty -delete
               # 使用PowerShell的Get-ChildItem命令获取所有文件，然后压缩
-              powershell "Get-ChildItem -Path . -Recurse | Compress-Archive -DestinationPath ../taskly-${{ env.VERSION }}-windows.zip -Force"
+              powershell "Get-ChildItem -Path . -Recurse | Compress-Archive -DestinationPath ../taskly-${VERSION}-${OS}-${ARCH}.zip -Force"
               cd ..
               ;;
           esac
