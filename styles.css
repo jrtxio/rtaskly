@@ -111,6 +111,38 @@ html {
     scroll-behavior: smooth;
 }
 
+/* Language Switcher */
+.language-switcher {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 5px;
+}
+
+.lang-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.lang-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.lang-btn.active {
+    background: rgba(255, 255, 255, 0.9);
+    color: #007bff;
+    font-weight: bold;
+}
+
 /* Animation for elements when they come into view */
 @keyframes fadeInUp {
     from {
@@ -150,4 +182,15 @@ html {
 
 .card:nth-child(6) {
     animation-delay: 0.6s;
+}
+
+/* Responsive adjustments for language switcher */
+@media (max-width: 768px) {
+    .language-switcher {
+        position: relative;
+        top: 0;
+        right: 0;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
 }
