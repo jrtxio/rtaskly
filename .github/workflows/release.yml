@@ -40,15 +40,18 @@ jobs:
         run: |
           case ${{ runner.os }} in
             Linux) 
-              raco distribute taskly-dist taskly.rkt
+              raco exe -o taskly taskly.rkt
+              raco distribute taskly-dist taskly
               tar -czf taskly-${{ env.VERSION }}-linux.tar.gz taskly-dist
               ;;
             macOS) 
-              raco distribute taskly-dist taskly.rkt
+              raco exe -o taskly taskly.rkt
+              raco distribute taskly-dist taskly
               zip -r taskly-${{ env.VERSION }}-macos.zip taskly-dist
               ;;
             Windows) 
-              raco distribute taskly-dist taskly.rkt
+              raco exe -o taskly.exe taskly.rkt
+              raco distribute taskly-dist taskly.exe
               powershell Compress-Archive -Path taskly-dist -DestinationPath taskly-${{ env.VERSION }}-windows.zip
               ;;
           esac
