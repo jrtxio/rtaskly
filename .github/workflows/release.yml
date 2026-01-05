@@ -28,7 +28,7 @@ jobs:
             runner: macos-latest
           - os: macos
             arch: arm64
-            runner: macos-14-arm64
+            runner: macos-14
           # Windows builds
           - os: windows
             arch: x86_64
