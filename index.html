@@ -7,9 +7,75 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        /* Navigation styles */
+        .nav-container {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .nav-menu li {
+            margin: 0;
+        }
+        
+        .nav-menu a {
+            display: block;
+            padding: 16px 24px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+        
+        .nav-menu a:hover {
+            color: var(--primary);
+            background: rgba(0, 113, 227, 0.05);
+        }
+        
+        /* Mobile navigation */
+        @media (max-width: 768px) {
+            .nav-menu {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-menu a {
+                padding: 12px 20px;
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header class="bg-gradient-to-br from-primary to-primary-dark text-white py-8">
+    <!-- Navigation -->
+    <nav class="nav-container">
+        <ul class="nav-menu">
+            <li><a href="#overview">Home</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#guide">User Guide</a></li>
+            <li><a href="#shortcuts">Smart Shortcuts</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#download">Download</a></li>
+        </ul>
+    </nav>
+    
+    <!-- Hero Section -->
+    <header id="overview" class="bg-gradient-to-br from-primary to-primary-dark text-white py-8">
         <div class="container">
             <div class="language-switcher">
                 <button id="lang-en" class="lang-btn active">English</button>
@@ -21,15 +87,16 @@
                     <h1 class="display-3 font-bold mb-3" data-en="Taskly" data-zh="Taskly">Taskly</h1>
                     <p class="lead mb-5" data-en="A Simple and Intuitive Task Manager Built with Racket" data-zh="一个使用 Racket 构建的简单直观的任务管理器">A Simple and Intuitive Task Manager Built with Racket</p>
                     <div class="mt-4 d-flex justify-content-center gap-3">
-                        <a href="https://github.com/jrtxio/taskly/releases" class="btn btn-white btn-lg text-primary font-medium" data-en="Download Now" data-zh="立即下载">Download Now</a>
-                        <a href="https://github.com/jrtxio/taskly" class="btn btn-outline-white btn-lg font-medium" data-en="Learn More" data-zh="了解更多">Learn More</a>
+                        <a href="#download" class="btn btn-white btn-lg text-primary font-medium" data-en="Download Now" data-zh="立即下载">Download Now</a>
+                        <a href="#guide" class="btn btn-outline-white btn-lg font-medium" data-en="Get Started" data-zh="开始使用">Get Started</a>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <section class="py-5">
+    <!-- Features Section -->
+    <section id="features" class="py-5">
         <div class="container">
             <div class="row">
                 <div class="col-md-8 offset-md-2">
@@ -118,7 +185,7 @@
                 </div>
             </div>
 
-            <div class="row mt-5">
+            <div class="row mt-5" id="shortcuts">
                 <div class="col-md-8 offset-md-2">
                     <h2 class="text-center mb-5" data-en="Smart Time Shortcuts" data-zh="智能时间快捷方式">Smart Time Shortcuts</h2>
                     <p class="text-center" data-en="Save time setting due dates with our innovative text-based shortcuts." data-zh="使用我们创新的基于文本的快捷方式，节省设置截止日期的时间。">Save time setting due dates with our innovative text-based shortcuts.</p>
@@ -272,7 +339,7 @@
                 </div>
             </div>
 
-            <div class="row mt-5 mb-8">
+            <div class="row mt-5 mb-8" id="download">
                 <div class="col-lg-8 offset-lg-2 text-center">
                     <div class="p-0">
                             <h2 class="mb-3" data-en="Download Taskly" data-zh="下载 Taskly">Download Taskly</h2>
@@ -316,6 +383,146 @@
                                 <a href="https://github.com/jrtxio/taskly/releases" class="btn btn-primary btn-md font-medium px-6 py-2" data-en="Download Now" data-zh="立即下载">Download Now</a>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- User Guide Section -->
+    <section id="guide" class="py-5">
+        <div class="container">
+            <div class="col-md-8 offset-md-2">
+                <h2 class="text-center mb-5" data-en="User Guide" data-zh="使用指南">User Guide</h2>
+                
+                <div class="mt-8">
+                    <h3 data-en="Getting Started" data-zh="入门指南">Getting Started</h3>
+                    <p data-en="Follow these simple steps to start using Taskly:" data-zh="按照以下简单步骤开始使用 Taskly：">Follow these simple steps to start using Taskly:</p>
+                    
+                    <div class="mt-4">
+                        <h4 data-en="1. Download and Install" data-zh="1. 下载和安装">1. Download and Install</h4>
+                        <p data-en="Download the latest version of Taskly from our <a href='#download'>download page</a> and install it on your computer." data-zh="从我们的 <a href='#download'>下载页面</a> 下载 Taskly 的最新版本，并将其安装到您的计算机上。">Download the latest version of Taskly from our <a href='#download'>download page</a> and install it on your computer.</p>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h4 data-en="2. First Launch" data-zh="2. 首次启动">2. First Launch</h4>
+                        <p data-en="When you first launch Taskly, you'll be prompted to select or create a database file. This file will store all your tasks." data-zh="当您首次启动 Taskly 时，系统会提示您选择或创建一个数据库文件。该文件将存储您的所有任务。">When you first launch Taskly, you'll be prompted to select or create a database file. This file will store all your tasks.</p>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h4 data-en="3. Main Interface" data-zh="3. 主界面">3. Main Interface</h4>
+                        <p data-en="Once the main window opens, you'll see the following components:" data-zh="主窗口打开后，您将看到以下组件：">Once the main window opens, you'll see the following components:</p>
+                        <ul class="mt-2">
+                            <li data-en="Sidebar: Shows all your task lists" data-zh="侧边栏：显示您的所有任务列表">Sidebar: Shows all your task lists</li>
+                            <li data-en="Task Panel: Displays tasks for the selected list" data-zh="任务面板：显示所选列表的任务">Task Panel: Displays tasks for the selected list</li>
+                            <li data-en="Toolbar: Contains buttons for creating tasks and lists" data-zh="工具栏：包含创建任务和列表的按钮">Toolbar: Contains buttons for creating tasks and lists</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <h3 data-en="Creating Tasks" data-zh="创建任务">Creating Tasks</h3>
+                    <p data-en="To create a new task, follow these steps:" data-zh="要创建新任务，请按照以下步骤操作：">To create a new task, follow these steps:</p>
+                    <ol class="mt-2">
+                        <li data-en="Click the 'New Task' button in the toolbar" data-zh="点击工具栏中的 '新建任务' 按钮">Click the 'New Task' button in the toolbar</li>
+                        <li data-en="Enter a title for your task" data-zh="为您的任务输入标题">Enter a title for your task</li>
+                        <li data-en="Optional: Add a description for more details" data-zh="可选：添加描述以获取更多详细信息">Optional: Add a description for more details</li>
+                        <li data-en="Set a due date (you can use smart shortcuts like +1d, +1w, etc.)" data-zh="设置截止日期（您可以使用 +1d、+1w 等智能快捷方式）">Set a due date (you can use smart shortcuts like +1d, +1w, etc.)</li>
+                        <li data-en="Select the list where you want to add the task" data-zh="选择要添加任务的列表">Select the list where you want to add the task</li>
+                        <li data-en="Click 'Save' to create the task" data-zh="点击 '保存' 创建任务">Click 'Save' to create the task</li>
+                    </ol>
+                </div>
+                
+                <div class="mt-8">
+                    <h3 data-en="Managing Lists" data-zh="管理列表">Managing Lists</h3>
+                    <p data-en="Taskly allows you to organize your tasks into different lists. Here's how to manage them:" data-zh="Taskly 允许您将任务组织到不同的列表中。以下是管理它们的方法：">Taskly allows you to organize your tasks into different lists. Here's how to manage them:</p>
+                    
+                    <div class="mt-4">
+                        <h4 data-en="Creating a New List" data-zh="创建新列表">Creating a New List</h4>
+                        <ol class="mt-2">
+                            <li data-en="Click the 'New List' button in the sidebar" data-zh="点击侧边栏中的 '新建列表' 按钮">Click the 'New List' button in the sidebar</li>
+                            <li data-en="Enter a name for your new list" data-zh="为您的新列表输入名称">Enter a name for your new list</li>
+                            <li data-en="Click 'Save' to create the list" data-zh="点击 '保存' 创建列表">Click 'Save' to create the list</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h4 data-en="Switching Between Lists" data-zh="在列表之间切换">Switching Between Lists</h4>
+                        <p data-en="Simply click on any list in the sidebar to view its tasks." data-zh="只需点击侧边栏中的任何列表即可查看其任务。">Simply click on any list in the sidebar to view its tasks.</p>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h4 data-en="Editing or Deleting Lists" data-zh="编辑或删除列表">Editing or Deleting Lists</h4>
+                        <p data-en="Right-click on a list in the sidebar to access options for editing or deleting it." data-zh="右键单击侧边栏中的列表，即可访问编辑或删除它的选项。">Right-click on a list in the sidebar to access options for editing or deleting it.</p>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <h3 data-en="Managing Tasks" data-zh="管理任务">Managing Tasks</h3>
+                    
+                    <div class="mt-4">
+                        <h4 data-en="Marking Tasks as Complete" data-zh="将任务标记为完成">Marking Tasks as Complete</h4>
+                        <p data-en="Click the checkbox next to any task to mark it as complete." data-zh="点击任何任务旁边的复选框，将其标记为完成。">Click the checkbox next to any task to mark it as complete.</p>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h4 data-en="Editing Tasks" data-zh="编辑任务">Editing Tasks</h4>
+                        <p data-en="Double-click on a task to open the edit dialog, or right-click on it and select 'Edit'." data-zh="双击任务以打开编辑对话框，或右键单击它并选择 '编辑'。">Double-click on a task to open the edit dialog, or right-click on it and select 'Edit'.</p>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h4 data-en="Deleting Tasks" data-zh="删除任务">Deleting Tasks</h4>
+                        <p data-en="Right-click on a task and select 'Delete' to remove it from your list." data-zh="右键单击任务并选择 '删除'，将其从列表中删除。">Right-click on a task and select 'Delete' to remove it from your list.</p>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <h3 data-en="Settings" data-zh="设置">Settings</h3>
+                    
+                    <div class="mt-4">
+                        <h4 data-en="Language Selection" data-zh="语言选择">Language Selection</h4>
+                        <p data-en="Taskly supports multiple languages. You can change the language in the settings menu." data-zh="Taskly 支持多种语言。您可以在设置菜单中更改语言。">Taskly supports multiple languages. You can change the language in the settings menu.</p>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h4 data-en="Database Management" data-zh="数据库管理">Database Management</h4>
+                        <p data-en="You can switch between different database files in the settings menu, allowing you to manage multiple sets of tasks." data-zh="您可以在设置菜单中切换不同的数据库文件，从而管理多组任务。">You can switch between different database files in the settings menu, allowing you to manage multiple sets of tasks.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-5">
+        <div class="container">
+            <div class="col-md-8 offset-md-2">
+                <h2 class="text-center mb-5" data-en="Frequently Asked Questions" data-zh="常见问题">Frequently Asked Questions</h2>
+                
+                <div class="mt-8">
+                    <div class="mb-5">
+                        <h4 data-en="How do I back up my tasks?" data-zh="如何备份我的任务？">How do I back up my tasks?</h4>
+                        <p data-en="Taskly automatically saves all your tasks to a SQLite database file. To back up your tasks, simply copy this database file to a safe location." data-zh="Taskly 会自动将您的所有任务保存到 SQLite 数据库文件中。要备份您的任务，只需将此数据库文件复制到安全位置即可。">Taskly automatically saves all your tasks to a SQLite database file. To back up your tasks, simply copy this database file to a safe location.</p>
+                    </div>
+                    
+                    <div class="mb-5">
+                        <h4 data-en="Can I use Taskly on multiple devices?" data-zh="我可以在多台设备上使用 Taskly 吗？">Can I use Taskly on multiple devices?</h4>
+                        <p data-en="Currently, Taskly is a desktop application that stores data locally. You can manually transfer your database file between devices to use your tasks on multiple computers." data-zh="目前，Taskly 是一个本地存储数据的桌面应用程序。您可以手动在设备之间传输数据库文件，以便在多台计算机上使用您的任务。">Currently, Taskly is a desktop application that stores data locally. You can manually transfer your database file between devices to use your tasks on multiple computers.</p>
+                    </div>
+                    
+                    <div class="mb-5">
+                        <h4 data-en="How do I change the language?" data-zh="如何更改语言？">How do I change the language?</h4>
+                        <p data-en="You can change the language in the settings menu. Click on the settings icon and select your preferred language." data-zh="您可以在设置菜单中更改语言。点击设置图标，然后选择您喜欢的语言。">You can change the language in the settings menu. Click on the settings icon and select your preferred language.</p>
+                    </div>
+                    
+                    <div class="mb-5">
+                        <h4 data-en="Can I import tasks from other applications?" data-zh="我可以从其他应用程序导入任务吗？">Can I import tasks from other applications?</h4>
+                        <p data-en="Currently, Taskly doesn't support importing tasks from other applications directly. However, you can manually create tasks or use our smart shortcuts to quickly add multiple tasks." data-zh="目前，Taskly 不支持直接从其他应用程序导入任务。但是，您可以手动创建任务或使用我们的智能快捷方式快速添加多个任务。">Currently, Taskly doesn't support importing tasks from other applications directly. However, you can manually create tasks or use our smart shortcuts to quickly add multiple tasks.</p>
+                    </div>
+                    
+                    <div class="mb-5">
+                        <h4 data-en="How do I report a bug or suggest a feature?" data-zh="如何报告错误或建议功能？">How do I report a bug or suggest a feature?</h4>
+                        <p data-en="You can report bugs or suggest features by opening an issue on our <a href='https://github.com/jrtxio/taskly/issues'>GitHub repository</a>." data-zh="您可以通过在我们的 <a href='https://github.com/jrtxio/taskly/issues'>GitHub 仓库</a> 上提交 issue 来报告错误或建议功能。">You can report bugs or suggest features by opening an issue on our <a href='https://github.com/jrtxio/taskly/issues'>GitHub repository</a>.</p>
                     </div>
                 </div>
             </div>
