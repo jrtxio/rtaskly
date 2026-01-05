@@ -225,8 +225,8 @@
      (check-equal? (normalize-date-string "2023-  01-  01") #f) ; 中间有多余空格
      
      ;; 测试格式日期显示的更多情况
-     (check-equal? (format-date-for-display "2023-01-01") "2023年1月1日")
-     (check-equal? (format-date-for-display "2023-12-31") "2023年12月31日")
+     (check-equal? (format-date-for-display "2023-01-01") "2023/1/1")
+     (check-equal? (format-date-for-display "2023-12-31") "2023/12/31")
      (check-equal? (format-date-for-display "invalid-date") "invalid-date")
      (check-equal? (format-date-for-display #f) "")
      

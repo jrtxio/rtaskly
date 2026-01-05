@@ -72,13 +72,13 @@
    ;; 测试 format-date-for-display 函数
    (test-case "测试日期显示格式化" 
      ;; 正常情况
-     (check-equal? (format-date-for-display "2023-01-01") "2023年1月1日")
-     (check-equal? (format-date-for-display "2023-12-31") "2023年12月31日")
-     (check-equal? (format-date-for-display "2023-06-15") "2023年6月15日")
+     (check-equal? (format-date-for-display "2023-01-01") "2023/1/1")
+     (check-equal? (format-date-for-display "2023-12-31") "2023/12/31")
+     (check-equal? (format-date-for-display "2023-06-15") "2023/6/15")
      
      ;; 边界情况
-     (check-equal? (format-date-for-display "1900-01-01") "1900年1月1日")
-     (check-equal? (format-date-for-display "9999-12-31") "9999年12月31日")
+     (check-equal? (format-date-for-display "1900-01-01") "1900/1/1")
+     (check-equal? (format-date-for-display "9999-12-31") "9999/12/31")
      
      ;; 特殊情况
      (check-equal? (format-date-for-display "") "")

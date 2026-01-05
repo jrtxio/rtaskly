@@ -67,8 +67,8 @@
                     [day (string->number (list-ref parts 2))])
                 (if (and year month day)
                     (if time-part
-                        (format "~a年~a月~a日 ~a" year month day time-part)
-                        (format "~a年~a月~a日" year month day))
+                    (format "~a/~a/~a ~a" year month day time-part)
+                    (format "~a/~a/~a" year month day))
                     date-str))
               date-str)))
       ""))
