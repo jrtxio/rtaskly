@@ -51,7 +51,7 @@
             (~r (date-month today) #:min-width 2 #:pad-string "0")
             (~r (date-day today) #:min-width 2 #:pad-string "0"))))
 
-;; 格式化日期显示 (YYYY-MM-DD -> MM月DD日)
+;; 格式化日期显示 (YYYY-MM-DD -> YYYY年MM月DD日)
 (define (format-date-for-display date-str)
   (if (and date-str (not (sql-null? date-str)) (string? date-str) (not (equal? date-str "")))
       (let ([date-part (if (string-contains? date-str " ")
@@ -62,12 +62,13 @@
                            #f)])
         (let ([parts (string-split date-part "-")])
           (if (= (length parts) 3)
-              (let ([month (string->number (list-ref parts 1))]
+              (let ([year (string->number (list-ref parts 0))]
+                    [month (string->number (list-ref parts 1))]
                     [day (string->number (list-ref parts 2))])
-                (if (and month day)
+                (if (and year month day)
                     (if time-part
-                        (format "~a月~a日 ~a" month day time-part)
-                        (format "~a月~a日" month day))
+                        (format "~a年~a月~a日 ~a" year month day time-part)
+                        (format "~a年~a月~a日" year month day))
                     date-str))
               date-str)))
       ""))

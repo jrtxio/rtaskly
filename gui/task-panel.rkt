@@ -121,30 +121,6 @@
                        (task:toggle-task-completed (task:task-id task-data))
                        (task-updated-callback))])
       
-      ;; 创建优先级标签
-      (define priority (task:task-priority task-data))
-      (define (priority->color p)
-        (case p
-          [(0) "#888888"] ; 低优先级 - 灰色
-          [(1) "#FFA500"] ; 中优先级 - 橙色
-          [(2) "#FF4444"] ; 高优先级 - 红色
-          [else "#888888"]))
-      
-      (define (priority->text p)
-        (case p
-          [(0) (translate "低")]
-          [(1) (translate "中")]
-          [(2) (translate "高")]
-          [else (translate "低")]))
-      
-      (new message% 
-           [parent task-item]
-           [label (string-append "[" (priority->text priority) "]")]
-           [font (make-font #:weight 'bold)]
-           [color (priority->color priority)]
-           [min-width 30]
-           [stretchable-width #f])
-      
       ;; 创建文本和日期面板
       (define text-date-panel (new vertical-panel% 
                                  [parent task-item]
@@ -152,11 +128,22 @@
                                  [alignment '(left top)]
                                  [spacing 2]))
       
-      ;; 创建任务文本消息
-      (new message% 
+      ;; 创建任务文本编辑器（只读）
+      (define task-text (new text%))
+      (send task-text insert (task:task-text task-data))
+      
+      ;; 创建只读的编辑器画布来显示任务文本
+      (new editor-canvas% 
            [parent text-date-panel]
+           [editor task-text]
            [stretchable-width #t]
-           [label (task:task-text task-data)])
+           [stretchable-height #f]
+           [min-height 20]
+           [horizontal-inset 0]
+           [vertical-inset 0]
+           [style '(no-hscroll no-vscroll no-border)])
+      ;; 设置文本编辑器为只读模式
+      (send task-text lock #t)
       
       ;; 创建截止日期标签
       (when (task:task-due-date task-data)

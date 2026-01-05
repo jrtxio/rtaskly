@@ -48,16 +48,6 @@
   (define date-input-panel (new horizontal-panel% [parent dialog-panel] [spacing 4] [stretchable-width #t]))
   (define date-field (new text-field% [parent date-input-panel] [label ""] [init-value ""] [stretchable-width #t] [vert-margin 2]))
   
-  ;; 添加优先级选择
-  (new message% [parent dialog-panel] [label (translate "优先级:")] [stretchable-width #t])
-  (define priority-choices (list (translate "低") (translate "中") (translate "高")))
-  (define priority-values '(0 1 2))
-  (define priority-choice (new choice% 
-                              [parent dialog-panel]
-                              [label ""]
-                              [choices priority-choices]
-                              [selection 1])) ; 默认中等优先级
-  
   ;; 添加列表选择
   (new message% [parent dialog-panel] [label (translate "任务列表:")] [stretchable-width #t])
   (define list-choice (new choice% 
@@ -140,17 +130,6 @@
                                          "")] 
                          [stretchable-width #t] [vert-margin 2]))
   
-  ;; 添加优先级选择
-  (new message% [parent dialog-panel] [label (translate "优先级:")] [stretchable-width #t])
-  (define priority-choices (list (translate "低") (translate "中") (translate "高")))
-  (define priority-values '(0 1 2))
-  (define current-priority (task:task-priority task-data))
-  (define priority-choice (new choice% 
-                              [parent dialog-panel]
-                              [label ""]
-                              [choices priority-choices]
-                              [selection (index-of priority-values current-priority)]))
-  
   ;; 添加列表选择
   (new message% [parent dialog-panel] [label (translate "任务列表:")] [stretchable-width #t])
   
@@ -174,7 +153,6 @@
   (define (save-task)
     (define text (send text-editor get-text))
     (define date (send date-field get-value))
-    (define selected-priority (list-ref priority-values (send priority-choice get-selection)))
     (define selected-list-id (list-ref list-ids (send list-choice get-selection)))
     
     (when (and text (not (equal? (string-trim text) "")))
@@ -187,7 +165,7 @@
               (equal? (string-trim date) "")
               parsed-date)
           (begin
-            (task:edit-task (task:task-id task-data) selected-list-id text parsed-date selected-priority)
+            (task:edit-task (task:task-id task-data) selected-list-id text parsed-date)
             (callback)
             (send dialog show #f))
           (message-box (translate "日期格式错误") 

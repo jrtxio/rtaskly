@@ -7,7 +7,7 @@
          "../utils/date.rkt")
 
 ;; 任务结构体定义
-(struct task (id list-id text due-date completed? priority created-at list-name) #:transparent)
+(struct task (id list-id text due-date completed? created-at list-name) #:transparent)
 
 ;; 将数据库查询结果转换为任务结构体
 (define (row->task row)
@@ -16,24 +16,12 @@
     (with-handlers ([exn:fail? (lambda (e) "未知列表")])
       (db:get-list-name list-id)))
   
-  ;; 根据行的长度决定是否有priority字段（兼容旧数据库模式）
-  (define (get-priority)
-    (if (<= (vector-length row) 6) ; 旧模式：只有6个字段
-        1 ; 默认优先级
-        (vector-ref row 5)))
-  
-  (define (get-created-at)
-    (if (<= (vector-length row) 6) ; 旧模式：created_at在索引5
-        (string->number (vector-ref row 5))
-        (string->number (vector-ref row 6))))
-  
   (task (vector-ref row 0)  ; task_id
         list-id  ; list_id
         (vector-ref row 2)  ; task_text
         (if (sql-null? (vector-ref row 3)) #f (vector-ref row 3))  ; due_date
         (= (vector-ref row 4) 1)  ; is_completed
-        (get-priority)  ; priority
-        (get-created-at)  ; created_at (转换为数字)
+        (string->number (vector-ref row 5))  ; created_at (转换为数字)
         list-name))
 
 ;; 将多个数据库查询结果转换为任务结构体列表
@@ -73,13 +61,13 @@
 ;; ------------------------
 
 ;; 添加任务 - 向后兼容版本
-(define (add-task list-id task-text due-date [priority 1])
+(define (add-task list-id task-text due-date)
   (define created-at (current-seconds))
-  (db:add-task list-id task-text due-date priority created-at))
+  (db:add-task list-id task-text due-date created-at))
 
 ;; 编辑任务 - 向后兼容版本
-(define (edit-task task-id list-id task-text due-date [priority 1])
-  (db:update-task task-id list-id task-text due-date priority))
+(define (edit-task task-id list-id task-text due-date)
+  (db:update-task task-id list-id task-text due-date))
 
 ;; 切换任务完成状态
 (define (toggle-task-completed task-id)
