@@ -1,8 +1,6 @@
 # Changelog
 
 ## [Unreleased]
-
-## [0.0.3] - 2026-01-05
 ### Added
 - 修复了macOS ARM64构建问题
 - 改进了GitHub Actions工作流，添加了环境信息输出
