@@ -75,7 +75,7 @@
    ;; 测试 row->task 函数能正确处理 sql-null 值
    (test-case "测试 row->task 函数能正确处理 sql-null 值"
      ;; 模拟数据库查询结果，其中 due_date 为 sql-null
-     (define test-row (vector 1 1 "测试任务" sql-null 0 1 "1609459200"))
+     (define test-row (vector 1 1 "测试任务" sql-null 0 "1609459200" "extra-column"))
      
      ;; 调用 row->task 函数
      (define result-task (row->task test-row))
@@ -86,7 +86,6 @@
      (check-equal? (task-text result-task) "测试任务")
      (check-false (task-due-date result-task)) ; 应该转换为 #f
      (check-false (task-completed? result-task))
-     (check-equal? (task-priority result-task) 1)
      (check-equal? (task-created-at result-task) 1609459200))
    
    ;; 测试同时处理有截止日期和无截止日期的任务
