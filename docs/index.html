@@ -19,12 +19,42 @@
             border-bottom: 1px solid rgba(0, 0, 0, 0.08);
         }
         
+        .nav-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 12px 0;
+            z-index: 1100;
+        }
+        
+        .bar {
+            display: block;
+            width: 25px;
+            height: 3px;
+            margin: 5px auto;
+            -webkit-transition: all 0.3s ease-in-out;
+            transition: all 0.3s ease-in-out;
+            background-color: var(--text-primary);
+            border-radius: 3px;
+        }
+        
         .nav-menu {
             display: flex;
             justify-content: center;
             list-style: none;
             margin: 0;
             padding: 0;
+            transition: all 0.3s ease-in-out;
         }
         
         .nav-menu li {
@@ -48,15 +78,54 @@
         
         /* Mobile navigation */
         @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            /* Mobile menu button animation */
+            .mobile-menu-btn.active .bar:nth-child(2) {
+                opacity: 0;
+            }
+            
+            .mobile-menu-btn.active .bar:nth-child(1) {
+                transform: translateY(8px) rotate(45deg);
+            }
+            
+            .mobile-menu-btn.active .bar:nth-child(3) {
+                transform: translateY(-8px) rotate(-45deg);
+            }
+            
+            /* Mobile menu styles */
             .nav-menu {
+                position: fixed;
+                left: -100%;
+                top: 60px;
                 flex-direction: column;
-                align-items: center;
+                background: rgba(255, 255, 255, 0.98);
+                backdrop-filter: blur(10px);
+                width: 100%;
+                text-align: center;
+                transition: 0.3s ease-in-out;
+                box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
+                border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            }
+            
+            .nav-menu.active {
+                left: 0;
+            }
+            
+            .nav-menu li {
+                width: 100%;
             }
             
             .nav-menu a {
-                padding: 12px 20px;
-                width: 100%;
-                text-align: center;
+                padding: 12px 0;
+                font-size: 16px;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            }
+            
+            .nav-menu a:hover {
+                background: rgba(0, 113, 227, 0.05);
             }
         }
     </style>
@@ -64,14 +133,27 @@
 <body>
     <!-- Navigation -->
     <nav class="nav-container">
-        <ul class="nav-menu">
-            <li><a href="#overview" data-en="Home" data-zh="首页">Home</a></li>
-            <li><a href="#features" data-en="Features" data-zh="功能">Features</a></li>
-            <li><a href="#guide" data-en="User Guide" data-zh="使用指南">User Guide</a></li>
-            <li><a href="#shortcuts" data-en="Smart Shortcuts" data-zh="智能快捷方式">Smart Shortcuts</a></li>
-            <li><a href="#faq" data-en="FAQ" data-zh="常见问题">FAQ</a></li>
-            <li><a href="#download" data-en="Download" data-zh="下载">Download</a></li>
-        </ul>
+        <div class="nav-wrapper">
+            <!-- Logo or Brand Name (optional) -->
+            <div class="nav-brand"></div>
+            
+            <!-- Mobile Menu Button (Hamburger Menu) -->
+            <button class="mobile-menu-btn" aria-label="Toggle Menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+            
+            <!-- Navigation Menu -->
+            <ul class="nav-menu">
+                <li><a href="#overview" data-en="Home" data-zh="首页">Home</a></li>
+                <li><a href="#features" data-en="Features" data-zh="功能">Features</a></li>
+                <li><a href="#guide" data-en="User Guide" data-zh="使用指南">User Guide</a></li>
+                <li><a href="#shortcuts" data-en="Smart Shortcuts" data-zh="智能快捷方式">Smart Shortcuts</a></li>
+                <li><a href="#faq" data-en="FAQ" data-zh="常见问题">FAQ</a></li>
+                <li><a href="#download" data-en="Download" data-zh="下载">Download</a></li>
+            </ul>
+        </div>
     </nav>
     
     <!-- Hero Section -->
