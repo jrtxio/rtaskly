@@ -5,7 +5,8 @@
   '("test-date.rkt" "test-database.rkt" "test-list.rkt" "test-task.rkt" "test-path.rkt" 
     "test-core-conversion.rkt" "test-integration.rkt" "test-additional-features.rkt" 
     "test-edge-cases.rkt" "test-cleanup.rkt" "test-sidebar.rkt" "test-smart-time.rkt" 
-    "test-language.rkt" "test-null-date-handling.rkt" "test-fix-verification.rkt"))
+    "test-language.rkt" "test-null-date-handling.rkt" "test-fix-verification.rkt" 
+    "test-db-suffix-automatic-addition.rkt"))
 
 ;; 运行单个测试文件并返回结果
 (define (run-test-file file)

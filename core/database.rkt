@@ -9,7 +9,8 @@
 ;; 连接到数据库
 (define (connect-to-database db-path)
   (unless (file-exists? db-path)
-    (printf "创建新数据库文件: ~a\n" db-path))
+    ;; 创建新数据库文件，不输出到命令行
+    #f)
   
   (define conn (sqlite3-connect #:database db-path #:mode 'create))
   (current-db-connection conn)

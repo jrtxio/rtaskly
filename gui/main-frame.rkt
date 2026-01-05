@@ -211,7 +211,11 @@
       (define (browse-callback btn evt)
         (define selected-file (put-file (translate "保存数据库文件")))
         (when selected-file
-          (send file-field set-value (path->string selected-file))))
+          ;; 检查并添加.db后缀
+          (define final-path (if (equal? #".db" (path-get-extension selected-file))
+                                 selected-file
+                                 (path-add-extension selected-file #".db")))
+          (send file-field set-value (path->string final-path))))
       
       (new button% [parent file-panel] 
            [label (translate "浏览...")] 
@@ -222,8 +226,13 @@
       (define (ok-callback)
         (define file-path (send file-field get-value))
         (when (not (equal? (string-trim file-path) ""))
+          ;; 检查并添加.db后缀
+          (define path (string->path file-path))
+          (define final-path (if (equal? #".db" (path-get-extension path))
+                                 path
+                                 (path-add-extension path #".db")))
           (send dialog show #f)
-          (connect-to-db file-path)))
+          (connect-to-db (path->string final-path))))
       
       (new button% [parent button-panel] 
            [label (translate "确定")] 
