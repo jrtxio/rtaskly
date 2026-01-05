@@ -25,6 +25,14 @@ jobs:
         with:
           version: '8.12'
       
+      - name: Show environment info
+        shell: bash
+        run: |
+          echo "Runner OS: ${{ runner.os }}"
+          echo "Runner Architecture: ${{ runner.arch }}"
+          echo "Runner OS Version: ${{ runner.osVersion }}"
+          echo "Matrix OS: ${{ matrix.os }}"
+      
       - name: Run tests
         run: racket ./test/run-all-tests.rkt
       
@@ -47,10 +55,12 @@ jobs:
               cd ..
               ;;
             macOS) 
+              # 确保在ARM64架构上正常构建
+              echo "Building on macOS ${{ runner.arch }}"
               raco exe -o taskly taskly.rkt
               raco distribute taskly-dist taskly
               cd taskly-dist
-              zip -r ../taskly-${{ env.VERSION }}-macos.zip .
+              zip -r ../taskly-${{ env.VERSION }}-macos-${{ runner.arch }}.zip .
               cd ..
               ;;
             Windows) 
@@ -78,6 +88,13 @@ jobs:
         shell: bash
         run: |
           ls -la
+          file taskly 2>/dev/null || file taskly.exe 2>/dev/null
+      
+      - name: Verify build artifacts
+        shell: bash
+        run: |
+          echo "Checking build artifacts..."
+          ls -la taskly-*.zip taskly-*.tar.gz 2>/dev/null || echo "No artifacts found"
       
       - name: Get CHANGELOG content
         id: get_changelog
