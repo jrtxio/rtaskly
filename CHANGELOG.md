@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.0.4] - 2026-01-05
+### Fixed
+- 修复了GitHub Pages主页上中英文切换时导航栏链接不会切换的问题 / Fixed navigation links not switching language on GitHub Pages
+
 ## [0.0.3] - 2026-01-05
 ### Added
 - 修复了macOS ARM64构建问题 / Fixed macOS ARM64 build issue
