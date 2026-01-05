@@ -7,7 +7,7 @@
          (prefix-in lst: "../core/list.rkt")
          (prefix-in db: "../core/database.rkt")
          "../utils/date.rkt"
-         "utils/test-utils.rkt")
+         "test-utils.rkt")
 
 ;; 定义测试套件
 (define task-tests

@@ -1,7 +1,7 @@
 #lang racket
 
 (require db
-         (prefix-in db: "../../core/database.rkt"))
+         (prefix-in db: "../core/database.rkt"))
 
 ;; 创建唯一的临时数据库文件
 (define (create-temp-db-path [prefix "temp-test"]) 

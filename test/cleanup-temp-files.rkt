@@ -5,7 +5,7 @@
 
 ;; 定义临时文件前缀
 (define temp-file-prefixes
-  '("temp-"))
+  '("temp-" "temp-test-"))
 
 ;; 清理临时文件
 (define (cleanup-temp-files)

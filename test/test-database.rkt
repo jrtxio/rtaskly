@@ -152,7 +152,7 @@
      (check-pred list? planned-tasks)
      
      ;; 测试更新任务
-     (update-task task-id list-id "更新后的测试任务" "2023-01-02" 1)
+     (update-task task-id list-id "更新后的测试任务" "2023-01-02")
      ;; 通过ID查找更新后的任务，因为任务现在按优先级排序
      (define all-tasks-after-update (get-all-tasks))
      (define updated-task (findf (lambda (t) (= (vector-ref t 0) task-id)) all-tasks-after-update))
