@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.0.7] - 2026-01-06
+### Added
+- 重构：改进主文件中的对话框处理和代码组织 / refactor: improve dialog handling and code organization in main file
+- 重构：将构建脚本重组到 build 目录 / refactor(build): reorganize build scripts into build directory
+- 修复：将临时文件移至测试目录并修复时区处理 / fix(test): move temp files to test dir and fix timezone handling
+- 文档：改进 README 结构和内容 / docs: improve README structure and content
+
 ## [0.0.6] - 2026-01-06
 ### Fixed
 - 修复了列表名过长导致输入框和列表名重叠的问题 / Fixed issue where long list names caused input box overlap
