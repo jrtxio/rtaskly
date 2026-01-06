@@ -2,6 +2,7 @@
 
 (require rackunit
          rackunit/text-ui
+         racket/date
          db
          "../core/task.rkt"
          (prefix-in lst: "../core/list.rkt")
@@ -156,7 +157,36 @@
      (check-equal? (date-diff #f "2023-01-01") 0)
      (check-equal? (date-diff "2023-01-01" #f) 0)
      (check-equal? (date-diff "" "2023-01-01") 0)
-     (check-equal? (date-diff "2023-01-01" "") 0))))
+     (check-equal? (date-diff "2023-01-01" "") 0))
+   
+   ;; 测试相对时间命令 +1h 的正确性（修复时区问题）
+   (test-case "+1h 命令时间计算正确性测试" 
+     ;; 获取当前时间
+     (define now (current-date))
+     (define current-hour (date-hour now))
+     (define current-minute (date-minute now))
+     
+     ;; 解析 +1h 命令
+     (define plus-1h-result (parse-date-string "+1h"))
+     (check-not-false plus-1h-result)
+     
+     ;; 解析结果为日期时间格式
+     (define result-parts (string-split plus-1h-result " "))
+     (check-equal? (length result-parts) 2)
+     
+     (define time-part (second result-parts))
+     (define time-components (string-split time-part ":"))
+     (check-equal? (length time-components) 2)
+     
+     (define result-hour (string->number (first time-components)))
+     (define result-minute (string->number (second time-components)))
+     
+     ;; 验证时间计算是否正确（考虑跨小时和跨天的情况）
+     (define expected-hour (if (= current-hour 23) 0 (+ current-hour 1)))
+     (check-equal? result-hour expected-hour)
+     (check-equal? result-minute current-minute))
+   )
+  )
 
 ;; 运行测试
 (run-tests fix-verification-tests)

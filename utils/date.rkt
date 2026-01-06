@@ -137,16 +137,16 @@
     (cond
       [(string=? unit "m")
        ;; 分钟
-       (seconds->date (+ (date->seconds now) (* num 60)) #f)]
+       (seconds->date (+ (date->seconds now) (* num 60)) #t)]
       [(string=? unit "h")
        ;; 小时
-       (seconds->date (+ (date->seconds now) (* num 3600)) #f)]
+       (seconds->date (+ (date->seconds now) (* num 3600)) #t)]
       [(string=? unit "d")
        ;; 天
-       (seconds->date (+ (date->seconds now) (* num 86400)) #f)]
+       (seconds->date (+ (date->seconds now) (* num 86400)) #t)]
       [(string=? unit "w")
        ;; 周
-       (seconds->date (+ (date->seconds now) (* num 604800)) #f)]
+       (seconds->date (+ (date->seconds now) (* num 604800)) #t)]
       [(string=? unit "M")
        ;; 月
        (let* ([new-month (+ (date-month now) num)]

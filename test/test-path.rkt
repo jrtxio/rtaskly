@@ -29,7 +29,7 @@
    ;; 测试目录存在性检查和创建
    (test-case "测试目录存在性检查和创建" 
      ;; 创建临时目录路径
-     (define temp-dir-path (format "./temp-test-dir-~a" (current-inexact-milliseconds)))
+     (define temp-dir-path (format "./test/temp-test-dir-~a" (current-inexact-milliseconds)))
      
      ;; 确保目录不存在
      (when (directory-exists? temp-dir-path)
@@ -54,7 +54,7 @@
    ;; 测试 safe-file-exists? 函数
    (test-case "测试 safe-file-exists? 函数" 
      ;; 创建临时文件
-     (define temp-file-path (format "./temp-test-file-~a.txt" (current-inexact-milliseconds)))
+     (define temp-file-path (format "./test/temp-test-file-~a.txt" (current-inexact-milliseconds)))
      
      ;; 确保文件不存在
      (when (file-exists? temp-file-path)

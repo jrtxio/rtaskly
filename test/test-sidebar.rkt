@@ -32,7 +32,7 @@
    ;; 测试列表刷新功能
    (test-case "测试列表刷新功能" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./temp-test-sidebar-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./test/temp-test-sidebar-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -100,7 +100,7 @@
    ;; 测试列表管理功能的间接测试
    (test-case "测试列表管理功能" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./temp-test-sidebar-lists-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./test/temp-test-sidebar-lists-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -161,7 +161,7 @@
    ;; 测试智能列表选中状态切换
    (test-case "测试智能列表选中状态切换" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./temp-test-sidebar-selected-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./test/temp-test-sidebar-selected-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -234,7 +234,7 @@
    ;; 测试自定义列表选中状态切换
    (test-case "测试自定义列表选中状态切换" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./temp-test-sidebar-custom-selected-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./test/temp-test-sidebar-custom-selected-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -307,7 +307,7 @@
    ;; 测试多个列表之间的选中状态切换
    (test-case "测试多个列表之间的选中状态切换" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./temp-test-sidebar-multi-selected-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./test/temp-test-sidebar-multi-selected-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -404,7 +404,7 @@
    ;; 测试语言切换时智能列表按钮选中状态
    (test-case "测试语言切换时智能列表按钮选中状态" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./temp-test-sidebar-language-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./test/temp-test-sidebar-language-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
