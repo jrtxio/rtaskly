@@ -34,7 +34,7 @@ function setLanguage(lang) {
     // Update all elements with data-en and data-zh attributes
     const elements = document.querySelectorAll('[data-en][data-zh]');
     elements.forEach(element => {
-        element.textContent = element.getAttribute(`data-${lang}`);
+        element.innerHTML = element.getAttribute(`data-${lang}`);
     });
 }
 
