@@ -17,21 +17,21 @@ jobs:
         include:
           # Linux builds
           - os: linux
-            arch: x86_64
+            arch: amd64
             runner: ubuntu-latest
           - os: linux
             arch: arm64
             runner: ubuntu-latest
           # macOS builds
           - os: macos
-            arch: x86_64
+            arch: amd64
             runner: macos-latest
           - os: macos
             arch: arm64
             runner: macos-14
           # Windows builds
           - os: windows
-            arch: x86_64
+            arch: amd64
             runner: windows-latest
           - os: windows
             arch: arm64
@@ -74,7 +74,7 @@ jobs:
           
           case "$OS" in
             linux)
-              if [ "$ARCH" = "x86_64" ]; then
+              if [ "$ARCH" = "amd64" ]; then
                 raco exe -o taskly taskly.rkt
               else
                 # For ARM64, use qemu to build
@@ -122,7 +122,7 @@ jobs:
               cd ..
               ;;
             windows)
-              if [ "$ARCH" = "x86_64" ]; then
+              if [ "$ARCH" = "amd64" ]; then
                 # 使用--embed-dlls选项将DLLs嵌入到可执行文件中，减小包体积
                 # 使用--ico选项添加应用图标
                 raco exe --gui --embed-dlls --ico icons/48x48.ico -o taskly.exe taskly.rkt
