@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 获取版本号
-VERSION=$(racket get-version.rkt)
+VERSION=$(racket ./get-version.rkt)
 
 # 构建可执行文件
 case $1 in

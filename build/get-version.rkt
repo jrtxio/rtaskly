@@ -4,7 +4,7 @@
 (require syntax/parse/define)
 
 ;; 读取info.rkt文件内容
-(define info-content (port->string (open-input-file "info.rkt")))
+(define info-content (port->string (open-input-file "../info.rkt")))
 
 ;; 解析版本号
 (define (extract-version str)
