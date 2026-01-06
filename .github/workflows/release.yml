@@ -19,22 +19,13 @@ jobs:
           - os: linux
             arch: x64
             runner: ubuntu-latest
-          - os: linux
-            arch: arm64
-            runner: ubuntu-latest
           # macOS builds
           - os: macos
             arch: x64
             runner: macos-latest
-          - os: macos
-            arch: arm64
-            runner: macos-14
           # Windows builds
           - os: windows
             arch: x64
-            runner: windows-latest
-          - os: windows
-            arch: arm64
             runner: windows-latest
     
     steps:
