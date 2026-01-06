@@ -45,6 +45,7 @@ jobs:
         uses: Bogdanp/setup-racket@v1.10
         with:
           version: '8.12'
+          architecture: ${{ matrix.arch }}
       
       - name: Show environment info
         shell: bash
@@ -91,6 +92,31 @@ jobs:
               echo "Building on macOS ${{ runner.arch }}"
               raco exe -o taskly taskly.rkt
               raco distribute taskly-dist taskly
+              
+              # Install create-dmg tool
+              brew install create-dmg
+              
+              # Create application bundle structure
+              mkdir -p Taskly.app/Contents/MacOS
+              mkdir -p Taskly.app/Contents/Resources
+              
+              # Copy executable and resources
+              cp -r taskly-dist/* Taskly.app/Contents/MacOS/
+              
+              # Create DMG file
+              create-dmg \
+                --volname "Taskly" \
+                --volicon "icons/taskly.svg" \
+                --window-pos 200 120 \
+                --window-size 800 400 \
+                --icon-size 100 \
+                --icon "Taskly.app" 200 190 \
+                --hide-extension "Taskly.app" \
+                --app-drop-link 600 185 \
+                "taskly-${VERSION}-${OS}-${ARCH}.dmg" \
+                "Taskly.app" 
+              
+              # Also keep zip for backward compatibility
               cd taskly-dist
               zip -r ../taskly-${VERSION}-${OS}-${ARCH}.zip .
               cd ..
@@ -158,6 +184,7 @@ jobs:
           files: |
             taskly-*.zip
             taskly-*.tar.gz
+            taskly-*.dmg
           name: Release v${{ env.VERSION }}
           generate_release_notes: true
           body: |
