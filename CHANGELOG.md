@@ -2,9 +2,13 @@
 
 ## [Unreleased]
 
-## [0.0.4] - 2026-01-06
+## [0.0.5] - 2026-01-06
 ### Fixed
 - 修复了任务勾选完成后不会从当前列表隐藏的问题 / Fixed issue where completed tasks weren't hidden from current list
+
+## [0.0.4] - 2026-01-05
+### Fixed
+- 修复了GitHub Pages主页上中英文切换时导航栏链接不会切换的问题 / Fixed navigation links not switching language on GitHub Pages
 
 ## [0.0.3] - 2026-01-05
 ### Added

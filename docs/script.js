@@ -54,7 +54,39 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initialize time shortcut demo
     initTimeShortcutDemo();
+    
+    // Initialize mobile menu
+    initMobileMenu();
 });
+
+// Initialize mobile menu
+function initMobileMenu() {
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    const navMenu = document.querySelector('.nav-menu');
+    
+    // Toggle menu on button click
+    mobileMenuBtn.addEventListener('click', () => {
+        mobileMenuBtn.classList.toggle('active');
+        navMenu.classList.toggle('active');
+    });
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!mobileMenuBtn.contains(e.target) && !navMenu.contains(e.target)) {
+            mobileMenuBtn.classList.remove('active');
+            navMenu.classList.remove('active');
+        }
+    });
+    
+    // Close menu when clicking on a nav link
+    const navLinks = navMenu.querySelectorAll('a');
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            mobileMenuBtn.classList.remove('active');
+            navMenu.classList.remove('active');
+        });
+    });
+}
 
 // Initialize time shortcut demo
 function initTimeShortcutDemo() {
