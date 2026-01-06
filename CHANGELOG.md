@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.0.6] - 2026-01-06
+### Fixed
+- 修复了列表名过长导致输入框和列表名重叠的问题 / Fixed issue where long list names caused input box overlap
+- 修复了输入框变形的问题 / Fixed input box distortion issue
+- 优化了任务面板的布局结构 / Optimized task panel layout structure
+
 ## [0.0.5] - 2026-01-06
 ### Fixed
 - 修复了任务勾选完成后不会从当前列表隐藏的问题 / Fixed issue where completed tasks weren't hidden from current list
