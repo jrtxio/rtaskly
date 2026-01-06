@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.0.4] - 2026-01-06
+### Fixed
+- 修复了任务勾选完成后不会从当前列表隐藏的问题 / Fixed issue where completed tasks weren't hidden from current list
+
 ## [0.0.3] - 2026-01-05
 ### Added
 - 修复了macOS ARM64构建问题 / Fixed macOS ARM64 build issue

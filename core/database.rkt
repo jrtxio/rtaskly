@@ -101,7 +101,7 @@
   (define conn (current-db-connection))
   (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
                    FROM task
-                   WHERE list_id = ?
+                   WHERE list_id = ? AND is_completed = 0
                    ORDER BY due_date NULLS LAST, created_at
                    " list-id))
 

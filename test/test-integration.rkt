@@ -58,7 +58,12 @@
      
      ;; 检查任务状态
      (define updated-tasks (get-tasks-by-list test-list-id))
-     (define completed-task (findf (lambda (t) (= (task-id t) (task-id task-to-complete))) updated-tasks))
+     ;; 由于 get-tasks-by-list 现在只返回未完成的任务，完成的任务不会出现在列表中
+     (check-equal? (length updated-tasks) 2) ; 应该只剩下2个未完成的任务
+     
+     ;; 检查完成的任务是否在已完成任务列表中
+     (define completed-tasks (get-all-completed-tasks))
+     (define completed-task (findf (lambda (t) (= (task-id t) (task-id task-to-complete))) completed-tasks))
      (check-true (task-completed? completed-task))
      
      ;; 5. 测试更新任务
@@ -138,11 +143,11 @@
      ;; 4. 测试 list 视图
      (define list1-view (get-tasks-by-view "list" list1-id))
      (check-pred list? list1-view)
-     (check-equal? (length list1-view) 3) ; 列表1有3个任务
+     (check-equal? (length list1-view) 1) ; 列表1有3个任务，其中2个已完成，所以返回1个
      
      (define list2-view (get-tasks-by-view "list" list2-id))
      (check-pred list? list2-view)
-     (check-equal? (length list2-view) 2) ; 列表2有2个任务
+     (check-equal? (length list2-view) 2) ; 列表2有2个任务，都未完成
      
      ;; 5. 测试 today 视图
      (define today-view (get-tasks-by-view "today"))
