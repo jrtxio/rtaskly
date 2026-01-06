@@ -149,7 +149,10 @@
                                            (when list-name (current-list-name list-name))
                                            (current-search-keyword #f)
                                            (send task-panel update-tasks view-type list-id list-name)
-                                           (show-status-message (translate "已切换到\"~a\"视图" list-name)))]
+                                           (show-status-message (translate "已切换到\"~a\"视图" list-name))
+                                           ;; 保存当前选中的列表ID到配置文件
+                                           (when (and list-id (equal? view-type "list"))
+                                             (set-config "last-selected-list-id" (number->string list-id))))]
                          [on-task-updated (lambda ()
                                             (send task-panel update-tasks (current-view) (current-list-id) (current-list-name) (current-search-keyword)))]))
     

@@ -2,7 +2,8 @@
 
 (require (prefix-in core: "../core/list.rkt")
          (prefix-in task: "../core/task.rkt")
-         "language.rkt")
+         "language.rkt"
+         "../utils/path.rkt")
 
 ;; 侧边栏类
 (define sidebar% 
@@ -253,7 +254,49 @@
         (set! new-buttons (cons btn new-buttons)))
       
       ;; 设置列表按钮列表
-      (set! list-buttons new-buttons))
+      (set! list-buttons new-buttons)
+      
+      ;; 恢复上次选择的列表
+      (define custom-list-buttons (send lists-container get-children))
+      (when (not (null? custom-list-buttons))
+        (define last-list-id-str (get-config "last-selected-list-id"))
+        (if last-list-id-str
+            ;; 如果有上次选择的列表ID，尝试恢复
+            (let ([last-list-id (string->number last-list-id-str)])
+              ;; 查找匹配的列表
+              (define matching-list (findf (lambda (lst) (equal? (core:todo-list-id lst) last-list-id)) all-lists))
+              (if matching-list
+                  ;; 如果找到匹配的列表，选中对应的按钮
+                  (let ([matching-btn (findf (lambda (btn) 
+                                              (equal? (send btn get-label) (core:todo-list-name matching-list))
+                                              ) custom-list-buttons)])
+                    (when matching-btn
+                      (set-selected-button matching-btn 
+                                          (core:todo-list-id matching-list) 
+                                          (core:todo-list-name matching-list))
+                      (view-change-callback "list" 
+                                           (core:todo-list-id matching-list) 
+                                           (core:todo-list-name matching-list))))
+                  ;; 如果没有找到匹配的列表，选中第一个列表
+                  (let ([first-list (first all-lists)]
+                        [first-btn (first custom-list-buttons)])
+                    (set-selected-button first-btn 
+                                        (core:todo-list-id first-list) 
+                                        (core:todo-list-name first-list))
+                    (view-change-callback "list" 
+                                         (core:todo-list-id first-list) 
+                                         (core:todo-list-name first-list)))
+                  ))
+            ;; 如果没有上次选择的列表ID，选中第一个列表
+            (let ([first-list (first all-lists)]
+                  [first-btn (first custom-list-buttons)])
+              (set-selected-button first-btn 
+                                  (core:todo-list-id first-list) 
+                                  (core:todo-list-name first-list))
+              (view-change-callback "list" 
+                                   (core:todo-list-id first-list) 
+                                   (core:todo-list-name first-list))) 
+            )))
     
     ;; 初始状态：禁用所有功能
     (refresh-lists)
