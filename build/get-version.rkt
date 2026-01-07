@@ -3,8 +3,14 @@
 ;; 直接读取info.rkt文件来获取版本号
 (require syntax/parse/define)
 
+;; 获取当前脚本所在目录
+(define current-directory (path->string (current-load-relative-directory "")))
+
+;; 构建info.rkt的绝对路径
+(define info-file-path (build-path current-directory ".." "info.rkt"))
+
 ;; 读取info.rkt文件内容
-(define info-content (port->string (open-input-file "../info.rkt")))
+(define info-content (port->string (open-input-file info-file-path)))
 
 ;; 解析版本号
 (define (extract-version str)
