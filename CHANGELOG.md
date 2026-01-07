@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.0.8] - 2026-01-07
+
 ## [0.0.7] - 2026-01-06
 ### Added
 - 重构：改进主文件中的对话框处理和代码组织 / refactor: improve dialog handling and code organization in main file
