@@ -2,17 +2,18 @@
   <h1>Taskly</h1>
   <p>📝 一个使用 Racket 构建的简单直观的任务管理工具</p>
   
-  <!-- Language Switcher -->
-  <div style="margin: 16px 0; display: flex; flex-direction: row; justify-content: center; align-items: center;">
-    <a href="README.md" style="margin-right: 8px; padding: 6px 14px; color: #656d76; background-color: #f6f8fa; border: 1px solid #d0d7de; border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 14px;">English</a>
-    <a href="README.zh-CN.md" style="padding: 6px 14px; color: #24292f; background-color: #ffffff; border: 1px solid #d0d7de; border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 14px;">中文</a>
+  <!-- GitHub Badges -->
+  <div style="margin: 1rem 0;">
+    <a href="https://github.com/jrtxio/taskly/blob/main/LICENSE"><img src="https://img.shields.io/github/license/jrtxio/taskly.svg" alt="License"></a>
+    <a href="https://github.com/jrtxio/taskly/stargazers"><img src="https://img.shields.io/github/stars/jrtxio/taskly.svg?style=social" alt="GitHub Stars"></a>
+    <a href="https://github.com/jrtxio/taskly/forks"><img src="https://img.shields.io/github/forks/jrtxio/taskly.svg?style=social" alt="GitHub Forks"></a>
+    <a href="https://github.com/jrtxio/taskly"><img src="https://img.shields.io/badge/GitHub-Project-blue.svg" alt="GitHub Project"></a>
   </div>
   
-  <!-- Badges (if available) -->
-  <div style="margin: 1rem 0;">
-    <!-- Example badges, uncomment if applicable -->
-    <!-- <img src="https://img.shields.io/github/license/jrtxio/taskly.svg" alt="License"> -->
-    <!-- <img src="https://img.shields.io/github/stars/jrtxio/taskly.svg?style=social" alt="GitHub Stars"> -->
+  <!-- Language Switcher -->
+  <div style="margin: 16px 0; display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 8px;">
+    <a href="README.md" style="padding: 4px 12px; color: #656d76; background-color: #f6f8fa; border: 1px solid #d0d7de; border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.2s ease; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">English</a>
+    <a href="README.zh-CN.md" style="padding: 4px 12px; color: #24292f; background-color: #ffffff; border: 1px solid #d0d7de; border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.2s ease; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">中文</a>
   </div>
 </div>
 
