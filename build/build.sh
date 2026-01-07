@@ -44,7 +44,47 @@ case $1 in
     ;;
   "linux")
     raco exe -o taskly taskly.rkt
-    tar -czf taskly-$VERSION-linux.tar.gz taskly
+    raco distribute taskly-dist taskly
+    
+    # Create deb package structure
+    DEB_DIR="taskly-${VERSION}-linux-deb"
+    mkdir -p "${DEB_DIR}"/DEBIAN
+    mkdir -p "${DEB_DIR}"/usr/bin
+    mkdir -p "${DEB_DIR}"/usr/share/applications
+    mkdir -p "${DEB_DIR}"/usr/share/icons/hicolor/512x512/apps
+    
+    # Copy executable to bin directory
+    cp -r taskly-dist/* "${DEB_DIR}"/usr/bin/
+    
+    # Copy icon
+    cp icons/taskly.png "${DEB_DIR}"/usr/share/icons/hicolor/512x512/apps/
+    
+    # Create desktop file
+    cat > "${DEB_DIR}"/usr/share/applications/taskly.desktop << EOF
+[Desktop Entry]
+Name=Taskly
+Comment=A simple task manager built with Racket
+Exec=/usr/bin/taskly
+Icon=taskly
+Terminal=false
+Type=Application
+Categories=Utility;Office;
+EOF
+    
+    # Create control file
+    cat > "${DEB_DIR}"/DEBIAN/control << EOF
+Package=taskly
+Version=${VERSION}
+Section=utils
+Priority=optional
+Architecture=amd64
+Depends=libc6 (>= 2.34)
+Maintainer=jrtxio <jrtxio@gmail.com>
+Description=A simple and intuitive task management tool.
+EOF
+    
+    # Build deb package
+    dpkg-deb --build "${DEB_DIR}" "taskly-${VERSION}-linux.deb"
     ;;
   "all")
     # Windows (模拟)
@@ -85,7 +125,48 @@ case $1 in
     zip taskly-$VERSION-macos.zip taskly
     
     # Linux
-    tar -czf taskly-$VERSION-linux.tar.gz taskly
+    raco exe -o taskly taskly.rkt
+    raco distribute taskly-dist taskly
+    
+    # Create deb package structure
+    DEB_DIR="taskly-${VERSION}-linux-deb"
+    mkdir -p "${DEB_DIR}"/DEBIAN
+    mkdir -p "${DEB_DIR}"/usr/bin
+    mkdir -p "${DEB_DIR}"/usr/share/applications
+    mkdir -p "${DEB_DIR}"/usr/share/icons/hicolor/512x512/apps
+    
+    # Copy executable to bin directory
+    cp -r taskly-dist/* "${DEB_DIR}"/usr/bin/
+    
+    # Copy icon
+    cp icons/taskly.png "${DEB_DIR}"/usr/share/icons/hicolor/512x512/apps/
+    
+    # Create desktop file
+    cat > "${DEB_DIR}"/usr/share/applications/taskly.desktop << EOF
+[Desktop Entry]
+Name=Taskly
+Comment=A simple task manager built with Racket
+Exec=/usr/bin/taskly
+Icon=taskly
+Terminal=false
+Type=Application
+Categories=Utility;Office;
+EOF
+    
+    # Create control file
+    cat > "${DEB_DIR}"/DEBIAN/control << EOF
+Package=taskly
+Version=${VERSION}
+Section=utils
+Priority=optional
+Architecture=amd64
+Depends=libc6 (>= 2.34)
+Maintainer=jrtxio <jrtxio@gmail.com>
+Description=A simple and intuitive task management tool.
+EOF
+    
+    # Build deb package
+    dpkg-deb --build "${DEB_DIR}" "taskly-${VERSION}-linux.deb"
     ;;
   *)
     echo "Usage: $0 {windows|macos|linux|all}"

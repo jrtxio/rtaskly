@@ -74,9 +74,46 @@ jobs:
                 raco exe -o taskly taskly.rkt
               fi
               raco distribute taskly-dist taskly
-              cd taskly-dist
-              tar -czf ../taskly-${VERSION}-${OS}-${ARCH}.tar.gz .
-              cd ..
+              
+              # Create deb package structure
+              DEB_DIR="taskly-${VERSION}-${OS}-${ARCH}-deb"
+              mkdir -p "${DEB_DIR}"/DEBIAN
+              mkdir -p "${DEB_DIR}"/usr/bin
+              mkdir -p "${DEB_DIR}"/usr/share/applications
+              mkdir -p "${DEB_DIR}"/usr/share/icons/hicolor/512x512/apps
+              
+              # Copy executable to bin directory
+              cp -r taskly-dist/* "${DEB_DIR}"/usr/bin/
+              
+              # Copy icon
+              cp icons/taskly.png "${DEB_DIR}"/usr/share/icons/hicolor/512x512/apps/
+              
+              # Create desktop file
+              cat > "${DEB_DIR}"/usr/share/applications/taskly.desktop << 'EOF'
+              [Desktop Entry]
+              Name=Taskly
+              Comment=A simple task manager built with Racket
+              Exec=/usr/bin/taskly
+              Icon=taskly
+              Terminal=false
+              Type=Application
+              Categories=Utility;Office;
+              EOF
+              
+              # Create control file
+              cat > "${DEB_DIR}"/DEBIAN/control << 'EOF'
+              Package=taskly
+              Version=${VERSION}
+              Section=utils
+              Priority=optional
+              Architecture=${ARCH}
+              Depends=libc6 (>= 2.34)
+              Maintainer=jrtxio <jrtxio@gmail.com>
+              Description=A simple and intuitive task management tool.
+              EOF
+              
+              # Build deb package
+              dpkg-deb --build "${DEB_DIR}" "taskly-${VERSION}-${OS}-${ARCH}.deb"
               ;;
             macos)
               # For macOS, use the runner's architecture
@@ -148,7 +185,7 @@ jobs:
         shell: bash
         run: |
           echo "Checking build artifacts..."
-          ls -la taskly-*.zip taskly-*.tar.gz 2>/dev/null || echo "No artifacts found"
+          ls -la taskly-*.zip taskly-*.deb 2>/dev/null || echo "No artifacts found"
       
       - name: Get CHANGELOG content
         id: get_changelog
@@ -174,7 +211,7 @@ jobs:
         with:
           files: |
             taskly-*.zip
-            taskly-*.tar.gz
+            taskly-*.deb
           name: Release v${{ env.VERSION }}
           generate_release_notes: true
           body: |
