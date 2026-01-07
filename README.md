@@ -3,9 +3,9 @@
   <p>📝 A Simple and Intuitive Task Manager Built with Racket</p>
   
   <!-- Language Switcher -->
-  <div style="margin: 1rem 0;">
-    <a href="README.md" style="padding: 0.5rem 1rem; background: #f3f4f6; color: #374151; text-decoration: none; border-radius: 4px 0 0 4px; font-weight: 600;">English</a>
-    <a href="README.zh-CN.md" style="padding: 0.5rem 1rem; background: #e5e7eb; color: #6b7280; text-decoration: none; border-radius: 0 4px 4px 0; font-weight: 600;">中文</a>
+  <div style="margin: 1rem 0; display: flex; gap: 0.5rem;">
+    <a href="README.md" style="padding: 0.375rem 0.875rem; color: #24292f; background-color: #ffffff; border: 1px solid #d0d7de; border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 0.875rem; transition: all 0.2s ease-in-out;">English</a>
+    <a href="README.zh-CN.md" style="padding: 0.375rem 0.875rem; color: #656d76; background-color: #f6f8fa; border: 1px solid #d0d7de; border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 0.875rem; transition: all 0.2s ease-in-out;">中文</a>
   </div>
   
   <!-- Badges (if available) -->
