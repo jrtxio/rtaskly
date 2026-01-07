@@ -15,7 +15,7 @@
   (define result
     (with-output-to-string
       (lambda ()
-        (system (format "racket ./test/~a" file)))))  ; 修复路径
+        (system (format "racket ./tests/~a" file)))))  ; 修复路径
   (define end-time (current-inexact-milliseconds))
   (define duration (- end-time start-time))
   
@@ -76,7 +76,7 @@
   (show-summary results)
   
   ;; 清理临时文件（修复路径）
-  (system "racket ./test/cleanup-temp-files.rkt"))
+  (system "racket ./tests/cleanup-temp-files.rkt"))
 
 ;; 运行主函数
 (main)

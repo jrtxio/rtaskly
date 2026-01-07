@@ -11,7 +11,7 @@
 (define (cleanup-temp-files)
   (displayln "\n=== 清理临时文件 ===")
   
-  (define test-dir "./test")
+  (define test-dir "./tests")
   (define root-dir "./")
   (define cleaned-count 0)
   

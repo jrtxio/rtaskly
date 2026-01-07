@@ -106,7 +106,7 @@ Taskly 采用模块化架构，职责分明：
   - `date.rkt`：日期和时间处理，包括智能快捷方式解析
   - `path.rkt`：文件路径管理和数据库文件处理
   
-- **test/**：全面的测试套件
+- **tests/**：全面的测试套件
   - 核心功能的单元测试
   - 端到端工作流的集成测试
   - 边缘情况测试
@@ -152,11 +152,11 @@ Taskly 具有全面的测试套件，确保功能按预期工作：
 
 ```bash
 # 运行所有测试
-racket test/run-all-tests.rkt
+racket tests/run-all-tests.rkt
 
 # 运行特定测试文件
-racket test/test-task.rkt
-racket test/test-list.rkt
+racket tests/test-task.rkt
+racket tests/test-list.rkt
 ```
 
 ### 代码结构

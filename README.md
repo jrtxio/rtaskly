@@ -106,7 +106,7 @@ Taskly follows a modular architecture with clear separation of concerns:
   - `date.rkt`: Date and time handling, including smart shortcut parsing
   - `path.rkt`: File path management and database file handling
   
-- **test/**: Comprehensive test suite
+- **tests/**: Comprehensive test suite
   - Unit tests for core functionality
   - Integration tests for end-to-end workflows
   - Edge case testing
@@ -152,11 +152,11 @@ Taskly has a comprehensive test suite to ensure functionality works as expected:
 
 ```bash
 # Run all tests
-racket test/run-all-tests.rkt
+racket tests/run-all-tests.rkt
 
 # Run specific test files
-racket test/test-task.rkt
-racket test/test-list.rkt
+racket tests/test-task.rkt
+racket tests/test-list.rkt
 ```
 
 ### Code Structure

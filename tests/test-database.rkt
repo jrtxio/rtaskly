@@ -14,7 +14,7 @@
    ;; 测试数据库连接和初始化
    (test-case "测试数据库连接和初始化" 
      ;; 创建唯一的临时数据库文件，使用更精确的时间戳
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -41,7 +41,7 @@
    ;; 测试数据库关闭后的操作
    (test-case "测试数据库关闭后的操作" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -61,7 +61,7 @@
    ;; 测试列表相关数据库操作
    (test-case "测试列表相关数据库操作" 
      ;; 创建唯一的临时数据库文件，使用更精确的时间戳
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -104,7 +104,7 @@
    ;; 测试任务相关数据库操作
    (test-case "测试任务相关数据库操作" 
      ;; 创建唯一的临时数据库文件，使用更精确的时间戳
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -175,7 +175,7 @@
    ;; 测试事务处理
    (test-case "测试事务处理" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -217,7 +217,7 @@
    ;; 测试并发访问
    (test-case "测试并发访问" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)

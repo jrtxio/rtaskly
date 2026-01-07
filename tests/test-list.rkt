@@ -14,7 +14,7 @@
    ;; 测试列表管理功能
    (test-case "测试列表管理功能" 
      ;; 创建唯一的临时数据库文件，使用更精确的时间戳
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -78,7 +78,7 @@
    ;; 测试空列表情况
    (test-case "测试空列表情况" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -119,7 +119,7 @@
    ;; 测试级联删除
    (test-case "测试级联删除" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)

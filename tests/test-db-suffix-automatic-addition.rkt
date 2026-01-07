@@ -35,16 +35,16 @@
      (check-equal? result3 (string->path "test-db.txt.db"))
      
      ;; 测试用例：包含路径的情况
-     (define test-path4 (string->path "./test/test-db"))
+     (define test-path4 (string->path "./tests/test-db"))
      (define result4 (if (equal? #".db" (path-get-extension test-path4))
                         test-path4
                         (path-add-extension test-path4 #".db")))
-     (check-equal? result4 (string->path "./test/test-db.db")))
+     (check-equal? result4 (string->path "./tests/test-db.db")))
    
    ;; 测试2：测试connect-to-database函数不会输出到命令行
    (test-case "测试connect-to-database函数不会输出到命令行" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-suffix-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-suffix-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -68,7 +68,7 @@
      ;; 创建唯一的临时数据库文件路径，不包含.db后缀
      ;; 使用整数时间戳避免文件名中的小数点问题
      (define timestamp (exact-truncate (current-inexact-milliseconds)))
-     (define temp-db-path-no-suffix (format "./test/temp-full-test-~a" timestamp))
+     (define temp-db-path-no-suffix (format "./tests/temp-full-test-~a" timestamp))
      
      ;; 测试直接连接到没有后缀的路径（模拟GUI中的自动添加后缀逻辑）
      (define path (string->path temp-db-path-no-suffix))
@@ -99,13 +99,13 @@
      (define test-cases
        (list
         ;; 输入路径，预期输出路径
-        (list (format "./test/test-db1-~a" timestamp) (format "./test/test-db1-~a.db" timestamp))
-        (list (format "./test/test-db2-~a.db" timestamp) (format "./test/test-db2-~a.db" timestamp))
-        (list (format "./test/subdir/test-db3-~a" timestamp) (format "./test/subdir/test-db3-~a.db" timestamp))
-        (list (format "./test/subdir/test-db4-~a.db" timestamp) (format "./test/subdir/test-db4-~a.db" timestamp))))
+        (list (format "./tests/test-db1-~a" timestamp) (format "./tests/test-db1-~a.db" timestamp))
+        (list (format "./tests/test-db2-~a.db" timestamp) (format "./tests/test-db2-~a.db" timestamp))
+        (list (format "./tests/subdir/test-db3-~a" timestamp) (format "./tests/subdir/test-db3-~a.db" timestamp))
+        (list (format "./tests/subdir/test-db4-~a.db" timestamp) (format "./tests/subdir/test-db4-~a.db" timestamp))))
      
      ;; 创建测试子目录
-     (define test-subdir "./test/subdir")
+     (define test-subdir "./tests/subdir")
      (unless (directory-exists? test-subdir)
        (make-directory test-subdir))
      

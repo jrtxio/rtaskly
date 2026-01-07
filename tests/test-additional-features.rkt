@@ -17,7 +17,7 @@
    ;; 测试任务搜索功能
    (test-case "测试任务搜索功能" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -68,7 +68,7 @@
    ;; 测试任务创建时间功能（增强版）
    (test-case "测试任务创建时间功能增强版" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -119,7 +119,7 @@
    ;; 测试任务分组功能（增强版）
    (test-case "测试任务分组功能增强版" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -175,7 +175,7 @@
    ;; 测试列表操作的边界情况
    (test-case "测试列表操作的边界情况" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -258,7 +258,7 @@
      (check-pred string? abs-path-parent)
      
      ;; 测试get-filename函数
-     (check-equal? (get-filename "./test/file.txt") "file.txt")
+     (check-equal? (get-filename "./tests/file.txt") "file.txt")
      (check-equal? (get-filename "/home/user/file.txt") "file.txt")
      (check-equal? (get-filename "file.txt") "file.txt")
      )
@@ -266,7 +266,7 @@
    ;; 测试任务优先级功能（如果有）
    (test-case "测试任务优先级功能" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)

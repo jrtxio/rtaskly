@@ -17,7 +17,7 @@
    ;; 测试任务搜索功能的边界情况
    (test-case "测试任务搜索功能的边界情况" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -69,7 +69,7 @@
    ;; 测试任务分组功能的边界情况
    (test-case "测试任务分组功能的边界情况" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -144,7 +144,7 @@
      (check-pred string? (get-absolute-path "./test")) ; 相对路径
      
      ;; 测试get-filename函数
-     (check-equal? (get-filename "./test/file.txt") "file.txt")
+     (check-equal? (get-filename "./tests/file.txt") "file.txt")
      (check-equal? (get-filename "/home/user/file.txt") "file.txt")
      (check-equal? (get-filename "file.txt") "file.txt")
      )
@@ -152,7 +152,7 @@
    ;; 测试任务操作的边界情况
    (test-case "测试任务操作的边界情况" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -204,7 +204,7 @@
    ;; 测试列表操作的边界情况
    (test-case "测试列表操作的边界情况" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -240,7 +240,7 @@
    ;; 测试数据库操作的边界情况
    (test-case "测试数据库操作的边界情况" 
      ;; 测试连接到不存在的目录
-     (define invalid-db-path "./test/不存在的目录/temp.db")
+     (define invalid-db-path "./tests/不存在的目录/temp.db")
      (check-exn exn:fail? (lambda () (db:connect-to-database invalid-db-path))) ; 应该抛出异常
      
      ;; 测试关闭未连接的数据库
@@ -250,7 +250,7 @@
    ;; 测试任务视图功能的边界情况
    (test-case "测试任务视图功能的边界情况" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)

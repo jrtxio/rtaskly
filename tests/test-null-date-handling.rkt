@@ -31,7 +31,7 @@
    ;; 测试没有截止日期的任务生命周期
    (test-case "测试没有截止日期的任务生命周期"
      ;; 创建唯一的临时数据库文件，使用更精确的时间戳
-     (define temp-db-path (format "./test/temp-null-date-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-null-date-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -91,7 +91,7 @@
    ;; 测试同时处理有截止日期和无截止日期的任务
    (test-case "测试同时处理有截止日期和无截止日期的任务"
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-mixed-dates-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-mixed-dates-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)

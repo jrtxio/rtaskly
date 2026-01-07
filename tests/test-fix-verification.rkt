@@ -17,7 +17,7 @@
    ;; 测试没有截止日期的任务可以正常编辑和删除
    (test-case "没有截止日期的任务可以正常编辑和删除" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-fix-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-fix-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -68,7 +68,7 @@
    ;; 测试多个无截止日期任务的处理
    (test-case "测试多个无截止日期任务的处理" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-multiple-fix-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-multiple-fix-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)

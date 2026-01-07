@@ -15,7 +15,7 @@
    ;; 测试列表和任务的综合操作
    (test-case "测试列表和任务的综合操作" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -90,7 +90,7 @@
    ;; 测试不同视图下的任务获取
    (test-case "测试不同视图下的任务获取" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -161,7 +161,7 @@
    ;; 测试任务状态转换流程
    (test-case "测试任务状态转换流程" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -244,7 +244,7 @@
    ;; 测试任务分组功能
    (test-case "测试任务分组功能" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -302,7 +302,7 @@
    ;; 测试空日期任务的完整生命周期
    (test-case "测试空日期任务的完整生命周期" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-null-date-integration-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-null-date-integration-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)

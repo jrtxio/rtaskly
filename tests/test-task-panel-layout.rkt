@@ -74,7 +74,7 @@
    ;; 测试列表名过长时的布局
    (test-case "测试列表名过长时的布局" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-task-panel-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-task-panel-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)
@@ -138,7 +138,7 @@
    ;; 测试不同视图下的布局
    (test-case "测试不同视图下的布局" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./test/temp-test-task-panel-views-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./tests/temp-test-task-panel-views-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)

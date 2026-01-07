@@ -47,7 +47,7 @@ jobs:
           echo "Matrix OS: ${{ matrix.os }}"
       
       - name: Run tests
-        run: racket ./test/run-all-tests.rkt
+        run: racket ./tests/run-all-tests.rkt
       
       - name: Get version
         id: get_version

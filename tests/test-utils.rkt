@@ -5,7 +5,7 @@
 
 ;; 创建唯一的临时数据库文件
 (define (create-temp-db-path [prefix "temp-test"]) 
-  (format "./test/~a-~a.db" prefix (current-inexact-milliseconds)))
+  (format "./tests/~a-~a.db" prefix (current-inexact-milliseconds)))
 
 ;; 确保临时文件不存在
 (define (ensure-file-not-exists file-path)
