@@ -1,7 +1,7 @@
 #lang info
 
 (define name "taskly")
-(define version "0.0.13")
+(define version "0.0.14")
 (define license 'MIT)
 (define author "jrtxio")
 (define homepage "https://github.com/jrtxio/taskly")

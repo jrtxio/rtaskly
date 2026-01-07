@@ -96,6 +96,11 @@ jobs:
               
               # Build deb package
               dpkg-deb --build "${DEB_DIR}" "taskly-${VERSION}-${OS}-${ARCH}.deb"
+              
+              # Compress deb file into ZIP for consistent distribution across platforms
+              zip -r "taskly-${VERSION}-${OS}-${ARCH}.zip" "taskly-${VERSION}-${OS}-${ARCH}.deb"
+              # Remove the standalone deb file, only keep the ZIP package
+              rm "taskly-${VERSION}-${OS}-${ARCH}.deb"
               ;;
             macos)
               # For macOS, use the runner's architecture

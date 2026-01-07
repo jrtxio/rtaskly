@@ -67,6 +67,11 @@ case $1 in
     
     # Build deb package
     dpkg-deb --build "${DEB_DIR}" "taskly-${VERSION}-linux.deb"
+    
+    # Compress deb file into ZIP for consistent distribution across platforms
+    zip -r "taskly-${VERSION}-linux.zip" "taskly-${VERSION}-linux.deb"
+    # Remove the standalone deb file, only keep the ZIP package
+    rm "taskly-${VERSION}-linux.deb"
     ;;
   "all")
     # Windows (模拟)
@@ -131,6 +136,11 @@ case $1 in
     
     # Build deb package
     dpkg-deb --build "${DEB_DIR}" "taskly-${VERSION}-linux.deb"
+    
+    # Compress deb file into ZIP for consistent distribution across platforms
+    zip -r "taskly-${VERSION}-linux.zip" "taskly-${VERSION}-linux.deb"
+    # Remove the standalone deb file, only keep the ZIP package
+    rm "taskly-${VERSION}-linux.deb"
     ;;
   *)
     echo "Usage: $0 {windows|macos|linux|all}"

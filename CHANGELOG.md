@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.0.14] - 2026-01-07
+### Changed
+- 为Linux平台添加了压缩步骤，将deb包压缩成ZIP格式，与macOS和Windows平台保持一致
+
 ## [0.0.13] - 2026-01-07
 ### Fixed
 - 修复了DEBIAN/control文件中的变量展开问题，将单引号改为双引号
