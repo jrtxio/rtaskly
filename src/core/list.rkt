@@ -1,6 +1,19 @@
 #lang racket
 
+;; 列表核心模块，定义列表结构体和列表操作函数
+;; 包含列表查询、添加、更新、删除等功能
+
 (require (prefix-in db: "database.rkt"))
+
+(provide (struct-out todo-list)
+         row->todo-list
+         rows->todo-lists
+         get-all-lists
+         get-list-by-id
+         add-list
+         update-list
+         delete-list
+         get-default-list)
 
 ;; 列表结构体定义
 (struct todo-list (id name) #:transparent)
@@ -49,13 +62,3 @@
   (if (not (empty? all-lists))
       (first all-lists)
       #f))
-
-(provide (struct-out todo-list)
-         row->todo-list
-         rows->todo-lists
-         get-all-lists
-         get-list-by-id
-         add-list
-         update-list
-         delete-list
-         get-default-list)

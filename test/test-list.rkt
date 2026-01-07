@@ -3,8 +3,8 @@
 (require rackunit
          rackunit/text-ui
          db
-         "../core/list.rkt"
-         (prefix-in db: "../core/database.rkt"))
+         "../src/core/list.rkt"
+         (prefix-in db: "../src/core/database.rkt"))
 
 ;; 定义测试套件
 (define list-tests

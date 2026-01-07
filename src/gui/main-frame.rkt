@@ -1,11 +1,16 @@
 #lang racket/gui
 
+;; 主窗口模块，定义应用程序的主框架
+;; 包含菜单栏、侧边栏、任务面板和状态栏
+
 (require "sidebar.rkt"
          "task-panel.rkt"
          "language.rkt"
          "dialogs.rkt"
          "../core/database.rkt"
          "../utils/path.rkt")
+
+(provide main-frame%)
 
 ;; 主窗口类
 (define main-frame% 
@@ -396,5 +401,3 @@
                 (send status-message set-label (translate "就绪")))))
     
     (void)))
-
-(provide main-frame%)

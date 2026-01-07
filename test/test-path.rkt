@@ -2,7 +2,7 @@
 
 (require rackunit
          rackunit/text-ui
-         "../utils/path.rkt"
+         "../src/utils/path.rkt"
          racket/path
          racket/file)
 

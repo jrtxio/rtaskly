@@ -1,6 +1,6 @@
 #lang racket
 
-(require "../utils/date.rkt")
+(require "../src/utils/date.rkt")
 
 ;; 测试函数：测试 parse-date-string 和 format-date-for-display
 (define (test-smart-time)

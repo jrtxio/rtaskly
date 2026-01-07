@@ -3,11 +3,11 @@
 (require rackunit
          rackunit/text-ui
          db
-         "../core/task.rkt"
-         "../core/list.rkt"
-         (prefix-in db: "../core/database.rkt")
-         "../utils/date.rkt"
-         "../utils/path.rkt")
+         "../src/core/task.rkt"
+         "../src/core/list.rkt"
+         (prefix-in db: "../src/core/database.rkt")
+         "../src/utils/date.rkt"
+         "../src/utils/path.rkt")
 
 ;; 定义测试套件
 (define additional-features-tests

@@ -2,10 +2,10 @@
 
 (require rackunit
          rackunit/text-ui
-         "../core/list.rkt"
-         "../core/task.rkt"
-         (prefix-in db: "../core/database.rkt")
-         "../utils/date.rkt")
+         "../src/core/list.rkt"
+         "../src/core/task.rkt"
+         (prefix-in db: "../src/core/database.rkt")
+         "../src/utils/date.rkt")
 
 ;; 定义测试套件
 (define integration-tests

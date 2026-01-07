@@ -1,10 +1,30 @@
 #lang racket
 
+;; 任务核心模块，定义任务结构体和任务操作函数
+;; 包含任务查询、添加、编辑、删除等功能
+
 (require db
          (only-in db sql-null?)
          (prefix-in db: "database.rkt")
          (prefix-in lst: "list.rkt")
          "../utils/date.rkt")
+
+(provide (struct-out task)
+         row->task
+         rows->tasks
+         get-all-tasks
+         get-tasks-by-list
+         get-today-tasks
+         get-planned-tasks
+         get-all-incomplete-tasks
+         get-all-completed-tasks
+         search-tasks
+         add-task
+         edit-task
+         toggle-task-completed
+         delete-task
+         get-tasks-by-view
+         group-tasks-by-list)
 
 ;; 任务结构体定义
 (struct task (id list-id text due-date completed? created-at list-name) #:transparent)
@@ -104,20 +124,3 @@
   
   ;; 转换为有序列表
   (hash->list groups))
-
-(provide (struct-out task)
-         row->task
-         rows->tasks
-         get-all-tasks
-         get-tasks-by-list
-         get-today-tasks
-         get-planned-tasks
-         get-all-incomplete-tasks
-         get-all-completed-tasks
-         search-tasks
-         add-task
-         edit-task
-         toggle-task-completed
-         delete-task
-         get-tasks-by-view
-         group-tasks-by-list)

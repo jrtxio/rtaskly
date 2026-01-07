@@ -1,6 +1,30 @@
 #lang racket
 
+;; 数据库核心模块，处理数据库连接和底层数据操作
+;; 包含数据库连接、关闭、初始化以及任务和列表的CRUD操作
+
 (require db)
+
+(provide connect-to-database
+         close-database
+         get-all-lists
+         add-list
+         update-list
+         delete-list
+         get-list-name
+         get-all-tasks
+         get-tasks-by-list
+         get-incomplete-tasks
+         get-completed-tasks
+         get-today-tasks
+         get-planned-tasks
+         add-task
+         update-task
+         toggle-task-completed
+         delete-task
+         search-tasks
+         current-db-connection
+         current-db-path)
 
 ;; 全局数据库连接参数
 (define current-db-connection (make-parameter #f))
@@ -178,24 +202,3 @@
                    WHERE task_text LIKE ?
                    ORDER BY due_date NULLS LAST, created_at
                    " (string-append "%" keyword "%")))
-
-(provide connect-to-database
-         close-database
-         get-all-lists
-         add-list
-         update-list
-         delete-list
-         get-list-name
-         get-all-tasks
-         get-tasks-by-list
-         get-incomplete-tasks
-         get-completed-tasks
-         get-today-tasks
-         get-planned-tasks
-         add-task
-         update-task
-         toggle-task-completed
-         delete-task
-         search-tasks
-         current-db-connection
-         current-db-path)

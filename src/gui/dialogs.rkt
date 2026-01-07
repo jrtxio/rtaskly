@@ -1,10 +1,16 @@
 #lang racket/gui
 
+;; 对话框模块，定义各种任务和列表操作的对话框
+;; 包含添加任务、编辑任务等对话框
+
 (require racket/gui/base
          (prefix-in task: "../core/task.rkt")
          (prefix-in core: "../core/list.rkt")
          (prefix-in date: "../utils/date.rkt")
          "language.rkt")
+
+(provide show-add-task-dialog
+         show-edit-task-dialog)
 
 ;; 添加任务对话框
 (define (show-add-task-dialog [list-id #f] [list-name #f] [callback (lambda () (void))])
@@ -187,6 +193,3 @@
   
   (send text-field focus)
   (send dialog show #t))
-
-(provide show-add-task-dialog
-         show-edit-task-dialog)

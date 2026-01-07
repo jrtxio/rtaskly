@@ -1,9 +1,14 @@
 #lang racket/gui
 
+;; 侧边栏模块，定义应用程序的侧边导航栏
+;; 包含智能列表按钮和自定义列表管理功能
+
 (require (prefix-in core: "../core/list.rkt")
          (prefix-in task: "../core/task.rkt")
          "language.rkt"
          "../utils/path.rkt")
+
+(provide sidebar%)
 
 ;; 侧边栏类
 (define sidebar% 
@@ -319,5 +324,3 @@
       current-selected-original-label)
     
     (void)))
-
-(provide sidebar%)

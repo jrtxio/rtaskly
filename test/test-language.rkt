@@ -2,7 +2,7 @@
 
 (require rackunit
          rackunit/text-ui
-         "../gui/language.rkt")
+         "../src/gui/language.rkt")
 
 ;; 定义测试套件
 (define language-tests

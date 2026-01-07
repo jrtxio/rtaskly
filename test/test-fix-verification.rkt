@@ -4,10 +4,10 @@
          rackunit/text-ui
          racket/date
          db
-         "../core/task.rkt"
-         (prefix-in lst: "../core/list.rkt")
-         (prefix-in db: "../core/database.rkt")
-         "../utils/date.rkt")
+         "../src/core/task.rkt"
+         (prefix-in lst: "../src/core/list.rkt")
+         (prefix-in db: "../src/core/database.rkt")
+         "../src/utils/date.rkt")
 
 ;; 定义测试套件
 (define fix-verification-tests

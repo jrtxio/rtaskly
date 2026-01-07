@@ -3,8 +3,8 @@
 (require rackunit
          rackunit/text-ui
          db
-         "../core/database.rkt"
-         "../utils/date.rkt")
+         "../src/core/database.rkt"
+         "../src/utils/date.rkt")
 
 ;; 定义测试套件
 (define database-tests

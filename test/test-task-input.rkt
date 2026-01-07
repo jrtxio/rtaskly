@@ -2,8 +2,8 @@
 
 (require rackunit
          rackunit/text-ui
-         "../gui/task-panel.rkt"
-         "../utils/date.rkt")
+         "../src/gui/task-panel.rkt"
+         "../src/utils/date.rkt")
 
 ;; 定义测试套件
 (define task-input-tests

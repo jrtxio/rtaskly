@@ -3,11 +3,11 @@
 (require rackunit
          rackunit/text-ui
          db
-         "../gui/task-panel.rkt"
-         "../gui/sidebar.rkt"
-         (prefix-in core: "../core/list.rkt")
-         (prefix-in db: "../core/database.rkt")
-         (prefix-in lang: "../gui/language.rkt"))
+         "../src/gui/task-panel.rkt"
+         "../src/gui/sidebar.rkt"
+         (prefix-in core: "../src/core/list.rkt")
+         (prefix-in db: "../src/core/database.rkt")
+         (prefix-in lang: "../src/gui/language.rkt"))
 
 ;; 定义测试套件
 (define task-panel-layout-tests
