@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.0.9] - 2026-01-07
+
 ## [0.0.8] - 2026-01-07
 ### Fixed
 - 修复了 GitHub 构建过程中 get-version.rkt 脚本的路径错误 / Fixed path error in get-version.rkt script during GitHub builds
