@@ -63,7 +63,7 @@ case $1 in
     printf '[Desktop Entry]\nName=Taskly\nComment=A simple task manager built with Racket\nExec=/usr/bin/taskly\nIcon=taskly\nTerminal=false\nType=Application\nCategories=Utility;Office;\n' > "${DEB_DIR}"/usr/share/applications/taskly.desktop
     
     # Create control file
-    printf 'Package=taskly\nVersion=${VERSION}\nSection=utils\nPriority=optional\nArchitecture=amd64\nDepends=libc6 (>= 2.34)\nMaintainer=jrtxio <jrtxio@gmail.com>\nDescription=A simple and intuitive task management tool.\n' > "${DEB_DIR}"/DEBIAN/control
+    printf 'Package: taskly\nVersion: ${VERSION}\nSection: utils\nPriority: optional\nArchitecture: amd64\nDepends: libc6 (>= 2.34)\nMaintainer: jrtxio <jrtxio@gmail.com>\nDescription: A simple and intuitive task management tool.\n' > "${DEB_DIR}"/DEBIAN/control
     
     # Build deb package
     dpkg-deb --build "${DEB_DIR}" "taskly-${VERSION}-linux.deb"
@@ -127,7 +127,7 @@ case $1 in
     printf '[Desktop Entry]\nName=Taskly\nComment=A simple task manager built with Racket\nExec=/usr/bin/taskly\nIcon=taskly\nTerminal=false\nType=Application\nCategories=Utility;Office;\n' > "${DEB_DIR}"/usr/share/applications/taskly.desktop
     
     # Create control file
-    printf 'Package=taskly\nVersion=${VERSION}\nSection=utils\nPriority=optional\nArchitecture=amd64\nDepends=libc6 (>= 2.34)\nMaintainer=jrtxio <jrtxio@gmail.com>\nDescription=A simple and intuitive task management tool.\n' > "${DEB_DIR}"/DEBIAN/control
+    printf 'Package: taskly\nVersion: ${VERSION}\nSection: utils\nPriority: optional\nArchitecture: amd64\nDepends: libc6 (>= 2.34)\nMaintainer: jrtxio <jrtxio@gmail.com>\nDescription: A simple and intuitive task management tool.\n' > "${DEB_DIR}"/DEBIAN/control
     
     # Build deb package
     dpkg-deb --build "${DEB_DIR}" "taskly-${VERSION}-linux.deb"

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.0.12] - 2026-01-07
+### Fixed
+- 修复了DEBIAN/control文件的字段格式，将等号(=)改为冒号(:)
+
 ## [0.0.11] - 2026-01-07
 ### Fixed
 - 修复了GitHub Actions构建脚本中的here-document语法错误
