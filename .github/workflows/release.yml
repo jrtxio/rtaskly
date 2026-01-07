@@ -89,28 +89,10 @@ jobs:
               cp icons/taskly.png "${DEB_DIR}"/usr/share/icons/hicolor/512x512/apps/
               
               # Create desktop file
-              cat > "${DEB_DIR}"/usr/share/applications/taskly.desktop << 'EOF'
-              [Desktop Entry]
-              Name=Taskly
-              Comment=A simple task manager built with Racket
-              Exec=/usr/bin/taskly
-              Icon=taskly
-              Terminal=false
-              Type=Application
-              Categories=Utility;Office;
-              EOF
+              printf '[Desktop Entry]\nName=Taskly\nComment=A simple task manager built with Racket\nExec=/usr/bin/taskly\nIcon=taskly\nTerminal=false\nType=Application\nCategories=Utility;Office;\n' > "${DEB_DIR}"/usr/share/applications/taskly.desktop
               
               # Create control file
-              cat > "${DEB_DIR}"/DEBIAN/control << 'EOF'
-              Package=taskly
-              Version=${VERSION}
-              Section=utils
-              Priority=optional
-              Architecture=${ARCH}
-              Depends=libc6 (>= 2.34)
-              Maintainer=jrtxio <jrtxio@gmail.com>
-              Description=A simple and intuitive task management tool.
-              EOF
+              printf 'Package=taskly\nVersion=${VERSION}\nSection=utils\nPriority=optional\nArchitecture=${ARCH}\nDepends=libc6 (>= 2.34)\nMaintainer=jrtxio <jrtxio@gmail.com>\nDescription=A simple and intuitive task management tool.\n' > "${DEB_DIR}"/DEBIAN/control
               
               # Build deb package
               dpkg-deb --build "${DEB_DIR}" "taskly-${VERSION}-${OS}-${ARCH}.deb"

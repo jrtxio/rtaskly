@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [0.0.11] - 2026-01-07
+### Fixed
+- 修复了GitHub Actions构建脚本中的here-document语法错误
+- 修复了构建脚本中的文件创建方式，使用printf替代cat命令
+
 ## [0.0.10] - 2026-01-07
 ### Changed
 - 将Linux版本打包格式从tar.gz改为deb格式 / Changed Linux packaging format from tar.gz to deb
