@@ -11,9 +11,9 @@
   </div>
   
   <!-- Language Switcher -->
-  <div style="margin: 16px 0; display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 8px;">
-    <a href="README.md" style="padding: 4px 12px; color: #656d76; background-color: #f6f8fa; border: 1px solid #d0d7de; border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.2s ease; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">English</a>
-    <a href="README.zh-CN.md" style="padding: 4px 12px; color: #24292f; background-color: #ffffff; border: 1px solid #d0d7de; border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.2s ease; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">中文</a>
+  <div style="margin: 16px 0; display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 0px;">
+    <a href="README.md" style="padding: 4px 12px; color: #374151; background-color: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px 0 0 4px; text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.2s ease; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; border-right: none;">Language English</a>
+    <a href="README.zh-CN.md" style="padding: 4px 12px; color: white; background-color: #2563eb; border: 1px solid #1d4ed8; border-radius: 0 4px 4px 0; text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.2s ease; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">语言 中文</a>
   </div>
 </div>
 
