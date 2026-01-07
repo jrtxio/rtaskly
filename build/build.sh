@@ -6,11 +6,11 @@ VERSION=$(racket ./build/get-version.rkt)
 # 构建可执行文件
 case $1 in
   "windows")
-    raco exe -o taskly.exe taskly.rkt
+    raco exe -o taskly.exe src/taskly.rkt
     zip taskly-$VERSION-windows.zip taskly.exe
     ;;
   "macos")
-    raco exe -o taskly taskly.rkt
+    raco exe -o taskly src/taskly.rkt
     raco distribute taskly-dist taskly
     
     # Check if create-dmg is installed, if not, install it
@@ -43,7 +43,7 @@ case $1 in
     zip taskly-$VERSION-macos.zip taskly
     ;;
   "linux")
-    raco exe -o taskly taskly.rkt
+    raco exe -o taskly src/taskly.rkt
     raco distribute taskly-dist taskly
     
     # Create deb package structure
@@ -75,11 +75,11 @@ case $1 in
     ;;
   "all")
     # Windows (模拟)
-    raco exe -o taskly.exe taskly.rkt
+    raco exe -o taskly.exe src/taskly.rkt
     zip taskly-$VERSION-windows.zip taskly.exe
     
     # macOS
-    raco exe -o taskly taskly.rkt
+    raco exe -o taskly src/taskly.rkt
     raco distribute taskly-dist taskly
     
     # Check if create-dmg is installed, if not, install it
@@ -112,7 +112,7 @@ case $1 in
     zip taskly-$VERSION-macos.zip taskly
     
     # Linux
-    raco exe -o taskly taskly.rkt
+    raco exe -o taskly src/taskly.rkt
     raco distribute taskly-dist taskly
     
     # Create deb package structure

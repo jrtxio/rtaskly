@@ -82,7 +82,7 @@ Taskly 是一个使用 Racket 构建的简单直观的任务管理工具。它�
 ### 运行应用
 
 ```bash
-racket taskly.rkt
+racket src/taskly.rkt
 ```
 
 ## 技术架构

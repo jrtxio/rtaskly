@@ -5,9 +5,9 @@
 
 (require racket
          racket/gui/base
-         "src/core/database.rkt"
-         "src/gui/main-frame.rkt"
-         "src/utils/path.rkt")
+         "core/database.rkt"
+         "gui/main-frame.rkt"
+         "utils/path.rkt")
 
 ;; 全局应用状态
 (define app-frame #f)
