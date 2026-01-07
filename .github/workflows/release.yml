@@ -107,10 +107,10 @@ jobs:
                 "taskly-${VERSION}-${OS}-${ARCH}.dmg" \
                 "Taskly.app" 
               
-              # Also keep zip for backward compatibility
-              cd taskly-dist
-              zip -r ../taskly-${VERSION}-${OS}-${ARCH}.zip .
-              cd ..
+              # Compress DMG file into ZIP for consistent distribution across platforms
+              zip -r "taskly-${VERSION}-${OS}-${ARCH}.zip" "taskly-${VERSION}-${OS}-${ARCH}.dmg"
+              # Remove the standalone DMG file, only keep the ZIP package
+              rm "taskly-${VERSION}-${OS}-${ARCH}.dmg"
               ;;
             windows)
               if [ "$ARCH" = "x64" ]; then
@@ -175,7 +175,6 @@ jobs:
           files: |
             taskly-*.zip
             taskly-*.tar.gz
-            taskly-*.dmg
           name: Release v${{ env.VERSION }}
           generate_release_notes: true
           body: |
