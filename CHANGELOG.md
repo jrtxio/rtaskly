@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.0.10] - 2026-01-07
+### Changed
+- 将Linux版本打包格式从tar.gz改为deb格式 / Changed Linux packaging format from tar.gz to deb
+
 ## [0.0.9] - 2026-01-07
 
 ## [0.0.8] - 2026-01-07
