@@ -52,7 +52,7 @@ jobs:
       - name: Get version
         id: get_version
         run: |
-          VERSION=$(racket get-version.rkt)
+          VERSION=$(racket build/get-version.rkt)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
         shell: bash
       
