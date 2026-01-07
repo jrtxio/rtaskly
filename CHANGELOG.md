@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 ## [0.0.8] - 2026-01-07
+### Fixed
+- 修复了 GitHub 构建过程中 get-version.rkt 脚本的路径错误 / Fixed path error in get-version.rkt script during GitHub builds
+- 修复了构建脚本中的路径问题，确保跨平台构建正常工作 / Fixed path issues in build scripts to ensure cross-platform builds work correctly
 
 ## [0.0.7] - 2026-01-06
 ### Added

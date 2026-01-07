@@ -1,13 +1,10 @@
 #lang racket
 
 ;; 直接读取info.rkt文件来获取版本号
-(require syntax/parse/define)
+(require racket/runtime-path)
 
-;; 获取当前脚本所在目录
-(define current-directory (path->string (current-load-relative-directory "")))
-
-;; 构建info.rkt的绝对路径
-(define info-file-path (build-path current-directory ".." "info.rkt"))
+;; 定义相对于脚本的运行时路径
+(define-runtime-path info-file-path "../info.rkt")
 
 ;; 读取info.rkt文件内容
 (define info-content (port->string (open-input-file info-file-path)))

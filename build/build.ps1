@@ -4,7 +4,7 @@ param (
     [string]$Platform
 )
 
-$VERSION = racket ./get-version.rkt
+$VERSION = racket ./build/get-version.rkt
 
 switch ($Platform) {
     "windows" {
