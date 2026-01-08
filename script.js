@@ -119,25 +119,39 @@ function initTimeShortcutDemo() {
 
 // Apply time shortcut and show result
 function applyTimeShortcut(input, resultElement) {
-    const shortcut = input.value.trim();
-    if (!shortcut) {
-        resultElement.innerHTML = '<div class="alert alert-info">Please enter a shortcut like +30m, +1h, +1d, +1w, or +1M</div>';
+    const inputText = input.value.trim();
+    if (!inputText) {
+        resultElement.innerHTML = '<div class="alert alert-info">Please enter a task with time shortcut like "完成项目报告 +3d" or just +30m, +1h, +1d, +1w, or +1M</div>';
         return;
     }
     
-    // Parse shortcut
+    // Parse input text to separate task content and time shortcut
     const now = new Date();
     let calculatedDate = new Date(now);
     let isValid = false;
     let description = '';
+    let taskContent = '';
+    let timeShortcut = '';
     
-    // Check for different shortcut formats
-    const match = shortcut.match(/^\+?([0-9]+)([dmhwM])$/i);
+    // Check for full task with shortcut format (e.g., "完成项目报告 +3d")
+    const fullMatch = inputText.match(/^(.*?)\s*(\+?[0-9]+[dmhwM])$/i);
     
-    if (match) {
-        const count = parseInt(match[1], 10);
-        const unit = match[2].toLowerCase();
-        const unitUpper = match[2];
+    if (fullMatch) {
+        // Extract task content and time shortcut
+        taskContent = fullMatch[1].trim();
+        timeShortcut = fullMatch[2].trim();
+    } else {
+        // Check if it's just a time shortcut (e.g., "+3d")
+        timeShortcut = inputText;
+    }
+    
+    // Parse time shortcut
+    const shortcutMatch = timeShortcut.match(/^\+?([0-9]+)([dmhwM])$/i);
+    
+    if (shortcutMatch) {
+        const count = parseInt(shortcutMatch[1], 10);
+        const unit = shortcutMatch[2].toLowerCase();
+        const unitUpper = shortcutMatch[2];
         
         switch (unitUpper) {
             case 'm':
@@ -189,14 +203,25 @@ function applyTimeShortcut(input, resultElement) {
         const formattedDate = calculatedDate.toLocaleDateString(document.documentElement.lang === 'zh' ? 'zh-CN' : 'en-US', options);
         
         // Show result
-        resultElement.innerHTML = `
-            <div class="alert alert-success">
-                <strong>Success!</strong> ${shortcut} = ${description} later<br>
-                <strong>Due date:</strong> ${formattedDate}
-            </div>
-        `;
+        if (taskContent) {
+            resultElement.innerHTML = `
+                <div class="alert alert-success">
+                    <strong>Success!</strong><br>
+                    <strong>Task:</strong> ${taskContent}<br>
+                    <strong>Shortcut:</strong> ${timeShortcut} = ${description} later<br>
+                    <strong>Due date:</strong> ${formattedDate}
+                </div>
+            `;
+        } else {
+            resultElement.innerHTML = `
+                <div class="alert alert-success">
+                    <strong>Success!</strong> ${timeShortcut} = ${description} later<br>
+                    <strong>Due date:</strong> ${formattedDate}
+                </div>
+            `;
+        }
     } else {
-        // Invalid shortcut
-        resultElement.innerHTML = '<div class="alert alert-danger">Invalid shortcut. Please use +30m, +1h, +1d, +1w, or +1M format.</div>';
+        // Invalid input
+        resultElement.innerHTML = '<div class="alert alert-danger">Invalid format. Please enter a task with time shortcut like "完成项目报告 +3d" or just +30m, +1h, +1d, +1w, or +1M</div>';
     }
 }
