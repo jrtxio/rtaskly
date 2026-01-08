@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [0.0.22] - 2026-01-08
+### Fixed
+- 修复了ARM64运行器标签不正确的问题 / Fixed incorrect ARM64 runner labels
+- 使用了GitHub Actions官方支持的ARM运行器标签：ubuntu-22.04-arm、macos-14和windows-11-arm / Used GitHub Actions officially supported ARM runner labels
+
 ## [0.0.21] - 2026-01-08
 ### Fixed
 - 修复了构建脚本中找不到taskly.rkt文件的问题 / Fixed issue where taskly.rkt file couldn't be found in build scripts

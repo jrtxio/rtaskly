@@ -22,7 +22,7 @@ jobs:
             racket-version: '8.18'
           - os: linux
             arch: arm64
-            runner: ubuntu-latest-arm64
+            runner: ubuntu-22.04-arm
             racket-version: '8.18'
           # macOS builds
           - os: macos
@@ -31,7 +31,7 @@ jobs:
             racket-version: '8.18'
           - os: macos
             arch: arm64
-            runner: macos-latest-arm64
+            runner: macos-14
             racket-version: '8.18'
           # Windows builds
           - os: windows
@@ -40,7 +40,7 @@ jobs:
             racket-version: '8.18'
           - os: windows
             arch: arm64
-            runner: windows-latest-arm64
+            runner: windows-11-arm
             racket-version: '8.18'
     
     steps:
