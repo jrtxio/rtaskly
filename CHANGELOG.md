@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.0.18] - 2026-01-08
+### Fixed
+- 修复了Linux arm64平台上Racket安装失败的问题 / Fixed Racket installation failure on Linux arm64 platforms
+- 为Linux arm64使用了具体的Racket版本8.14 / Used specific Racket version 8.14 for Linux arm64
+- 添加了distribution参数，使用minimal发行版 / Added distribution parameter, using minimal distribution
+- 移除了Linux arm64的snapshot_site参数，使用默认值'auto' / Removed snapshot_site parameter for Linux arm64, using default value 'auto'
+
 ## [0.0.17] - 2026-01-08
 ### Fixed
 - 修复了ARM64平台上Racket安装失败的问题 / Fixed Racket installation failure on ARM64 platforms
