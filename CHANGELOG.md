@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.0.17] - 2026-01-08
+### Fixed
+- 修复了ARM64平台上Racket安装失败的问题 / Fixed Racket installation failure on ARM64 platforms
+- 为setup-racket添加了variant参数，明确指定CS变体 / Added variant parameter to setup-racket, explicitly specifying CS variant
+- 为ARM64构建添加了snapshot_site参数，根据平台选择合适的快照站点 / Added snapshot_site parameter for ARM64 builds, selecting appropriate snapshot site based on platform
+
 ## [0.0.16] - 2026-01-08
 ### Fixed
 - 修复了ARM64平台上Racket安装失败的问题 / Fixed Racket installation failure on ARM64 platforms

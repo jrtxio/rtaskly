@@ -24,6 +24,7 @@ jobs:
             arch: arm64
             runner: ubuntu-latest
             racket-version: 'current'
+            snapshot_site: 'utah'
           # macOS builds
           - os: macos
             arch: x64
@@ -42,6 +43,7 @@ jobs:
             arch: arm64
             runner: windows-latest
             racket-version: '8.18'
+            snapshot_site: 'utah'
     
     steps:
       - name: Checkout code
@@ -52,6 +54,8 @@ jobs:
         with:
           version: ${{ matrix.racket-version }}
           architecture: ${{ matrix.arch }}
+          variant: 'CS'
+          snapshot_site: ${{ matrix.snapshot_site || 'auto' }}
       
       - name: Show environment info
         shell: bash
