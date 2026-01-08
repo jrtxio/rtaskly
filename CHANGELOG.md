@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [0.0.21] - 2026-01-08
+### Fixed
+- 修复了构建脚本中找不到taskly.rkt文件的问题 / Fixed issue where taskly.rkt file couldn't be found in build scripts
+- 更新了构建脚本，使用正确的src/taskly.rkt文件路径 / Updated build scripts to use correct src/taskly.rkt file path
+
 ## [0.0.20] - 2026-01-08
 ### Fixed
 - 修复了ARM64平台上Racket安装失败的问题 / Fixed Racket installation failure on ARM64 platforms

@@ -81,7 +81,7 @@ jobs:
           case "$OS" in
             linux)
               # Native build on both x64 and arm64 runners
-              raco exe -o taskly taskly.rkt
+              raco exe -o taskly src/taskly.rkt
               raco distribute taskly-dist taskly
               
               # Create deb package structure
@@ -114,7 +114,7 @@ jobs:
             macos)
               # For macOS, use the runner's architecture
               echo "Building on macOS ${{ runner.arch }}"
-              raco exe -o taskly taskly.rkt
+              raco exe -o taskly src/taskly.rkt
               raco distribute taskly-dist taskly
               
               # Install create-dmg tool
@@ -146,14 +146,8 @@ jobs:
               rm "taskly-${VERSION}-${OS}-${ARCH}.dmg"
               ;;
             windows)
-              if [ "$ARCH" = "x64" ]; then
-                # 使用--embed-dlls选项将DLLs嵌入到可执行文件中，减小包体积
-                # 使用--ico选项添加应用图标
-                raco exe --gui --embed-dlls --ico icons/48x48.ico -o taskly.exe taskly.rkt
-              else
-                # For ARM64, use appropriate flags
-                raco exe --gui --embed-dlls --ico icons/48x48.ico -o taskly.exe taskly.rkt
-              fi
+              # Native build on both x64 and arm64 runners
+              raco exe --gui --embed-dlls --ico icons/48x48.ico -o taskly.exe src/taskly.rkt
               raco distribute taskly-dist taskly.exe
               # 清理重复文件和目录，减小包体积
               cd taskly-dist
