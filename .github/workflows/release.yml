@@ -19,23 +19,29 @@ jobs:
           - os: linux
             arch: x64
             runner: ubuntu-latest
+            racket-version: '8.18'
           - os: linux
             arch: arm64
             runner: ubuntu-latest
+            racket-version: 'current'
           # macOS builds
           - os: macos
             arch: x64
             runner: macos-latest
+            racket-version: '8.18'
           - os: macos
             arch: arm64
             runner: macos-latest
+            racket-version: '8.18'
           # Windows builds
           - os: windows
             arch: x64
             runner: windows-latest
+            racket-version: '8.18'
           - os: windows
             arch: arm64
             runner: windows-latest
+            racket-version: '8.18'
     
     steps:
       - name: Checkout code
@@ -44,7 +50,7 @@ jobs:
       - name: Install Racket
         uses: Bogdanp/setup-racket@v1.14
         with:
-          version: '8.18'
+          version: ${{ matrix.racket-version }}
           architecture: ${{ matrix.arch }}
       
       - name: Show environment info

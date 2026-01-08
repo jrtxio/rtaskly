@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [0.0.16] - 2026-01-08
+### Fixed
+- 修复了ARM64平台上Racket安装失败的问题 / Fixed Racket installation failure on ARM64 platforms
+- 为不同平台和架构设置了合适的Racket版本 / Set appropriate Racket versions for different platforms and architectures
+
 ## [0.0.15] - 2026-01-08
 ### Added
 - 为所有平台添加了ARM架构支持 / Added ARM architecture support for all platforms
