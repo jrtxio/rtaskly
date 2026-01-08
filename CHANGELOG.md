@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.0.15] - 2026-01-08
+### Added
+- 为所有平台添加了ARM架构支持 / Added ARM architecture support for all platforms
+- 更新了setup-racket动作到v1.14 / Updated setup-racket action to v1.14
+- 升级了Racket版本到8.18 / Upgraded Racket version to 8.18
+
 ## [0.0.14] - 2026-01-07
 ### Changed
 - 为Linux平台添加了压缩步骤，将deb包压缩成ZIP格式，与macOS和Windows平台保持一致
