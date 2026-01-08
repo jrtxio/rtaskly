@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.0.20] - 2026-01-08
+### Fixed
+- 修复了ARM64平台上Racket安装失败的问题 / Fixed Racket installation failure on ARM64 platforms
+- 使用GitHub Actions原生Arm64运行器构建ARM64版本 / Used GitHub Actions native Arm64 runners for ARM64 builds
+- 简化了setup-racket配置，使用默认值 / Simplified setup-racket configuration, using default values
+- 移除了不必要的QEMU配置，使用原生构建 / Removed unnecessary QEMU configuration, using native builds
+
 ## [0.0.19] - 2026-01-08
 ### Fixed
 - 修复了Linux arm64平台上Racket安装失败的问题 / Fixed Racket installation failure on Linux arm64 platforms
