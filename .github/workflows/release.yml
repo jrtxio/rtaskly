@@ -23,7 +23,8 @@ jobs:
           - os: linux
             arch: arm64
             runner: ubuntu-latest
-            racket-version: '8.14'
+            racket-version: 'current'
+            snapshot_site: 'utah'
           # macOS builds
           - os: macos
             arch: x64
@@ -54,7 +55,7 @@ jobs:
           version: ${{ matrix.racket-version }}
           architecture: ${{ matrix.arch }}
           variant: 'CS'
-          distribution: 'minimal'
+          distribution: 'full'
           snapshot_site: ${{ matrix.snapshot_site || 'auto' }}
       
       - name: Show environment info

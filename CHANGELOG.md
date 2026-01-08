@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.0.19] - 2026-01-08
+### Fixed
+- 修复了Linux arm64平台上Racket安装失败的问题 / Fixed Racket installation failure on Linux arm64 platforms
+- 为Linux arm64使用current版本和full发行版 / Used current version and full distribution for Linux arm64
+- 恢复了Linux arm64的snapshot_site: 'utah'配置 / Restored snapshot_site: 'utah' configuration for Linux arm64
+
 ## [0.0.18] - 2026-01-08
 ### Fixed
 - 修复了Linux arm64平台上Racket安装失败的问题 / Fixed Racket installation failure on Linux arm64 platforms
