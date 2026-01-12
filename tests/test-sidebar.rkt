@@ -185,8 +185,8 @@
      ;; 定义测试回调函数
      (define (test-view-change-callback view-type [list-id #f] [list-name #f])
        (set! callback-called #t))
-     
-     (define sidebar (new sidebar% [parent frame] [on-view-change test-view-change-callback]))
+    
+    (define sidebar (new sidebar% [parent frame] [on-view-change test-view-change-callback] [auto-select-first-list #f]))
      
      ;; 刷新列表
      (send sidebar refresh-lists)
@@ -256,8 +256,8 @@
      ;; 定义测试回调函数
      (define (test-view-change-callback view-type [list-id #f] [list-name #f])
        (set! callback-called #t))
-     
-     (define sidebar (new sidebar% [parent frame] [on-view-change test-view-change-callback]))
+    
+    (define sidebar (new sidebar% [parent frame] [on-view-change test-view-change-callback] [auto-select-first-list #f]))
      
      ;; 刷新列表
      (send sidebar refresh-lists)

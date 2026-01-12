@@ -15,7 +15,8 @@
   (class vertical-panel% 
     (init parent 
           [on-view-change (lambda (view-type [list-id #f] [list-name #f]) (void))]
-          [on-task-updated (lambda () (void))])
+          [on-task-updated (lambda () (void))]
+          [auto-select-first-list #t])
     
     (super-new [parent parent]
                [min-width 250]
@@ -26,6 +27,7 @@
     ;; 回调函数
     (define view-change-callback on-view-change)
     (define task-updated-callback on-task-updated)
+    (define auto-select-first-list? auto-select-first-list)
     
     ;; 列表按钮列表
     (define list-buttons '())
@@ -263,7 +265,7 @@
       
       ;; 恢复上次选择的列表
       (define custom-list-buttons (send lists-container get-children))
-      (when (not (null? custom-list-buttons))
+      (when (and (not (null? custom-list-buttons)) auto-select-first-list?)
         (define last-list-id-str (get-config "last-selected-list-id"))
         (if last-list-id-str
             ;; 如果有上次选择的列表ID，尝试恢复
