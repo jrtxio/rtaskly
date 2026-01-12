@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.0.23] - 2026-01-12
+
 ## [0.0.22] - 2026-01-08
 ### Fixed
 - 修复了ARM64运行器标签不正确的问题 / Fixed incorrect ARM64 runner labels
