@@ -11,27 +11,29 @@
          get-language-options
          save-language-setting
          load-language-setting
-         lang-id->code
          get-system-language)
 
 ;; 当前语言参数 - 支持 "zh" 和 "en"
 (define current-language (make-parameter "zh"))
 
-;; 获取系统默认语言 (Windows API)
-(define kernel32 (ffi-lib "kernel32"))
-(define GetUserDefaultUILanguage (get-ffi-obj "GetUserDefaultUILanguage" kernel32 (_fun -> _uint)))
-
-;; 将语言 ID 转换为语言代码
-(define (lang-id->code id)
-  (cond
-    [(= id #x0804) "zh"]  ;; 中文 (中国)
-    [(= id #x0409) "en"]  ;; 英语 (美国)
-    ;; 可以添加更多语言支持
-    [else "en"]))  ;; 默认英语
-
-;; 获取系统语言代码
+;; 获取系统默认语言 (跨平台实现)
 (define (get-system-language)
-  (lang-id->code (GetUserDefaultUILanguage)))
+  (case (system-type)
+    [(windows)  ;; Windows平台 - 使用API调用
+     (define kernel32 (ffi-lib "kernel32"))
+     (define GetUserDefaultUILanguage (get-ffi-obj "GetUserDefaultUILanguage" kernel32 (_fun -> _uint)))
+     (define id (GetUserDefaultUILanguage))
+     (cond
+       [(= id #x0804) "zh"]  ;; 中文 (中国)
+       [(= id #x0409) "en"]  ;; 英语 (美国)
+       [else "en"])]  ;; 默认英语
+    [(macosx)  ;; macOS平台 - 使用环境变量或默认值
+     (let ([lang (getenv "LANG")])
+       (if (and lang (regexp-match? #rx"^zh" lang))
+           "zh"
+           "en"))]
+    [else  ;; 其他平台 - 默认英语
+     "en"]))
 
 ;; 语言映射表
 (define translations
