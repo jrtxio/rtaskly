@@ -2,15 +2,35 @@
 
 ;; 语言管理模块
 
+(require ffi/unsafe ffi/unsafe/define)
+
 (provide current-language
          set-language!
          translate
          get-language-options
          save-language-setting
-         load-language-setting)
+         load-language-setting
+         lang-id->code
+         get-system-language)
 
 ;; 当前语言参数 - 支持 "zh" 和 "en"
 (define current-language (make-parameter "zh"))
+
+;; 获取系统默认语言 (Windows API)
+(define kernel32 (ffi-lib "kernel32"))
+(define GetUserDefaultUILanguage (get-ffi-obj "GetUserDefaultUILanguage" kernel32 (_fun -> _uint)))
+
+;; 将语言 ID 转换为语言代码
+(define (lang-id->code id)
+  (cond
+    [(= id #x0804) "zh"]  ;; 中文 (中国)
+    [(= id #x0409) "en"]  ;; 英语 (美国)
+    ;; 可以添加更多语言支持
+    [else "en"]))  ;; 默认英语
+
+;; 获取系统语言代码
+(define (get-system-language)
+  (lang-id->code (GetUserDefaultUILanguage)))
 
 ;; 语言映射表
 (define translations
@@ -122,10 +142,14 @@
 ;; 加载语言设置
 (define (load-language-setting)
   (let ((config-file (build-path (find-system-path 'home-dir) ".taskly_config")))
-    (when (file-exists? config-file)
-      (with-input-from-file config-file
-        (lambda ()
-          (let ((config (read)))
-            (when (hash? config)
-              (let ((lang (hash-ref config "language" #f)))
-                (when lang (set-language! lang))))))))))
+    (if (file-exists? config-file)
+        (with-input-from-file config-file
+          (lambda ()
+            (let ((config (read)))
+              (when (hash? config)
+                (let ((lang (hash-ref config "language" #f)))
+                  (if lang
+                      (set-language! lang)
+                      (set-language! (get-system-language))))))))
+        ;; 如果配置文件不存在，使用系统语言
+        (set-language! (get-system-language)))))
