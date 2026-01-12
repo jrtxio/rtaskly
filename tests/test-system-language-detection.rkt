@@ -4,7 +4,8 @@
          rackunit/text-ui
          racket/file
          ffi/unsafe ffi/unsafe/define
-         "../src/gui/language.rkt")
+         "../src/gui/language.rkt"
+         "../src/utils/path.rkt")
 
 ;; 定义测试套件
 (define system-language-tests
@@ -30,10 +31,8 @@
      ;; 保存原始语言设置
      (define original-lang (current-language))
      
-     ;; 删除配置文件
-     (define config-file (build-path (find-system-path 'home-dir) ".taskly_config"))
-     (when (file-exists? config-file)
-       (delete-file config-file))
+     ;; 删除语言配置项
+     (set-config "language" "")
      
      ;; 加载语言设置（应该使用系统语言）
      (load-language-setting)
@@ -54,81 +53,39 @@
    (test-case "测试有配置文件时使用保存的语言" 
      ;; 保存原始语言设置
      (define original-lang (current-language))
-     (define config-file (build-path (find-system-path 'home-dir) ".taskly_config"))
-     (define original-config-existed? (file-exists? config-file))
-     (define original-config-content #f)
      
-     ;; 保存原始配置文件内容
-     (when original-config-existed?
-       (with-input-from-file config-file
-         (lambda ()
-           (set! original-config-content (read)))))
-     
-     ;; 创建测试配置文件（设置为中文）
-     (with-output-to-file config-file
-       (lambda ()
-         (write (hash "language" "zh")))
-       #:exists 'replace)
+     ;; 创建测试配置（设置为中文）
+     (set-config "language" "zh")
      
      ;; 加载语言设置
      (set-language! "en")  ;; 先切换到英文
      (load-language-setting)
      
-     ;; 检查语言是否为配置文件中保存的中文
+     ;; 检查语言是否为配置中保存的中文
      (check-equal? (current-language) "zh")
-     
-     ;; 清理：恢复原始配置
-     (if original-config-existed?
-         (with-output-to-file config-file
-           (lambda ()
-             (write original-config-content))
-           #:exists 'replace)
-         (when (file-exists? config-file)
-           (delete-file config-file)))
      
      ;; 恢复原始语言
      (set-language! original-lang)
      (save-language-setting))
    
-   ;; 测试配置文件损坏的情况
-   (test-case "测试配置文件损坏时使用系统语言" 
+   ;; 测试配置项不存在的情况
+   (test-case "测试配置项不存在时使用系统语言" 
      ;; 保存原始语言设置
      (define original-lang (current-language))
-     (define config-file (build-path (find-system-path 'home-dir) ".taskly_config"))
-     (define original-config-existed? (file-exists? config-file))
-     (define original-config-content #f)
      
-     ;; 保存原始配置文件内容
-     (when original-config-existed?
-       (with-input-from-file config-file
-         (lambda ()
-           (set! original-config-content (read)))))
-     
-     ;; 创建损坏的配置文件
-     (with-output-to-file config-file
-       (lambda ()
-         (write "This is not a valid hash"))
-       #:exists 'replace)
+     ;; 删除语言配置项
+     (set-config "language" "")
      
      ;; 加载语言设置
      (set-language! "en")  ;; 先切换到英文
      (load-language-setting)
      
-     ;; 检查语言是否为默认值（配置文件损坏时应该使用系统语言）
+     ;; 检查语言是否为默认值（配置项不存在时应该使用系统语言）
      (define kernel32 (ffi-lib "kernel32"))
      (define GetUserDefaultUILanguage (get-ffi-obj "GetUserDefaultUILanguage" kernel32 (_fun -> _uint)))
      (define expected-lang (lang-id->code (GetUserDefaultUILanguage)))
      
      (check-equal? (current-language) expected-lang)
-     
-     ;; 清理：恢复原始配置
-     (if original-config-existed?
-         (with-output-to-file config-file
-           (lambda ()
-             (write original-config-content))
-           #:exists 'replace)
-         (when (file-exists? config-file)
-           (delete-file config-file)))
      
      ;; 恢复原始语言
      (set-language! original-lang)

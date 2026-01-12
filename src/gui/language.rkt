@@ -2,7 +2,8 @@
 
 ;; 语言管理模块
 
-(require ffi/unsafe ffi/unsafe/define)
+(require ffi/unsafe ffi/unsafe/define
+         "../utils/path.rkt")
 
 (provide current-language
          set-language!
@@ -133,23 +134,11 @@
 
 ;; 保存语言设置
 (define (save-language-setting)
-  (let ((config-file (build-path (find-system-path 'home-dir) ".taskly_config")))
-    (with-output-to-file config-file
-      (lambda ()
-        (write (hash "language" (current-language))))
-      #:exists 'replace)))
+  (set-config "language" (current-language)))
 
 ;; 加载语言设置
 (define (load-language-setting)
-  (let ((config-file (build-path (find-system-path 'home-dir) ".taskly_config")))
-    (if (file-exists? config-file)
-        (with-input-from-file config-file
-          (lambda ()
-            (let ((config (read)))
-              (when (hash? config)
-                (let ((lang (hash-ref config "language" #f)))
-                  (if lang
-                      (set-language! lang)
-                      (set-language! (get-system-language))))))))
-        ;; 如果配置文件不存在，使用系统语言
+  (let ((lang (get-config "language" #f)))
+    (if lang
+        (set-language! lang)
         (set-language! (get-system-language)))))
