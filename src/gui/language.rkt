@@ -63,6 +63,8 @@
    
    ;; 任务面板
    "欢迎使用 Taskly！" (hash "zh" "欢迎使用 Taskly！" "en" "Welcome to Taskly!")
+   "欢迎来到 Taskly" (hash "zh" "欢迎来到 Taskly" "en" "Welcome to Taskly")
+   "请选择或创建任务数据库" (hash "zh" "请选择或创建任务数据库" "en" "Please select or create a task database")
    "请创建或打开数据库文件以开始使用" (hash "zh" "请创建或打开数据库文件以开始使用" "en" "Please create or open a database file to get started")
    "操作指南：" (hash "zh" "操作指南：" "en" "Quick Start Guide:")
    "1. 点击  文件 → 新建数据库  创建新的任务数据库" (hash "zh" "1. 点击  文件 → 新建数据库  创建新的任务数据库" "en" "1. Click File → New Database to create a new task database")

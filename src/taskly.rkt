@@ -7,6 +7,7 @@
          racket/gui/base
          "core/database.rkt"
          "gui/main-frame.rkt"
+         "gui/language.rkt"
          "utils/path.rkt")
 
 ;; 全局应用状态
@@ -14,10 +15,18 @@
 
 ;; 显示数据文件选择对话框，返回选中的文件路径
 (define (show-db-file-dialog)
+  ;; 加载用户的语言设置
+  (load-language-setting)
+  
+  ;; 设置固定窗口大小 - 使用stretchable参数防止拉伸
   (define dialog (new dialog% 
-                      [label "选择或创建数据库文件"]
+                      [label (translate "欢迎来到 Taskly")]
                       [width 500]
-                      [height 300]))
+                      [height 200]
+                      [min-width 500]
+                      [min-height 200]
+                      [stretchable-width #f]
+                      [stretchable-height #f]))
   
   ;; 尝试为对话框设置图标
   (define (set-dialog-icon)
@@ -33,9 +42,15 @@
   
   (set-dialog-icon)
   
-  (define panel (new vertical-panel% [parent dialog] [spacing 10] [border 10]))
-  (new message% [parent panel] [label "请选择一个SQLite数据库文件，或输入新文件路径创建。"])
+  ;; 主面板
+  (define panel (new vertical-panel% [parent dialog] [spacing 25] [border 30]))
   
+  ;; 提示信息
+  (new message% [parent panel] 
+       [label (translate "请选择或创建任务数据库")]
+       [font (make-object font% 12 'default 'normal 'normal)])
+  
+  ;; 文件选择区域
   (define file-panel (new horizontal-panel% [parent panel] [spacing 10]))
   (define file-field (new text-field% [parent file-panel] 
                           [label ""] 
@@ -44,18 +59,19 @@
   
   ;; 浏览按钮回调函数
   (new button% [parent file-panel] 
-       [label "浏览..."] 
+       [label (translate "浏览...")] 
        [callback (lambda (btn evt)
-                  (define selected-file (get-file "选择数据库文件"))
+                  (define selected-file (get-file (translate "选择数据库文件")))
                   (when selected-file
                     (send file-field set-value (path->string selected-file))))])
   
-  (define button-panel (new horizontal-panel% [parent panel] [spacing 10] [alignment '(center center)]))
+  ;; 按钮区域
+  (define button-panel (new horizontal-panel% [parent panel] [spacing 20] [alignment '(center center)]))
   
   ;; 确定按钮回调
   (define result #f)
   (new button% [parent button-panel] 
-       [label "确定"] 
+       [label (translate "确定")] 
        [min-width 80]
        [callback (lambda (btn evt)
                   (define file-path (send file-field get-value))
@@ -64,7 +80,7 @@
                     (send dialog show #f)))])
   
   (new button% [parent button-panel] 
-       [label "取消"] 
+       [label (translate "取消")] 
        [min-width 80]
        [callback (lambda (btn evt) (send dialog show #f))])
   
