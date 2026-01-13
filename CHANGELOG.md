@@ -4,11 +4,11 @@
 
 ## [0.0.27] - 2026-01-13
 ### Changed
-- 样式(gui)：任务项在面板中垂直居中对齐
-- 样式(gui)：调整任务面板布局和间距，提高一致性
-- 样式(gui)：将任务面板元素对齐到中心
-- 修复(gui)：使任务滚动面板可伸缩以适应父容器宽度
-- 重构(language)：使get-system-language函数跨平台兼容
+- 样式(gui)：任务项在面板中垂直居中对齐 / style(gui): center task items vertically in panel
+- 样式(gui)：调整任务面板布局和间距，提高一致性 / style(gui): adjust task panel layout and spacing for better consistency
+- 样式(gui)：将任务面板元素对齐到中心 / style(gui): align task panel elements to center
+- 修复(gui)：使任务滚动面板可伸缩以适应父容器宽度 / fix(gui): make task-scroll panel stretchable to fit parent width
+- 重构(language)：使get-system-language函数跨平台兼容 / refactor(language): make get-system-language cross-platform compatible
 
 ## [0.0.26] - 2026-01-13
 ### Changed
