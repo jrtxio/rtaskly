@@ -349,19 +349,45 @@
       (send language-menu set-label (translate "语言"))
       (send help-menu set-label (translate "帮助"))
       
-      ;; 更新菜单项目
-      (for ([item (send file-menu get-items)])
-        (when (is-a? item menu-item%)
-          (let ([original-label (send item get-label)])
-            ;; 根据原始标签更新翻译
-            (cond
-              [(equal? original-label (translate "新建数据库")) (void)]
-              [(equal? original-label (translate "打开数据库")) (void)]
-              [(equal? original-label (translate "关闭数据库")) (void)]
-              [(equal? original-label (translate "退出")) (void)]
-              [(equal? original-label (translate "关于")) (void)]
-              [(equal? original-label (translate "中文")) (void)]
-              [(equal? original-label (translate "English")) (void)]))))
+      ;; 定义菜单标签映射
+      (define file-menu-mapping
+        '("新建数据库" "打开数据库" "关闭数据库" "退出"))
+      
+      (define help-menu-mapping
+        '("关于"))
+      
+      (define language-menu-mapping
+        '("中文" "English"))
+      
+      ;; 更新文件菜单项目
+      (let ([items (send file-menu get-items)]
+            [mapping-index 0])
+        (for ([item items])
+          (when (and (is-a? item menu-item%)
+                     (< mapping-index (length file-menu-mapping)))
+            (let ([key (list-ref file-menu-mapping mapping-index)])
+              (send item set-label (translate key))
+              (set! mapping-index (+ mapping-index 1))))))
+      
+      ;; 更新帮助菜单项目
+      (let ([items (send help-menu get-items)]
+            [mapping-index 0])
+        (for ([item items])
+          (when (and (is-a? item menu-item%)
+                     (< mapping-index (length help-menu-mapping)))
+            (let ([key (list-ref help-menu-mapping mapping-index)])
+              (send item set-label (translate key))
+              (set! mapping-index (+ mapping-index 1))))))
+      
+      ;; 更新语言菜单项目
+      (let ([items (send language-menu get-items)]
+            [mapping-index 0])
+        (for ([item items])
+          (when (and (is-a? item menu-item%)
+                     (< mapping-index (length language-menu-mapping)))
+            (let ([key (list-ref language-menu-mapping mapping-index)])
+              (send item set-label (translate key))
+              (set! mapping-index (+ mapping-index 1))))))
       
       ;; 更新侧边栏
       (send sidebar refresh-lists)
