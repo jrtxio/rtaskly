@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [0.0.27] - 2026-01-13
+### Changed
+- 样式(gui)：任务项在面板中垂直居中对齐
+- 样式(gui)：调整任务面板布局和间距，提高一致性
+- 样式(gui)：将任务面板元素对齐到中心
+- 修复(gui)：使任务滚动面板可伸缩以适应父容器宽度
+- 重构(language)：使get-system-language函数跨平台兼容
+
 ## [0.0.26] - 2026-01-13
 ### Changed
 - 优化：更新构建脚本，添加版本号处理逻辑 / Optimized: Updated build scripts, added version handling logic
