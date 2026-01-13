@@ -23,8 +23,11 @@
     ;; 尝试设置窗口图标
     (define (set-window-icon)
       ;; 尝试使用不同尺寸的图标，优先使用适合标题栏的小尺寸图标
+      ;; 优先使用ICO格式，因为ICO格式原生支持透明度和多尺寸，适合任务栏显示
       (define icon-paths
         (list
+         (build-path (current-directory) "icons" "16x16.ico")
+         (build-path (current-directory) "icons" "32x32.ico")
          (build-path (current-directory) "icons" "16x16.png")
          (build-path (current-directory) "icons" "32x32.png")
          (build-path (current-directory) "icons" "taskly.png")))
