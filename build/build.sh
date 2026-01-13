@@ -3,6 +3,12 @@
 # 获取版本号
 VERSION=$(racket ./build/get-version.rkt)
 
+# 备份原始main-frame.rkt文件
+cp -f src/gui/main-frame.rkt src/gui/main-frame.rkt.bak
+
+# 替换get-app-version函数
+sed -i "" "s|(define (get-app-version) \"[0-9]+\.[0-9]+\.[0-9]+\")|(define (get-app-version) \"$VERSION\")|g" src/gui/main-frame.rkt
+
 # 构建可执行文件
 case $1 in
   "windows")
@@ -147,3 +153,7 @@ case $1 in
     exit 1
     ;;
 esac
+
+# 恢复原始main-frame.rkt文件
+cp -f src/gui/main-frame.rkt.bak src/gui/main-frame.rkt
+rm -f src/gui/main-frame.rkt.bak
