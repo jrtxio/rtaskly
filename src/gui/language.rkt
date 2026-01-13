@@ -81,6 +81,7 @@
    "确定要删除列表\"~a\"及其所有任务吗？" (hash "zh" "确定要删除列表\"~a\"及其所有任务吗？" "en" "Are you sure you want to delete the list \"~a\" and all its tasks?")
    "是" (hash "zh" "是" "en" "Yes")
    "否" (hash "zh" "否" "en" "No")
+   "删除" (hash "zh" "删除" "en" "Delete")
    
    ;; 任务面板
    "欢迎使用 Taskly！" (hash "zh" "欢迎使用 Taskly！" "en" "Welcome to Taskly!")

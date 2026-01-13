@@ -278,30 +278,30 @@
              [font (make-font #:size 9 #:family 'modern)]
              [color date-color]))
       
-      ;; 创建编辑按钮
+      ;; 创建编辑按钮（使用设置图标）
       (new button%
            [parent task-item]
-           [label "✎"]
+           [label "⚙"]
            [min-width 20]
-           [min-height 24]
+           [min-height 20]
            [callback (lambda (btn evt) (show-edit-task-dialog task-data task-updated-callback))])
       
-      ;; 创建删除按钮
-      (new button%
-           [parent task-item]
-           [label "×"]
-           [min-width 20]
-           [min-height 24]
-           [callback (lambda (btn evt)
-                       ;; 显示删除确认对话框
-                       (define result (message-box (translate "确认删除")
-                                                  (translate "确定要删除任务\"~a\"吗？" 
-                                                               (task:task-text task-data))
-                                                  (send btn get-top-level-window)
-                                                  '(yes-no)))
-                       (when (eq? result 'yes)
-                         (task:delete-task (task:task-id task-data))
-                         (task-updated-callback)))])
+      ;; 删除按钮已移至编辑对话框中
+      ;; (new button%
+      ;;      [parent task-item]
+      ;;      [label "×"]
+      ;;      [min-width 20]
+      ;;      [min-height 24]
+      ;;      [callback (lambda (btn evt)
+      ;;                  ;; 显示删除确认对话框
+      ;;                  (define result (message-box (translate "确认删除")
+      ;;                                             (translate "确定要删除任务\"~a\"吗？" 
+      ;;                                                          (task:task-text task-data))
+      ;;                                             (send btn get-top-level-window)
+      ;;                                             '(yes-no)))
+      ;;                  (when (eq? result 'yes)
+      ;;                    (task:delete-task (task:task-id task-data))
+      ;;                    (task-updated-callback))])
     )
     
     ;; 更新任务列表
