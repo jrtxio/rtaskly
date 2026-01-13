@@ -248,22 +248,15 @@
                              [alignment '(left top)]
                              [spacing 2]))
       
-      ;; 创建任务文本编辑器（只读）
-      (define task-text (new text%))
-      (send task-text insert (task:task-text task-data))
-      
-      ;; 创建只读的编辑器画布来显示任务文本
-      (new editor-canvas%
+      ;; 创建任务文本标签，使用 message% 组件支持自动换行
+      (new message% 
            [parent text-date-panel]
-           [editor task-text]
+           [label (task:task-text task-data)]
            [stretchable-width #t]
            [stretchable-height #f]
            [min-height 20]
-           [horizontal-inset 0]
-           [vertical-inset 0]
-           [style '(no-hscroll no-vscroll no-border)])
-      ;; 设置文本编辑器为只读模式
-      (send task-text lock #t)
+           [horiz-margin 0]
+           [vert-margin 0])
       
       ;; 创建截止日期标签
       (when (task:task-due-date task-data)
