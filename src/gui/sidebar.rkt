@@ -163,8 +163,23 @@
            [callback (lambda (btn evt)
                        (define name (send name-field get-value))
                        (when (not (equal? name ""))
-                         (core:add-list name)
+                         (define new-list-id (core:add-list name))
                          (refresh-lists)
+                         ;; 查找并选中新创建的列表
+                         (define custom-list-buttons (send lists-container get-children))
+                         (define all-lists (core:get-all-lists))
+                         (define new-list (findf (lambda (lst) (equal? (core:todo-list-id lst) new-list-id)) all-lists))
+                         (when new-list
+                           (define new-list-btn (findf (lambda (btn) 
+                                                         (equal? (send btn get-label) (core:todo-list-name new-list))
+                                                         ) custom-list-buttons))
+                           (when new-list-btn
+                             (set-selected-button new-list-btn 
+                                                 (core:todo-list-id new-list) 
+                                                 (core:todo-list-name new-list))
+                             (view-change-callback "list" 
+                                                  (core:todo-list-id new-list) 
+                                                  (core:todo-list-name new-list))))
                          (task-updated-callback)
                          (send dialog show #f)))])
       

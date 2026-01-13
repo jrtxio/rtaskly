@@ -91,7 +91,8 @@
 (define (add-list list-name)
   (define conn (current-db-connection))
   (query-exec conn "INSERT INTO list (list_name) VALUES (?)
-                   " list-name))
+                   " list-name)
+  (query-value conn "SELECT last_insert_rowid()"))
 
 ;; 更新列表名称
 (define (update-list list-id new-name)
