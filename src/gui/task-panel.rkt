@@ -228,7 +228,7 @@
                            [style '(border)]
                            [spacing 4]  ; 减小间距
                            [border 1]  ; 减小边框宽度
-                           [alignment '(left top)]))  ; 顶部对齐
+                           [alignment '(left center)]))  ; 垂直居中对齐
       
       ;; 创建复选框
       (new check-box% [parent task-item]
