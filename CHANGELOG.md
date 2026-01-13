@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.0.28] - 2026-01-13
+### Fixed
+- 修复(changelog)：为v0.0.27添加英文翻译 / fix(changelog): add English translations for v0.0.27
+
 ## [0.0.27] - 2026-01-13
 ### Changed
 - 样式(gui)：任务项在面板中垂直居中对齐 / style(gui): center task items vertically in panel
