@@ -8,9 +8,25 @@
          "language.rkt"
          "dialogs.rkt"
          "../core/database.rkt"
-         "../utils/path.rkt")
+         "../utils/path.rkt"
+         racket/runtime-path)
 
 (provide main-frame%)
+
+;; 定义相对于模块的运行时路径
+(define-runtime-path info-file-path "../../info.rkt")
+
+;; 从info.rkt文件读取版本号
+(define (get-app-version)
+  (with-handlers ([exn:fail? (lambda (e) "unknown")])
+    (if (file-exists? info-file-path)
+        (let* ([info-content (port->string (open-input-file info-file-path))]
+               [version-regex #px"define version \"([0-9]+(\\.[0-9]+)+)\""]
+               [match (regexp-match version-regex info-content)])
+          (if match
+              (cadr match)
+              "unknown"))
+        "unknown")))
 
 ;; 主窗口类
 (define main-frame% 
@@ -325,7 +341,7 @@
       (define panel (new vertical-panel% [parent dialog] [spacing 15] [border 20] [alignment '(center center)]))
       
       (new message% [parent panel] [label (translate "Taskly")] [font (make-font #:weight 'bold #:size 18)])
-      (new message% [parent panel] [label "V1.0.0"])
+      (new message% [parent panel] [label (format "V~a" (get-app-version))])
       (new message% [parent panel] [label (translate "极简本地任务管理工具")])
       (new message% [parent panel] [label (translate "完全本地化，用户掌控数据")])
       
