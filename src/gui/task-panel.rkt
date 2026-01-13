@@ -172,7 +172,7 @@
                             [label ""][vert-margin 10][font (make-font #:size 18 #:weight 'bold #:family 'modern)][stretchable-width #t]))
     
     ;; 创建任务滚动面板
-    (define task-scroll (new panel% [parent this] [style '(vscroll)]))
+    (define task-scroll (new panel% [parent this] [style '(vscroll)] [stretchable-width #f]))
     
     (define task-list-panel (new vertical-panel%
                             [parent task-scroll]
