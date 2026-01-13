@@ -4,8 +4,8 @@
 
 ## [0.0.26] - 2026-01-13
 ### Changed
-- 优化：更新构建脚本，添加版本号处理逻辑
-- 优化：简化版本号获取方式，提高构建可靠性
+- 优化：更新构建脚本，添加版本号处理逻辑 / Optimized: Updated build scripts, added version handling logic
+- 优化：简化版本号获取方式，提高构建可靠性 / Optimized: Simplified version retrieval method, improved build reliability
 
 ## [0.0.25] - 2026-01-13
 
