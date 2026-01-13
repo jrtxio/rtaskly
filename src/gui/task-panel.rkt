@@ -228,7 +228,8 @@
                            [stretchable-width #t]
                            [style '(border)]
                            [spacing 8]
-                           [border 5]))
+                           [border 5]
+                           [alignment '(left center)]))
       
       ;; 创建复选框
       (new check-box%
@@ -245,7 +246,7 @@
       (define text-date-panel (new vertical-panel%
                              [parent task-item]
                              [stretchable-width #t]
-                             [alignment '(left top)]
+                             [alignment '(left center)]
                              [spacing 2]))
       
       ;; 创建任务文本标签，使用 message% 组件支持自动换行
