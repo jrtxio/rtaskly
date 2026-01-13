@@ -222,42 +222,44 @@
     ;; 创建单个任务项
     (define (create-task-item task-data)
       ;; 创建任务项面板
-      (define task-item (new horizontal-panel%
-                           [parent task-list-panel]
-                           [stretchable-height #f]
+      (define task-item (new horizontal-panel% [parent task-list-panel]
+                           [stretchable-height #f]  ; 不拉伸高度，随内容自适应
                            [stretchable-width #t]
                            [style '(border)]
-                           [spacing 8]
-                           [border 5]
-                           [alignment '(left center)]))
+                           [spacing 4]  ; 减小间距
+                           [border 1]  ; 减小边框宽度
+                           [alignment '(left top)]))  ; 顶部对齐
       
       ;; 创建复选框
-      (new check-box%
-           [parent task-item]
+      (new check-box% [parent task-item]
            [label ""]
-           [min-width 30]
+           [min-width 20]  ; 减小最小宽度
+           [min-height 20]  ; 调整最小高度
            [stretchable-width #f]
+           [stretchable-height #f]  ; 不拉伸高度
            [value (task:task-completed? task-data)]
+           [vert-margin 0]  ; 移除垂直边距
            [callback (lambda (cb evt)
                        (task:toggle-task-completed (task:task-id task-data))
                        (task-updated-callback))])
       
       ;; 创建文本和日期面板
-      (define text-date-panel (new vertical-panel%
-                             [parent task-item]
+      (define text-date-panel (new vertical-panel% [parent task-item]
                              [stretchable-width #t]
-                             [alignment '(left center)]
-                             [spacing 2]))
+                             [stretchable-height #f]  ; 不拉伸高度
+                             [alignment '(left top)]  ; 左对齐顶部
+                             [spacing 0]))  ; 移除间距
       
       ;; 创建任务文本标签，使用 message% 组件支持自动换行
       (new message% 
            [parent text-date-panel]
            [label (task:task-text task-data)]
            [stretchable-width #t]
-           [stretchable-height #f]
-           [min-height 20]
-           [horiz-margin 0]
-           [vert-margin 0])
+           [stretchable-height #f]  ; 不拉伸高度
+           [min-height 16]  ; 减小最小高度
+           [horiz-margin 0]  ; 移除水平边距
+           [vert-margin 0]  ; 移除垂直边距
+           [font (make-font #:size 13)])  ; 设置合适的字体大小
       
       ;; 创建截止日期标签
       (when (task:task-due-date task-data)
@@ -273,18 +275,26 @@
             [(<= diff 3) "#FFD700"] ; 金色
             [else "black"]))
         
-        (new message%
+        (new message%  
              [parent text-date-panel]
              [label (date:format-date-for-display due-date-str)]
-             [font (make-font #:size 9 #:family 'modern)]
-             [color date-color]))
+             [font (make-font #:size 11)]  ; 较小的字体
+             [color date-color]
+             [vert-margin 0]  ; 移除垂直边距
+             [horiz-margin 0]  ; 移除水平边距
+             [stretchable-width #t]
+             [stretchable-height #f]))  ; 不拉伸高度
       
       ;; 创建编辑按钮（使用设置图标）
-      (new button%
+      (new button% 
            [parent task-item]
            [label "⚙"]
-           [min-width 20]
-           [min-height 20]
+           [min-width 24]  ; 减小最小宽度
+           [min-height 20]  ; 减小最小高度
+           [stretchable-width #f]
+           [stretchable-height #f]  ; 不拉伸高度
+           [vert-margin 0]  ; 移除垂直边距
+           [horiz-margin 0]  ; 移除水平边距
            [callback (lambda (btn evt) (show-edit-task-dialog task-data task-updated-callback))])
       
       ;; 删除按钮已移至编辑对话框中
