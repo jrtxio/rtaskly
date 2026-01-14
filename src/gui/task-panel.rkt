@@ -7,6 +7,7 @@
          (prefix-in task: "../core/task.rkt")
          (prefix-in core: "../core/list.rkt")
          (prefix-in date: "../utils/date.rkt")
+         "../utils/font.rkt"
          "language.rkt")
 
 (provide parse-task-input
@@ -25,7 +26,7 @@
     (define showing-placeholder? #t)
     
     ;; 设置字体
-    (define font (send the-font-list find-or-create-font 13 'default 'normal 'normal))
+    (define font (create-default-font))
     
     (define text (new text%))
     (send this set-editor text)
@@ -35,7 +36,7 @@
     
     ;; 设置字体样式
     (define style-delta (new style-delta%))
-    (send style-delta set-delta 'change-size 13)
+    (send style-delta set-delta 'change-size default-font-size)
     (send text change-style style-delta)
     
     ;; 处理回车键提交
@@ -91,7 +92,9 @@
     
     ;; 提供获取内容的方法
     (define/public (get-content)
-      (send text get-text))))
+      (send text get-text))
+)
+)
 
 ;; 解析任务输入，提取任务描述和截止日期
 (define (parse-task-input input-str)
@@ -109,7 +112,9 @@
                [parsed-date (date:parse-date-string modifier)])
           (values task-text parsed-date))
         ;; 没有时间修饰符
-        (values trimmed #f))))
+        (values trimmed #f))
+  )
+)
 
 ;; 创建任务面板类
 (define task-panel%
@@ -167,9 +172,9 @@
                            [stretchable-width #t]))
     
     ;; 创建标题标签
-    (define title-label (new message%
-                            [parent top-panel]
-                            [label ""][vert-margin 10][font (make-font #:size 18 #:weight 'bold #:family 'modern)][stretchable-width #t]))
+    (define title-label (new message% 
+                            [parent top-panel] 
+                            [label ""][vert-margin 10][font (create-bold-xlarge-font)][stretchable-width #t]))
     
     ;; 创建任务滚动面板
     (define task-scroll (new panel% [parent this] [style '(vscroll)] [stretchable-width #t]))
@@ -193,18 +198,18 @@
                             [stretchable-height #t]
                             [spacing 16]))
       
-      (new message%
-           [parent welcome-panel]
-           [label (translate "欢迎使用 Taskly！")]
-           [font (make-font #:size 24 #:weight 'bold #:family 'modern)])
-      (new message%
-           [parent welcome-panel]
-           [label (translate "请创建或打开数据库文件以开始使用")]
-           [font (make-font #:size 14 #:family 'modern)])
-      (new message%
-           [parent welcome-panel]
-           [label (translate "操作指南：")]
-           [font (make-font #:size 14 #:weight 'bold #:family 'modern)])
+      (new message% 
+           [parent welcome-panel] 
+           [label (translate "欢迎使用 Taskly！")] 
+           [font (send the-font-list find-or-create-font 24 'default 'bold 'normal)])
+      (new message% 
+           [parent welcome-panel] 
+           [label (translate "请创建或打开数据库文件以开始使用")] 
+           [font (create-medium-font)])
+      (new message% 
+           [parent welcome-panel] 
+           [label (translate "操作指南：")] 
+           [font (create-bold-medium-font)])
       (new message%
            [parent welcome-panel]
            [label (translate "1. 点击  文件 → 新建数据库  创建新的任务数据库")])
@@ -259,7 +264,7 @@
            [min-height 16]  ; 减小最小高度
            [horiz-margin 0]  ; 移除水平边距
            [vert-margin 0]  ; 移除垂直边距
-           [font (make-font #:size 13)])  ; 设置合适的字体大小
+           [font (create-default-font)])  ; 设置合适的字体大小
       
       ;; 创建截止日期标签
       (when (task:task-due-date task-data)
@@ -278,12 +283,13 @@
         (new message%  
              [parent text-date-panel]
              [label (date:format-date-for-display due-date-str)]
-             [font (make-font #:size 11)]  ; 较小的字体
+             [font (create-small-font)]  ; 较小的字体
              [color date-color]
              [vert-margin 0]  ; 移除垂直边距
              [horiz-margin 0]  ; 移除水平边距
              [stretchable-width #t]
-             [stretchable-height #f]))  ; 不拉伸高度
+             [stretchable-height #f])  ; 不拉伸高度
+      )
       
       ;; 创建编辑按钮（使用设置图标）
       (new button% 
@@ -298,14 +304,14 @@
            [callback (lambda (btn evt) (show-edit-task-dialog task-data task-updated-callback))])
       
       ;; 删除按钮已移至编辑对话框中
-      ;; (new button%
-      ;;      [parent task-item]
-      ;;      [label "×"]
-      ;;      [min-width 20]
-      ;;      [min-height 24]
-      ;;      [callback (lambda (btn evt)
+      ;; (new button% 
+      ;;      [parent task-item] 
+      ;;      [label "×"] 
+      ;;      [min-width 20] 
+      ;;      [min-height 24] 
+      ;;      [callback (lambda (btn evt) 
       ;;                  ;; 显示删除确认对话框
-      ;;                  (define result (message-box (translate "确认删除")
+      ;;                  (define result (message-box (translate "确认删除") 
       ;;                                             (translate "确定要删除任务\"~a\"吗？" 
       ;;                                                          (task:task-text task-data))
       ;;                                             (send btn get-top-level-window)

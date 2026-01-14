@@ -6,7 +6,8 @@
 (require (prefix-in core: "../core/list.rkt")
          (prefix-in task: "../core/task.rkt")
          "language.rkt"
-         "../utils/path.rkt")
+         "../utils/path.rkt"
+         "../utils/font.rkt")
 
 (provide sidebar%)
 
@@ -81,6 +82,7 @@
            [label (translate "今天")]
            [min-width 100]
            [min-height 36]
+           [font (create-default-font)]
            [callback (lambda (btn evt) 
                        (set-selected-button btn #f (translate "今天"))
                        (view-change-callback "today" #f (translate "今天")))]))
@@ -92,6 +94,7 @@
            [label (translate "计划")]
            [min-width 100]
            [min-height 36]
+           [font (create-default-font)]
            [callback (lambda (btn evt) 
                        (set-selected-button btn #f (translate "计划"))
                        (view-change-callback "planned" #f (translate "计划")))]))
@@ -111,6 +114,7 @@
            [label (translate "全部")]
            [min-width 100]
            [min-height 36]
+           [font (create-default-font)]
            [callback (lambda (btn evt) 
                        (set-selected-button btn #f (translate "全部"))
                        (view-change-callback "all" #f (translate "全部")))]))
@@ -122,6 +126,7 @@
            [label (translate "完成")]
            [min-width 100]
            [min-height 36]
+           [font (create-default-font)]
            [callback (lambda (btn evt) 
                        (set-selected-button btn #f (translate "完成"))
                        (view-change-callback "completed" #f (translate "完成")))]))
@@ -130,7 +135,7 @@
     (define my-lists-panel (new vertical-panel% [parent this] [spacing 2]))
     
     ;; 列表标题
-    (define my-lists-label (new message% [parent my-lists-panel] [label (translate "我的列表")] [font (make-font #:weight 'bold #:family 'modern #:size 14)] [stretchable-width #t]))
+    (define my-lists-label (new message% [parent my-lists-panel] [label (translate "我的列表")] [font (create-bold-medium-font)] [stretchable-width #t]))
     
     ;; 列表容器
     (define lists-container (new vertical-panel% [parent my-lists-panel] [spacing 2]))
@@ -219,6 +224,7 @@
            [label "+"]
            [min-width 40]
            [min-height 32]
+           [font (create-default-font)]
            [callback (lambda (btn evt) (show-add-list-dialog))]))
     
     ;; 创建删除列表按钮
@@ -228,6 +234,7 @@
            [label "-"]
            [min-width 40]
            [min-height 32]
+           [font (create-default-font)]
            [callback (lambda (btn evt) (show-delete-list-dialog))]))
     
     ;; 刷新列表
@@ -269,6 +276,7 @@
                         [label list-name]
                         [min-width 100]
                         [min-height 32]
+                        [font (create-default-font)]
                         [callback (lambda (btn evt) 
                                     (set-selected-button btn list-id list-name)
                                     (view-change-callback "list" list-id list-name))]))
