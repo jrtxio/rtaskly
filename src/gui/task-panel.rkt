@@ -154,7 +154,7 @@
            [min-height 30] ;; 固定最小高度
            [stretchable-width #t] ;; 全宽显示
            [stretchable-height #f] ;; 禁止垂直拉伸
-           [placeholder (translate "添加任务...")]
+           [placeholder (translate "添加新任务...")]
            [callback (lambda (content)
                        (handle-quick-add-task content))]))
     
