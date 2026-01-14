@@ -3,7 +3,7 @@
 (require rackunit
          rackunit/text-ui
          db
-         "../src/utils/date.rkt")
+         "../../src/utils/date.rkt")
 
 ;; 定义测试套件
 (define date-tests

@@ -4,8 +4,15 @@
          rackunit/text-ui
          racket/file
          ffi/unsafe ffi/unsafe/define
-         "../src/gui/language.rkt"
-         "../src/utils/path.rkt")
+         "../../src/gui/language.rkt"
+         "../../src/utils/path.rkt")
+
+;; 语言ID到代码的转换函数
+(define (lang-id->code lang-id)
+  (cond
+    [(= lang-id #x0409) "en"]  ;; 英语(美国)
+    [(= lang-id #x0804) "zh"]  ;; 中文(中国)
+    [else "en"]))  ;; 未知语言默认英语
 
 ;; 定义测试套件
 (define system-language-tests

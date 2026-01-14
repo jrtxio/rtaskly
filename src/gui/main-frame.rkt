@@ -11,6 +11,9 @@
          "../utils/path.rkt"
          racket/runtime-path)
 
+;; 定义图标目录的运行时路径
+(define-runtime-path icons-path "../../icons")
+
 (provide main-frame%)
 
 ;; 版本号
@@ -30,11 +33,11 @@
       ;; 优先使用ICO格式，因为ICO格式原生支持透明度和多尺寸，适合任务栏显示
       (define icon-paths
         (list
-         (build-path (current-directory) "icons" "16x16.ico")
-         (build-path (current-directory) "icons" "32x32.ico")
-         (build-path (current-directory) "icons" "16x16.png")
-         (build-path (current-directory) "icons" "32x32.png")
-         (build-path (current-directory) "icons" "taskly.png")))
+         (build-path icons-path "16x16.ico")
+         (build-path icons-path "32x32.ico")
+         (build-path icons-path "16x16.png")
+         (build-path icons-path "32x32.png")
+         (build-path icons-path "taskly.png")))
       
       (define (try-set-icon paths)
         (when (not (null? paths))
@@ -431,11 +434,14 @@
     (define/public (get-current-search-keyword) (current-search-keyword))
     (define/public (is-db-connected?) (db-connected?))
     (define/public (show-status-message msg [duration 3000])
-      (send status-message set-label msg)
+      ;; 使用 queue-callback 确保在主线程中更新 GUI
+      (queue-callback (lambda ()
+                        (send status-message set-label msg)))
       ;; 3秒后恢复默认状态
       (thread (lambda ()
                 (sleep (* duration 0.001))
-                ;; 直接更新状态消息，不需要queue-callback
-                (send status-message set-label (translate "就绪")))))
+                ;; 使用 queue-callback 确保在主线程中更新 GUI
+                (queue-callback (lambda ()
+                                  (send status-message set-label (translate "就绪")))))))
     
     (void)))

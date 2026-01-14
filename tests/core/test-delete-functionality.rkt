@@ -2,11 +2,11 @@
 
 (require rackunit
          rackunit/text-ui
-         "test-utils.rkt"
-         (prefix-in db: "../src/core/database.rkt")
-         (prefix-in lst: "../src/core/list.rkt")
-         (prefix-in task: "../src/core/task.rkt")
-         "../src/gui/language.rkt")
+         "../utils/test-utils.rkt"
+         (prefix-in db: "../../src/core/database.rkt")
+         (prefix-in lst: "../../src/core/list.rkt")
+         (prefix-in task: "../../src/core/task.rkt")
+         "../../src/gui/language.rkt")
 
 ;; 定义测试套件
 (define delete-functionality-tests

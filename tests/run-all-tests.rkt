@@ -2,14 +2,27 @@
 
 (require rackunit rackunit/text-ui)
 
-;; 定义测试文件列表
-(define test-files
-  '(
-    "test-date.rkt" "test-database.rkt" "test-list.rkt" "test-task.rkt" "test-path.rkt" 
-    "test-core-conversion.rkt" "test-integration.rkt" "test-additional-features.rkt" 
-    "test-edge-cases.rkt" "test-cleanup.rkt" "test-sidebar.rkt" "test-smart-time.rkt" 
-    "test-language.rkt" "test-system-language-detection.rkt" "test-null-date-handling.rkt" "test-fix-verification.rkt" 
-    "test-db-suffix-automatic-addition.rkt" "test-long-task-text.rkt" "test-task-panel-layout.rkt"))
+;; 自动发现测试文件
+(define (find-test-files)
+  (define test-dirs '("./core" "./gui" "./utils"))
+  (define all-test-files '())
+  
+  ;; 遍历所有测试目录
+  (for ([dir test-dirs])
+    (when (directory-exists? dir)
+      (define files (directory-list dir #:build? #t))
+      (for ([file files])
+        (define file-path (path->string file))
+        ;; 将反斜杠替换为正斜杠，确保 Racket 可以正确处理路径
+        (define normalized-path (string-replace file-path "\\" "/"))
+        (define file-name (path->string (file-name-from-path file)))
+        ;; 只处理 .rkt 文件，且文件名以 test- 开头
+        (when (and (string-suffix? normalized-path ".rkt")
+                   (string-prefix? file-name "test-"))
+          (set! all-test-files (cons normalized-path all-test-files))))))
+  
+  ;; 按文件名排序，确保测试运行顺序一致
+  (sort all-test-files string<?))
 
 ;; 运行单个测试文件并返回结果
 (define (run-test-file file)
@@ -23,7 +36,7 @@
       (values #t
               (with-output-to-string
                 (lambda ()
-                  (dynamic-require (string-append "./" file) #f))))))
+                  (dynamic-require file #f))))))
   
   (define end-time (current-inexact-milliseconds))
   (define duration (- end-time start-time))
@@ -94,6 +107,10 @@
   
   ;; 切换到测试目录
   (current-directory "tests")
+  
+  ;; 自动发现测试文件
+  (define test-files (find-test-files))
+  (displayln (format "发现 ~a 个测试文件" (length test-files)))
   
   ;; 运行所有测试
   (define results

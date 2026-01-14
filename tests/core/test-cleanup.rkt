@@ -4,7 +4,7 @@
          rackunit/text-ui
          racket/file
          racket/path
-         "../tests/cleanup-temp-files.rkt")
+         "../cleanup-temp-files.rkt")
 
 ;; 定义测试套件
 (define cleanup-tests
@@ -14,7 +14,7 @@
    ;; 测试清理功能
    (test-case "测试临时文件清理功能" 
      ;; 创建临时文件和目录进行测试
-     (define test-dir "./tests")
+     (define test-dir "./")
      
      ;; 创建临时文件
      (define temp-file1 (build-path test-dir (format "temp-test-~a.txt" (current-inexact-milliseconds))))

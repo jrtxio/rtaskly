@@ -4,12 +4,12 @@
          rackunit/text-ui
          db
          racket/gui/base
-         "../src/core/task.rkt"
-         (prefix-in lst: "../src/core/list.rkt")
-         (prefix-in db: "../src/core/database.rkt")
-         "../src/utils/date.rkt"
-         "../src/utils/font.rkt"
-         "test-utils.rkt")
+         "../../src/core/task.rkt"
+         (prefix-in lst: "../../src/core/list.rkt")
+         (prefix-in db: "../../src/core/database.rkt")
+         "../../src/utils/date.rkt"
+         "../../src/utils/font.rkt"
+         "../utils/test-utils.rkt")
 
 ;; 定义测试套件
 (define task-render-tests

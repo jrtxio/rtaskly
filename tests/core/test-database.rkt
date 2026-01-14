@@ -3,8 +3,9 @@
 (require rackunit
          rackunit/text-ui
          db
-         "../src/core/database.rkt"
-         "../src/utils/date.rkt")
+         "../../src/core/database.rkt"
+         "../../src/utils/date.rkt"
+         "../utils/test-utils.rkt")
 
 ;; 定义测试套件
 (define database-tests
@@ -13,15 +14,11 @@
    
    ;; 测试数据库连接和初始化
    (test-case "测试数据库连接和初始化" 
-     ;; 创建唯一的临时数据库文件，使用更精确的时间戳
-     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
+     ;; 使用测试工具函数
+     (define temp-db-path (setup-db "database-test"))
      
-     ;; 确保临时文件不存在
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path))
-     
-     ;; 测试连接和初始化
-     (define conn (connect-to-database temp-db-path))
+     ;; 获取当前数据库连接
+     (define conn (current-db-connection))
      (check-pred connection? conn)
      
      ;; 验证表是否创建成功
@@ -33,42 +30,27 @@
      (define initial-lists (get-all-lists))
      (check-equal? (length initial-lists) 2)
      
-     ;; 关闭连接并清理
-     (close-database)
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path)))
+     ;; 清理资源
+     (teardown-db temp-db-path))
    
    ;; 测试数据库关闭后的操作
    (test-case "测试数据库关闭后的操作" 
-     ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
+     ;; 使用测试工具函数
+     (define temp-db-path (setup-db "database-close-test"))
      
-     ;; 确保临时文件不存在
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path))
-     
-     ;; 连接并关闭数据库
-     (connect-to-database temp-db-path)
+     ;; 关闭数据库
      (close-database)
      
      ;; 测试在数据库关闭后调用操作函数，应该不会崩溃
      (check-exn exn:fail? (lambda () (get-all-lists)))
      
-     ;; 清理
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path)))
+     ;; 清理资源
+     (teardown-db temp-db-path))
    
    ;; 测试列表相关数据库操作
    (test-case "测试列表相关数据库操作" 
-     ;; 创建唯一的临时数据库文件，使用更精确的时间戳
-     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
-     
-     ;; 确保临时文件不存在
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path))
-     
-     ;; 连接数据库
-     (connect-to-database temp-db-path)
+     ;; 使用测试工具函数
+     (define temp-db-path (setup-db "database-list-test"))
      
      ;; 测试获取所有列表（默认应该有2个列表）
      (define initial-lists (get-all-lists))
@@ -96,22 +78,13 @@
      ;; 测试删除不存在的列表（应该不会崩溃）
      (delete-list 9999)
      
-     ;; 关闭连接并清理
-     (close-database)
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path)))
+     ;; 清理资源
+     (teardown-db temp-db-path))
    
    ;; 测试任务相关数据库操作
    (test-case "测试任务相关数据库操作" 
-     ;; 创建唯一的临时数据库文件，使用更精确的时间戳
-     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
-     
-     ;; 确保临时文件不存在
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path))
-     
-     ;; 连接数据库
-     (connect-to-database temp-db-path)
+     ;; 使用测试工具函数
+     (define temp-db-path (setup-db "database-task-test"))
      
      ;; 先添加一个列表
      (add-list "测试列表")
@@ -167,21 +140,14 @@
      ;; 测试删除不存在的任务（应该不会崩溃）
      (delete-task 9999)
      
-     ;; 关闭连接并清理
-     (close-database)
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path)))
+     ;; 清理资源
+     (teardown-db temp-db-path))
    
    ;; 测试事务处理
    (test-case "测试事务处理" 
-     ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
+     ;; 使用测试工具函数
+     (define temp-db-path (setup-db "database-transaction-test"))
      
-     ;; 确保临时文件不存在
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path))
-     
-     (connect-to-database temp-db-path)
      (define conn (current-db-connection))
      
      ;; 测试手动事务处理
@@ -209,22 +175,15 @@
      (define lists-after-commit (get-all-lists))
      (check-equal? (length lists-after-commit) 3)
      
-     ;; 关闭连接并清理
-     (close-database)
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path)))
+     ;; 清理资源
+     (teardown-db temp-db-path))
    
    ;; 测试并发访问
    (test-case "测试并发访问" 
-     ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
-     
-     ;; 确保临时文件不存在
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path))
+     ;; 使用测试工具函数
+     (define temp-db-path (setup-db "database-concurrency-test"))
      
      ;; 第一个连接
-     (connect-to-database temp-db-path)
      (add-list "并发测试列表1")
      (define conn1 (current-db-connection))
      
@@ -240,11 +199,9 @@
      
      ;; 关闭连接
      (disconnect conn2)
-     (close-database)
      
-     ;; 清理
-     (when (file-exists? temp-db-path)
-       (delete-file temp-db-path)))
+     ;; 清理资源
+     (teardown-db temp-db-path))
    ))
 
 ;; 运行测试套件

@@ -5,10 +5,14 @@
 
 (require racket
          racket/gui/base
+         racket/runtime-path
          "core/database.rkt"
          "gui/main-frame.rkt"
          "gui/language.rkt"
          "utils/path.rkt")
+
+;; 定义图标目录的运行时路径
+(define-runtime-path icons-path "../icons")
 
 ;; 全局应用状态
 (define app-frame #f)
@@ -33,11 +37,11 @@
     ;; 尝试使用不同尺寸的图标，优先使用适合标题栏的小尺寸图标
     ;; 优先使用ICO格式，因为ICO格式原生支持透明度和多尺寸
     (define icon-paths
-      (list (build-path (current-directory) "icons" "16x16.ico")
-            (build-path (current-directory) "icons" "32x32.ico")
-            (build-path (current-directory) "icons" "16x16.png")
-            (build-path (current-directory) "icons" "32x32.png")
-            (build-path (current-directory) "icons" "taskly.png")))
+      (list (build-path icons-path "16x16.ico")
+            (build-path icons-path "32x32.ico")
+            (build-path icons-path "16x16.png")
+            (build-path icons-path "32x32.png")
+            (build-path icons-path "taskly.png")))
     
     ;; 查找第一个存在的图标文件并设置
     (for/first ([icon-path icon-paths] #:when (file-exists? icon-path))

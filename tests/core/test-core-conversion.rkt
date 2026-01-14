@@ -2,8 +2,8 @@
 
 (require rackunit
          rackunit/text-ui
-         "../src/core/list.rkt"
-         "../src/core/task.rkt")
+         "../../src/core/list.rkt"
+         "../../src/core/task.rkt")
 
 ;; 定义测试套件
 (define core-conversion-tests

@@ -3,8 +3,8 @@
 (require rackunit
          rackunit/text-ui
          racket/gui/base
-         (prefix-in gui: "../src/gui/main-frame.rkt")
-         "../src/core/database.rkt")
+         (prefix-in gui: "../../src/gui/main-frame.rkt")
+         "../../src/core/database.rkt")
 
 ;; 定义测试套件
 (define db-suffix-tests

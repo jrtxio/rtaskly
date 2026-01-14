@@ -3,11 +3,11 @@
 (require rackunit
          rackunit/text-ui
          db
-         "../src/core/task.rkt"
-         "../src/core/list.rkt"
-         (prefix-in db: "../src/core/database.rkt")
-         "../src/utils/date.rkt"
-         "../src/utils/path.rkt")
+         "../../src/core/task.rkt"
+         "../../src/core/list.rkt"
+         (prefix-in db: "../../src/core/database.rkt")
+         "../../src/utils/date.rkt"
+         "../../src/utils/path.rkt")
 
 ;; 定义测试套件
 (define additional-features-tests
@@ -17,7 +17,7 @@
    ;; 测试任务搜索功能
    (test-case "测试任务搜索功能" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)

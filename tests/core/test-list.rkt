@@ -3,8 +3,8 @@
 (require rackunit
          rackunit/text-ui
          db
-         "../src/core/list.rkt"
-         (prefix-in db: "../src/core/database.rkt"))
+         "../../src/core/list.rkt"
+         (prefix-in db: "../../src/core/database.rkt"))
 
 ;; 定义测试套件
 (define list-tests
@@ -14,7 +14,7 @@
    ;; 测试列表管理功能
    (test-case "测试列表管理功能" 
      ;; 创建唯一的临时数据库文件，使用更精确的时间戳
-     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)

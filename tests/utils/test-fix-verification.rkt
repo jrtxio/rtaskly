@@ -4,10 +4,10 @@
          rackunit/text-ui
          racket/date
          db
-         "../src/core/task.rkt"
-         (prefix-in lst: "../src/core/list.rkt")
-         (prefix-in db: "../src/core/database.rkt")
-         "../src/utils/date.rkt")
+         "../../src/core/task.rkt"
+         (prefix-in lst: "../../src/core/list.rkt")
+         (prefix-in db: "../../src/core/database.rkt")
+         "../../src/utils/date.rkt")
 
 ;; 定义测试套件
 (define fix-verification-tests
@@ -17,7 +17,7 @@
    ;; 测试没有截止日期的任务可以正常编辑和删除
    (test-case "没有截止日期的任务可以正常编辑和删除" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./tests/temp-fix-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./temp-fix-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)

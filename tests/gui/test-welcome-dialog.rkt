@@ -3,9 +3,9 @@
 (require rackunit
          rackunit/text-ui
          (prefix-in gui: racket/gui)
-         "../src/taskly.rkt"
-         "../src/gui/language.rkt"
-         "../src/utils/path.rkt")
+         "../../src/taskly.rkt"
+         "../../src/gui/language.rkt"
+         "../../src/utils/path.rkt")
 
 ;; 定义测试套件
 (define welcome-dialog-tests

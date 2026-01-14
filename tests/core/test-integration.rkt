@@ -2,10 +2,10 @@
 
 (require rackunit
          rackunit/text-ui
-         "../src/core/list.rkt"
-         "../src/core/task.rkt"
-         (prefix-in db: "../src/core/database.rkt")
-         "../src/utils/date.rkt")
+         "../../src/core/list.rkt"
+         "../../src/core/task.rkt"
+         (prefix-in db: "../../src/core/database.rkt")
+         "../../src/utils/date.rkt")
 
 ;; 定义测试套件
 (define integration-tests
@@ -15,7 +15,7 @@
    ;; 测试列表和任务的综合操作
    (test-case "测试列表和任务的综合操作" 
      ;; 创建唯一的临时数据库文件
-     (define temp-db-path (format "./tests/temp-test-~a.db" (current-inexact-milliseconds)))
+     (define temp-db-path (format "./temp-test-~a.db" (current-inexact-milliseconds)))
      
      ;; 确保临时文件不存在
      (when (file-exists? temp-db-path)

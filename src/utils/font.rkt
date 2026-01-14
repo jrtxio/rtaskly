@@ -3,6 +3,8 @@
 ;; 字体配置模块，定义应用程序中使用的统一字体
 ;; 提供一致的字体样式，确保界面视觉统一性
 
+(require racket/system)
+
 (provide ;; 字体常量
          default-font
          default-font-size
@@ -71,7 +73,17 @@
 (define (create-bold-xlarge-font)
   (send the-font-list find-or-create-font xlarge-font-size 'default 'normal 'bold))
 
-;; 辅助函数:针对 Windows 优化字体渲染
+;; 获取当前平台的默认字体
+(define (get-platform-default-font)
+  (case (system-type 'os)
+    [(windows) "Microsoft YaHei"] ;; Windows 平台
+    [(macosx) "SF Pro"] ;; macOS 平台
+    [(unix) "Ubuntu"] ;; Linux 平台
+    [else 'default])) ;; 默认字体
+
+;; 辅助函数:根据平台选择合适的字体
 (define (make-app-font size [weight 'normal])
-  ;; "Microsoft YaHei" 在 Windows 上有最佳的 Hinting 效果,比默认字体更锐利
-  (make-object font% size "Microsoft YaHei" 'default 'normal weight))
+  (define platform-font (get-platform-default-font))
+  (if (eq? platform-font 'default)
+      (send the-font-list find-or-create-font size 'default 'normal weight)
+      (make-object font% size platform-font 'default 'normal weight)))
