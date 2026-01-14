@@ -20,7 +20,10 @@
          create-bold-font
          create-bold-medium-font
          create-bold-large-font
-         create-bold-xlarge-font)
+         create-bold-xlarge-font
+         
+         ;; 应用字体函数
+         make-app-font)
 
 ;; 字体大小常量
 (define default-font-size 13)
@@ -67,3 +70,8 @@
 ;; 创建粗体特大字体
 (define (create-bold-xlarge-font)
   (send the-font-list find-or-create-font xlarge-font-size 'default 'normal 'bold))
+
+;; 辅助函数:针对 Windows 优化字体渲染
+(define (make-app-font size [weight 'normal])
+  ;; "Microsoft YaHei" 在 Windows 上有最佳的 Hinting 效果,比默认字体更锐利
+  (make-object font% size "Microsoft YaHei" 'default 'normal weight))

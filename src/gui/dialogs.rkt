@@ -190,21 +190,6 @@
        [label (translate "取消")]
        [min-width 60]
        [callback (lambda (btn evt) (send dialog show #f))])
-
-  (new button% 
-       [parent button-panel]
-       [label (translate "删除")]
-       [min-width 60]
-       [callback (lambda (btn evt)
-                   (define result (message-box (translate "确认删除")
-                                              (translate "确定要删除任务\"~a\"吗？" 
-                                                           (task:task-text task-data))
-                                              dialog
-                                              '(yes-no)))
-                   (when (eq? result 'yes)
-                     (task:delete-task (task:task-id task-data))
-                     (callback)
-                     (send dialog show #f)))])
   
   (send text-field focus)
   (send dialog show #t))

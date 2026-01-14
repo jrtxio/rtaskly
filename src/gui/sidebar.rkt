@@ -274,8 +274,9 @@
         (define btn (new button% 
                         [parent lists-container]
                         [label list-name]
-                        [min-width 100]
+                        [min-width 120]
                         [min-height 32]
+                        [stretchable-width #t]
                         [font (create-default-font)]
                         [callback (lambda (btn evt) 
                                     (set-selected-button btn list-id list-name)

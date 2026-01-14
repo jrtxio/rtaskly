@@ -10,6 +10,67 @@
          "../utils/font.rkt"
          "language.rkt")
 
+;; 任务渲染画布类，实现自动换行和删除线效果
+(define task-render-canvas%
+  (class canvas%
+    (init-field task-text task-completed?)
+    (inherit get-dc get-client-size min-height refresh)
+    
+    ;; 动态折行算法
+    (define (get-lines dc max-w txt)
+      (if (<= max-w 40) '("")
+          (let ([chars (map string (string->list txt))] [ls '()] [curr ""])
+            (for ([c chars])
+              (define-values (cw ch cd ca) (send dc get-text-extent (string-append curr c)))
+              ;; Windows 系统下预留边距稍微加大,防止像素溢出
+              (if (> cw (- max-w 28)) 
+                  (begin (set! ls (append ls (list curr))) (set! curr c))
+                  (set! curr (string-append curr c))))
+            (append ls (list curr)))))
+
+    (define/override (on-paint)
+      (define dc (get-dc))
+      (define-values (w h) (get-client-size))
+      
+      ;; 渲染优化核心:
+      (send dc set-smoothing 'smoothed)    ;; 开启平滑
+      (send dc set-text-mode 'solid)       ;; 关键:设置为实体模式,减少 Windows 上的边缘模糊
+      
+      ;; 手动清理背景,为字体渲染提供干净的底色
+      (send dc set-background (make-object color% 255 255 255))
+      (send dc clear)
+      
+      ;; 设置颜色:已完成任务颜色稍微加深一点点防止在 Win 上看不清
+      (define text-color (if task-completed? 
+                             (make-object color% 160 160 160) 
+                             (make-object color% 30 30 30)))
+      (send dc set-text-foreground text-color)
+      
+      ;; 在 Windows 上,10.5 或 11 号雅黑通常最锐利
+      (send dc set-font (make-app-font 10.5 (if task-completed? 'normal 'bold)))
+      
+      (define lines (get-lines dc w task-text))
+      (define line-h 24)
+      
+      (for ([line lines] [i (in-naturals)])
+        (define y-pos (+ 6 (* i line-h)))
+        (send dc draw-text line 5 y-pos)
+        
+        ;; 渲染删除线
+        (when task-completed?
+          (define-values (lw lh ld la) (send dc get-text-extent line))
+          (send dc set-pen text-color 1 'solid)
+          (define middle-y (+ y-pos 13))
+          (send dc draw-line 5 middle-y (+ 5 lw) middle-y)))
+      
+      ;; 动态反馈高度
+      (define total-h (+ 12 (* (length lines) line-h)))
+      (when (not (= (min-height) (exact-round total-h)))
+        (min-height (exact-round total-h))))
+
+    (define/override (on-size w h) (refresh))
+    (super-new [style '(no-autoclear)])))
+
 (provide parse-task-input
          task-panel%
          task-input%)
@@ -226,100 +287,73 @@
     
     ;; 创建单个任务项
     (define (create-task-item task-data)
-      ;; 创建任务项面板
-      (define task-item (new horizontal-panel% [parent task-list-panel]
-                           [stretchable-height #f]  ; 不拉伸高度，随内容自适应
-                           [stretchable-width #t]
+      ;; 创建任务项包装面板
+      (define wrapper (new vertical-panel% [parent task-list-panel] [border 2] [stretchable-height #f]))
+      (define task-item (new horizontal-panel% [parent wrapper]
                            [style '(border)]
-                           [spacing 4]  ; 减小间距
-                           [border 1]  ; 减小边框宽度
-                           [alignment '(left center)]))  ; 垂直居中对齐
+                           [border 10]
+                           [spacing 12]
+                           [stretchable-height #f]
+                           [stretchable-width #t]))
       
       ;; 创建复选框
       (new check-box% [parent task-item]
            [label ""]
-           [min-width 20]  ; 减小最小宽度
-           [min-height 20]  ; 调整最小高度
-           [stretchable-width #f]
-           [stretchable-height #f]  ; 不拉伸高度
            [value (task:task-completed? task-data)]
-           [vert-margin 0]  ; 移除垂直边距
+           [stretchable-width #f]
+           [stretchable-height #f]
            [callback (lambda (cb evt)
                        (task:toggle-task-completed (task:task-id task-data))
                        (task-updated-callback))])
       
-      ;; 创建文本和日期面板
-      (define text-date-panel (new vertical-panel% [parent task-item]
-                             [stretchable-width #t]
-                             [stretchable-height #f]  ; 不拉伸高度
-                             [alignment '(left top)]  ; 左对齐顶部
-                             [spacing 0]))  ; 移除间距
+      ;; 创建内容区域
+      (define info-panel (new vertical-panel% [parent task-item]
+                           [stretchable-width #t]
+                           [spacing 4]))
       
-      ;; 创建任务文本标签，使用 message% 组件支持自动换行
-      (new message% 
-           [parent text-date-panel]
-           [label (task:task-text task-data)]
-           [stretchable-width #t]
-           [stretchable-height #f]  ; 不拉伸高度
-           [min-height 16]  ; 减小最小高度
-           [horiz-margin 0]  ; 移除水平边距
-           [vert-margin 0]  ; 移除垂直边距
-           [font (create-default-font)])  ; 设置合适的字体大小
+      ;; 使用任务渲染画布显示任务内容
+      (new task-render-canvas% [parent info-panel]
+           [task-text (task:task-text task-data)]
+           [task-completed? (task:task-completed? task-data)]
+           [stretchable-width #t])
       
-      ;; 创建截止日期标签
+      ;; 创建元数据展示面板
+      (define meta-panel (new horizontal-panel% [parent info-panel] [spacing 15]))
+      
+      ;; 显示截止日期
       (when (task:task-due-date task-data)
-        (define due-date-str (task:task-due-date task-data))
-        (define today-str (date:get-current-date-string))
-        (define diff (date:date-diff due-date-str today-str))
-        
-        ;; 根据日期差设置不同颜色
-        (define date-color
-          (cond
-            [(date:is-today? due-date-str) "red"]
-            [(= diff 1) "orange"]
-            [(<= diff 3) "#FFD700"] ; 金色
-            [else "black"]))
-        
-        (new message%  
-             [parent text-date-panel]
-             [label (date:format-date-for-display due-date-str)]
-             [font (create-small-font)]  ; 较小的字体
-             [color date-color]
-             [vert-margin 0]  ; 移除垂直边距
-             [horiz-margin 0]  ; 移除水平边距
-             [stretchable-width #t]
-             [stretchable-height #f])  ; 不拉伸高度
-      )
+        (new message% [parent meta-panel]
+             [label (format "📅 ~a" (date:format-date-for-display (task:task-due-date task-data)))]
+             [font (make-app-font 9)]))
       
-      ;; 创建编辑按钮（使用设置图标）
-      (new button% 
-           [parent task-item]
-           [label "⚙"]
-           [min-width 24]  ; 减小最小宽度
-           [min-height 20]  ; 减小最小高度
-           [stretchable-width #f]
-           [stretchable-height #f]  ; 不拉伸高度
-           [vert-margin 0]  ; 移除垂直边距
-           [horiz-margin 0]  ; 移除水平边距
+      ;; 创建操作区
+      (define action-panel (new vertical-panel% [parent task-item]
+                              [stretchable-width #f]
+                              [alignment '(center center)]))
+      
+      ;; 编辑按钮
+      (new button% [parent action-panel]
+           [label "✎"]
+           [min-width 35]
+           [vert-margin 0]
            [callback (lambda (btn evt) (show-edit-task-dialog task-data task-updated-callback))])
       
-      ;; 删除按钮已移至编辑对话框中
-      ;; (new button% 
-      ;;      [parent task-item] 
-      ;;      [label "×"] 
-      ;;      [min-width 20] 
-      ;;      [min-height 24] 
-      ;;      [callback (lambda (btn evt) 
-      ;;                  ;; 显示删除确认对话框
-      ;;                  (define result (message-box (translate "确认删除") 
-      ;;                                             (translate "确定要删除任务\"~a\"吗？" 
-      ;;                                                          (task:task-text task-data))
-      ;;                                             (send btn get-top-level-window)
-      ;;                                             '(yes-no)))
-      ;;                  (when (eq? result 'yes)
-      ;;                    (task:delete-task (task:task-id task-data))
-      ;;                    (task-updated-callback))])
-    )
+      ;; 删除按钮
+      (new button% [parent action-panel]
+           [label "✕"]
+           [vert-margin 4]
+           [min-width 35]
+           [callback (lambda (btn evt)
+                       ;; 显示删除确认对话框
+                       (define result (message-box (translate "确认删除")
+                                                  (translate "确定要删除任务\"~a\"吗？"
+                                                               (task:task-text task-data))
+                                                  (send btn get-top-level-window)
+                                                  '(yes-no)))
+                       (when (eq? result 'yes)
+                         (task:delete-task (task:task-id task-data))
+                         (task-updated-callback)))])
+      )
     
     ;; 更新任务列表
     (define/public (update-tasks view-type [list-id #f] [list-name #f] [keyword #f])
