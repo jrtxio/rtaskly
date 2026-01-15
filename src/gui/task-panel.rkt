@@ -154,6 +154,12 @@
     ;; Provide method to get content
     (define/public (get-content)
       (send text get-text))
+    
+    ;; Provide method to set placeholder
+    (define/public (set-placeholder new-placeholder)
+      (set! placeholder new-placeholder)
+      (when showing-placeholder?
+        (send this refresh)))
 )
 )
 
@@ -390,4 +396,9 @@
           (show-welcome-message))
     )
     
-    (void)))
+    (void)
+    
+    ;; Public method: update language elements
+    (define/public (update-language)
+      ;; Update task input placeholder
+      (send quick-task-input set-placeholder (translate "Add new task...")))))

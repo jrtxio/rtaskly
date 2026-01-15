@@ -409,11 +409,14 @@
               (send item set-label (translate key))
               (set! mapping-index (+ mapping-index 1))))))
       
-      ;; Update sidebar
+      ;; Update language elements first
+      (send sidebar update-language)
+      (send task-panel update-language)
+      
+      ;; Then refresh lists and tasks with updated language
       (send sidebar refresh-lists)
       (send sidebar set-selected-button (send sidebar get-current-selected-btn))
       
-      ;; Update task panel
       (send task-panel update-tasks (current-view) (current-list-id) (current-list-name))
       
       ;; Update status bar

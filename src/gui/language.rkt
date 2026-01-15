@@ -117,6 +117,9 @@
    "语言" (hash "zh" "语言" "en" "Language")
    "中文" (hash "zh" "中文" "en" "Chinese")
    "English" (hash "zh" "English" "en" "English")
+   
+   ;; Test
+   "Test Button" (hash "zh" "测试按钮" "en" "Test Button")
    ))
 
 ;; Translation function

@@ -174,30 +174,22 @@
       ;; Clear custom lists container
       (send lists-container change-children (lambda (children) '()))
       
-      ;; Add a test button to verify container is working
-      (new button% [parent lists-container]
-           [label "Test Button"]
-           [min-width 120]
-           [min-height 32]
-           [stretchable-width #t]
-           [font (create-default-font)]
-           [callback (lambda (btn evt) (void))])
+
       
       ;; Try to get lists with detailed error handling
       (define all-lists '())
       (with-handlers ([exn:fail? (lambda (e) 
-                                   (eprintf "Error getting lists: ~a\n" (exn-message e))
                                    '())])
         (set! all-lists (core:get-all-lists)))
       
-      (eprintf "Found ~a lists to display\n" (length all-lists))
+
       
       ;; Add custom list buttons
       (for ([lst all-lists])
         (define list-id (core:todo-list-id lst))
         (define list-name (core:todo-list-name lst))
         
-        (eprintf "Adding list: ~a (ID: ~a)\n" list-name list-id)
+
         
         (new button% [parent lists-container]
              [label list-name]
@@ -229,6 +221,17 @@
     ;; Public method: get current selected button's original label
     (define/public (get-current-selected-original-label)
       current-selected-original-label)
+    
+    ;; Public method: update language elements
+    (define/public (update-language)
+      ;; Update smart list buttons
+      (send today-btn set-label (translate "Today"))
+      (send planned-btn set-label (translate "Planned"))
+      (send all-btn set-label (translate "All"))
+      (send completed-btn set-label (translate "Completed"))
+      
+      ;; Update my lists label
+      (send my-lists-label set-label (translate "My Lists")))
     
     (void)
   )
