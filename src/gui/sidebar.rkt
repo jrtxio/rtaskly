@@ -44,9 +44,20 @@
     
     ;; Set selected button
     (define/public (set-selected-button btn [list-id #f] [list-name #f])
+      ;; Restore previous selected button's label if exists
+      (when current-selected-btn
+        (when current-selected-original-label
+          (send current-selected-btn set-label current-selected-original-label)))
+      
+      ;; Set new selected button
       (set! current-selected-btn btn)
       (set! current-selected-list-id list-id)
       (set! current-selected-list-name list-name)
+      
+      ;; Save original label and set selected style if button exists
+      (when btn
+        (set! current-selected-original-label (send btn get-label))
+        (send btn set-label (string-append "→ " current-selected-original-label)))
     )
     
     ;; Create smart lists panel
