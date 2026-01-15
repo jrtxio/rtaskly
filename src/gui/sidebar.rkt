@@ -1,7 +1,7 @@
 #lang racket/gui
 
-;; 侧边栏模块，定义应用程序的侧边导航栏
-;; 包含智能列表按钮和自定义列表管理功能
+;; Sidebar module - defines the application's side navigation bar
+;; Includes smart list buttons and custom list management functionality
 
 (require (prefix-in core: "../core/list.rkt")
          (prefix-in task: "../core/task.rkt")
@@ -11,10 +11,10 @@
 
 (provide sidebar%)
 
-;; 侧边栏类
-(define sidebar% 
-  (class vertical-panel% 
-    (init parent 
+;; Sidebar class
+(define sidebar%
+  (class vertical-panel%
+    (init parent
           [on-view-change (lambda (view-type [list-id #f] [list-name #f]) (void))]
           [on-task-updated (lambda () (void))]
           [auto-select-first-list #t])
@@ -23,330 +23,213 @@
                [min-width 250]
                [spacing 6]
                [border 6]
-               [stretchable-width #f])
+               [stretchable-width #f]
+               [stretchable-height #t])
     
-    ;; 回调函数
+    ;; Callback functions
     (define view-change-callback on-view-change)
     (define task-updated-callback on-task-updated)
     (define auto-select-first-list? auto-select-first-list)
     
-    ;; 列表按钮列表
+    ;; List buttons list
     (define list-buttons '())
     
-    ;; 当前选中的按钮和原始标签
+    ;; Currently selected button and original label
     (define current-selected-btn #f)
     (define current-selected-original-label #f)
     
-    ;; 当前选中列表的ID和名称
+    ;; Currently selected list ID and name
     (define current-selected-list-id #f)
     (define current-selected-list-name #f)
     
-    ;; 设置选中按钮
+    ;; Set selected button
     (define/public (set-selected-button btn [list-id #f] [list-name #f])
-      ;; 恢复之前选中按钮的原始标签（从当前标签中去除箭头前缀）
-      (when current-selected-btn
-        (define current-label (send current-selected-btn get-label))
-        (when (string-prefix? current-label "→ ")
-          (send current-selected-btn set-label (substring current-label 2))))
-      ;; 设置当前选中按钮的标签（添加箭头）
       (set! current-selected-btn btn)
       (set! current-selected-list-id list-id)
       (set! current-selected-list-name list-name)
-      (when btn
-        (define original-label (send btn get-label))
-        ;; 如果标签已经包含箭头，先去除
-        (when (string-prefix? original-label "→ ")
-          (set! original-label (substring original-label 2)))
-        (set! current-selected-original-label original-label)
-        (send btn set-label (string-append "→ " original-label))))
+    )
     
-    ;; 创建智能列表面板
-    (define smart-lists-panel (new vertical-panel% 
+    ;; Create smart lists panel
+    (define smart-lists-panel (new vertical-panel%
                                    [parent this]
                                    [stretchable-height #f]
                                    [spacing 4]
                                    [border 4]))
     
-    ;; 创建第一行水平面板
-    (define smart-lists-row1 (new horizontal-panel% 
+    ;; Create first row horizontal panel
+    (define smart-lists-row1 (new horizontal-panel%
                                   [parent smart-lists-panel]
                                   [stretchable-height #f]
                                   [spacing 4]
                                   [stretchable-width #t]
                                   [alignment '(center center)]))
     
-    ;; 今天按钮
+    ;; Today button
     (define today-btn
-      (new button% 
+      (new button%
            [parent smart-lists-row1]
-           [label (translate "今天")]
+           [label (translate "Today")]
            [min-width 100]
            [min-height 36]
            [font (create-default-font)]
            [callback (lambda (btn evt) 
-                       (set-selected-button btn #f (translate "今天"))
-                       (view-change-callback "today" #f (translate "今天")))]))
+                       (set-selected-button btn #f (translate "Today"))
+                       (view-change-callback "today" #f (translate "Today")))]))
     
-    ;; 计划按钮
+    ;; Planned button
     (define planned-btn
-      (new button% 
+      (new button%
            [parent smart-lists-row1]
-           [label (translate "计划")]
+           [label (translate "Planned")]
            [min-width 100]
            [min-height 36]
            [font (create-default-font)]
            [callback (lambda (btn evt) 
-                       (set-selected-button btn #f (translate "计划"))
-                       (view-change-callback "planned" #f (translate "计划")))]))
+                       (set-selected-button btn #f (translate "Planned"))
+                       (view-change-callback "planned" #f (translate "Planned")))]))
     
-    ;; 创建第二行水平面板（All 和 Flagged）
-    (define smart-lists-row2 (new horizontal-panel% 
+    ;; Create second row horizontal panel
+    (define smart-lists-row2 (new horizontal-panel%
                                   [parent smart-lists-panel]
                                   [stretchable-height #f]
                                   [spacing 4]
                                   [stretchable-width #t]
                                   [alignment '(center center)]))
     
-    ;; 全部按钮
+    ;; All button
     (define all-btn
-      (new button% 
+      (new button%
            [parent smart-lists-row2]
-           [label (translate "全部")]
+           [label (translate "All")]
            [min-width 100]
            [min-height 36]
            [font (create-default-font)]
            [callback (lambda (btn evt) 
-                       (set-selected-button btn #f (translate "全部"))
-                       (view-change-callback "all" #f (translate "全部")))]))
+                       (set-selected-button btn #f (translate "All"))
+                       (view-change-callback "all" #f (translate "All")))]))
     
-    ;; 已完成按钮
+    ;; Completed button
     (define completed-btn
-      (new button% 
+      (new button%
            [parent smart-lists-row2]
-           [label (translate "完成")]
+           [label (translate "Completed")]
            [min-width 100]
            [min-height 36]
            [font (create-default-font)]
            [callback (lambda (btn evt) 
-                       (set-selected-button btn #f (translate "完成"))
-                       (view-change-callback "completed" #f (translate "完成")))]))
+                       (set-selected-button btn #f (translate "Completed"))
+                       (view-change-callback "completed" #f (translate "Completed")))]))
     
-    ;; 创建自定义列表面板
-    (define my-lists-panel (new vertical-panel% [parent this] [spacing 2]))
+    ;; Create custom lists panel
+    (define my-lists-panel (new vertical-panel% 
+                              [parent this] 
+                              [spacing 2] 
+                              [stretchable-height #t]
+                              [stretchable-width #t]))
     
-    ;; 列表标题
-    (define my-lists-label (new message% [parent my-lists-panel] [label (translate "我的列表")] [font (create-bold-medium-font)] [stretchable-width #t]))
+    ;; Lists title
+    (define my-lists-label (new message% 
+                                [parent my-lists-panel] 
+                                [label (translate "My Lists")] 
+                                [font (create-bold-medium-font)] 
+                                [stretchable-width #t]))
     
-    ;; 列表容器
-    (define lists-container (new vertical-panel% [parent my-lists-panel] [spacing 2]))
+    ;; Create lists container
+    (define lists-container (new vertical-panel% 
+                                 [parent my-lists-panel] 
+                                 [spacing 2] 
+                                 [stretchable-height #t]
+                                 [stretchable-width #t]
+                                 [min-height 150]))
     
-    ;; 列表管理面板（左下角）
-    (define list-management-panel (new horizontal-panel% 
+    ;; List management panel (bottom left)
+    (define list-management-panel (new horizontal-panel%
                                       [parent my-lists-panel]
                                       [stretchable-height #f]
                                       [spacing 4]
                                       [alignment '(center center)]))
     
-    ;; 添加列表按钮
-    (define (show-add-list-dialog)
-      (define dialog (new dialog% 
-                         [label (translate "添加新列表")]
-                         [parent (send this get-top-level-window)]
-                         [width 320]
-                         [height 160]))
-      
-      (define dialog-panel (new vertical-panel% [parent dialog] [spacing 8] [border 12]))
-      (new message% [parent dialog-panel] [label (translate "列表名称:")])
-      (define name-field (new text-field% [parent dialog-panel] [label ""] [init-value ""]))
-      
-      (define button-panel (new horizontal-panel% [parent dialog-panel] [spacing 8]))
-      
-      (new button% 
-           [parent button-panel] 
-           [label (translate "确定")]
-           [min-width 60]
-           [callback (lambda (btn evt)
-                       (define name (send name-field get-value))
-                       (when (not (equal? name ""))
-                         (define new-list-id (core:add-list name))
-                         (refresh-lists)
-                         ;; 查找并选中新创建的列表
-                         (define custom-list-buttons (send lists-container get-children))
-                         (define all-lists (core:get-all-lists))
-                         (define new-list (findf (lambda (lst) (equal? (core:todo-list-id lst) new-list-id)) all-lists))
-                         (when new-list
-                           (define new-list-btn (findf (lambda (btn) 
-                                                         (equal? (send btn get-label) (core:todo-list-name new-list))
-                                                         ) custom-list-buttons))
-                           (when new-list-btn
-                             (set-selected-button new-list-btn 
-                                                 (core:todo-list-id new-list) 
-                                                 (core:todo-list-name new-list))
-                             (view-change-callback "list" 
-                                                  (core:todo-list-id new-list) 
-                                                  (core:todo-list-name new-list))))
-                         (task-updated-callback)
-                         (send dialog show #f)))])
-      
-      (new button% 
-           [parent button-panel] 
-           [label (translate "取消")]
-           [min-width 60]
-           [callback (lambda (btn evt)
-                       (send dialog show #f))])
-      
-      (send name-field focus)
-      (send dialog show #t))
-    
-    ;; 删除列表按钮
-    (define (show-delete-list-dialog)
-      ;; 检查是否有选中的自定义列表
-      (if (and current-selected-list-id current-selected-list-name)
-          ;; 如果有，直接使用当前选中的列表
-          (let ([confirm-result (message-box (translate "确认删除") 
-                                             (translate "确定要删除列表\"~a\"及其所有任务吗？" current-selected-list-name)
-                                             (send this get-top-level-window)
-                                             '(yes-no))])
-            (when (eq? confirm-result 'yes)
-              (core:delete-list current-selected-list-id)
-              (refresh-lists)
-              (task-updated-callback)))
-          ;; 如果没有，提示用户先选中要删除的列表
-          (message-box (translate "提示") 
-                      (translate "请先选中要删除的列表")
-                      (send this get-top-level-window)
-                      '(ok))))
-    
-    ;; 创建添加列表按钮
+    ;; Create add list button
     (define add-list-btn
-      (new button% 
+      (new button%
            [parent list-management-panel]
            [label "+"]
            [min-width 40]
            [min-height 32]
            [font (create-default-font)]
-           [callback (lambda (btn evt) (show-add-list-dialog))]))
+           [callback (lambda (btn evt) (void))]))
     
-    ;; 创建删除列表按钮
+    ;; Create delete list button
     (define delete-list-btn
-      (new button% 
+      (new button%
            [parent list-management-panel]
            [label "-"]
            [min-width 40]
            [min-height 32]
            [font (create-default-font)]
-           [callback (lambda (btn evt) (show-delete-list-dialog))]))
+           [callback (lambda (btn evt) (void))]))
     
-    ;; 刷新列表
+    ;; Refresh lists
     (define/public (refresh-lists)
-      ;; 清空自定义列表容器
+      ;; Clear custom lists container
       (send lists-container change-children (lambda (children) '()))
       
-      ;; 尝试获取列表，处理可能的数据库连接错误
-      (define all-lists
-        (with-handlers ([exn:fail? (lambda (e) '())])
-          (core:get-all-lists)))
+      ;; Add a test button to verify container is working
+      (new button% [parent lists-container]
+           [label "Test Button"]
+           [min-width 120]
+           [min-height 32]
+           [stretchable-width #t]
+           [font (create-default-font)]
+           [callback (lambda (btn evt) (void))])
       
-      ;; 根据是否有列表来启用或禁用智能列表按钮
-      (define has-lists? (> (length all-lists) 0))
-      (send today-btn enable has-lists?)
-      (send planned-btn enable has-lists?)
-      (send all-btn enable has-lists?)
-      (send completed-btn enable has-lists?)
-      (send add-list-btn enable has-lists?)
-      (send delete-list-btn enable has-lists?)
+      ;; Try to get lists with detailed error handling
+      (define all-lists '())
+      (with-handlers ([exn:fail? (lambda (e) 
+                                   (eprintf "Error getting lists: ~a\n" (exn-message e))
+                                   '())])
+        (set! all-lists (core:get-all-lists)))
       
-      ;; 更新智能列表按钮标签
-      (send today-btn set-label (translate "今天"))
-      (send planned-btn set-label (translate "计划"))
-      (send all-btn set-label (translate "全部"))
-      (send completed-btn set-label (translate "完成"))
+      (eprintf "Found ~a lists to display\n" (length all-lists))
       
-      ;; 更新"我的列表"标题
-      (send my-lists-label set-label (translate "我的列表"))
-      
-      ;; 添加自定义列表按钮
-      (define new-buttons '())
+      ;; Add custom list buttons
       (for ([lst all-lists])
         (define list-id (core:todo-list-id lst))
         (define list-name (core:todo-list-name lst))
         
-        (define btn (new button% 
-                        [parent lists-container]
-                        [label list-name]
-                        [min-width 120]
-                        [min-height 32]
-                        [stretchable-width #t]
-                        [font (create-default-font)]
-                        [callback (lambda (btn evt) 
-                                    (set-selected-button btn list-id list-name)
-                                    (view-change-callback "list" list-id list-name))]))
+        (eprintf "Adding list: ~a (ID: ~a)\n" list-name list-id)
         
-        (set! new-buttons (cons btn new-buttons)))
-      
-      ;; 设置列表按钮列表
-      (set! list-buttons new-buttons)
-      
-      ;; 恢复上次选择的列表
-      (define custom-list-buttons (send lists-container get-children))
-      (when (and (not (null? custom-list-buttons)) auto-select-first-list?)
-        (define last-list-id-str (get-config "last-selected-list-id"))
-        (if last-list-id-str
-            ;; 如果有上次选择的列表ID，尝试恢复
-            (let ([last-list-id (string->number last-list-id-str)])
-              ;; 查找匹配的列表
-              (define matching-list (findf (lambda (lst) (equal? (core:todo-list-id lst) last-list-id)) all-lists))
-              (if matching-list
-                  ;; 如果找到匹配的列表，选中对应的按钮
-                  (let ([matching-btn (findf (lambda (btn) 
-                                              (equal? (send btn get-label) (core:todo-list-name matching-list))
-                                              ) custom-list-buttons)])
-                    (when matching-btn
-                      (set-selected-button matching-btn 
-                                          (core:todo-list-id matching-list) 
-                                          (core:todo-list-name matching-list))
-                      (view-change-callback "list" 
-                                           (core:todo-list-id matching-list) 
-                                           (core:todo-list-name matching-list))))
-                  ;; 如果没有找到匹配的列表，选中第一个列表
-                  (let ([first-list (first all-lists)]
-                        [first-btn (first custom-list-buttons)])
-                    (set-selected-button first-btn 
-                                        (core:todo-list-id first-list) 
-                                        (core:todo-list-name first-list))
-                    (view-change-callback "list" 
-                                         (core:todo-list-id first-list) 
-                                         (core:todo-list-name first-list)))
-                  ))
-            ;; 如果没有上次选择的列表ID，选中第一个列表
-            (let ([first-list (first all-lists)]
-                  [first-btn (first custom-list-buttons)])
-              (set-selected-button first-btn 
-                                  (core:todo-list-id first-list) 
-                                  (core:todo-list-name first-list))
-              (view-change-callback "list" 
-                                   (core:todo-list-id first-list) 
-                                   (core:todo-list-name first-list))) 
-            )))
+        (new button% [parent lists-container]
+             [label list-name]
+             [min-width 120]
+             [min-height 32]
+             [stretchable-width #t]
+             [font (create-default-font)]
+             [callback (lambda (btn evt) 
+                         (set-selected-button btn list-id list-name)
+                         (view-change-callback "list" list-id list-name))]))
+    )
     
-    ;; 初始状态：禁用所有功能
+    ;; Initial state: disable all functionality
     (refresh-lists)
     
-    ;; 公共方法：获取智能列表按钮
+    ;; Public method: get smart list buttons
     (define/public (get-smart-list-buttons)
       (list today-btn planned-btn all-btn completed-btn))
     
-    ;; 公共方法：获取自定义列表按钮
+    ;; Public method: get custom list buttons
     (define/public (get-custom-list-buttons)
-      ;; 直接从容器中获取子组件，确保返回最新的按钮列表
+      ;; Get children directly from container to ensure latest button list
       (send lists-container get-children))
     
-    ;; 公共方法：获取当前选中按钮
+    ;; Public method: get current selected button
     (define/public (get-current-selected-btn)
       current-selected-btn)
     
-    ;; 公共方法：获取当前选中按钮的原始标签
+    ;; Public method: get current selected button's original label
     (define/public (get-current-selected-original-label)
       current-selected-original-label)
     
-    (void)))
+    (void)
+  )
+)

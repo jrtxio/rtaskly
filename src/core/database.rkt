@@ -1,7 +1,7 @@
 #lang racket
 
-;; 数据库核心模块，处理数据库连接和底层数据操作
-;; 包含数据库连接、关闭、初始化以及任务和列表的CRUD操作
+;; Database core module - handles database connections and low-level data operations
+;; Includes database connection, closing, initialization, and CRUD operations for tasks and lists
 
 (require db)
 
@@ -26,44 +26,48 @@
          current-db-connection
          current-db-path)
 
-;; 全局数据库连接参数
+;; Global database connection parameters
 (define current-db-connection (make-parameter #f))
 (define current-db-path (make-parameter #f))
 
-;; 连接到数据库
+;; Connect to database
+;; Returns database connection or #f on failure
 (define (connect-to-database db-path)
-  (unless (file-exists? db-path)
-    ;; 创建新数据库文件，不输出到命令行
-    #f)
-  
-  (define conn (sqlite3-connect #:database db-path #:mode 'create))
-  (current-db-connection conn)
-  (current-db-path db-path)
-  
-  ;; 启用外键约束
-  (query-exec conn "PRAGMA foreign_keys = ON")
-  
-  ;; 初始化数据库表
-  (initialize-database conn)
-  conn)
+  (with-handlers ([exn:fail? (lambda (e) 
+                               (eprintf "Database connection error: ~a\n" (exn-message e))
+                               #f)])
+    (define conn (sqlite3-connect #:database db-path #:mode 'create))
+    (current-db-connection conn)
+    (current-db-path db-path)
+    
+    ;; Enable foreign key constraints
+    (query-exec conn "PRAGMA foreign_keys = ON")
+    
+    ;; Initialize database tables
+    (initialize-database conn)
+    conn))
 
-;; 关闭数据库连接
+;; Close database connection
 (define (close-database)
-  (when (current-db-connection)
-    (disconnect (current-db-connection))
-    (current-db-connection #f)
-    (current-db-path #f)))
+  (with-handlers ([exn:fail? (lambda (e) 
+                               (eprintf "Error closing database: ~a\n" (exn-message e)))])
+    (when (current-db-connection)
+      (disconnect (current-db-connection))
+      (current-db-connection #f)
+      (current-db-path #f))))
 
-;; 初始化数据库表
+;; Initialize database tables
 (define (initialize-database conn)
-  ;; 创建任务列表表
-  (query-exec conn "CREATE TABLE IF NOT EXISTS list (
+  (with-handlers ([exn:fail? (lambda (e) 
+                               (eprintf "Error initializing database: ~a\n" (exn-message e)))])
+    ;; Create task lists table
+    (query-exec conn "CREATE TABLE IF NOT EXISTS list (
                      list_id INTEGER PRIMARY KEY AUTOINCREMENT,
                      list_name TEXT NOT NULL
                      )")
-  
-  ;; 创建任务表
-  (query-exec conn "CREATE TABLE IF NOT EXISTS task (
+    
+    ;; Create tasks table
+    (query-exec conn "CREATE TABLE IF NOT EXISTS task (
                      task_id INTEGER PRIMARY KEY AUTOINCREMENT,
                      list_id INTEGER NOT NULL,
                      task_text TEXT NOT NULL,
@@ -72,134 +76,243 @@
                      created_at TEXT NOT NULL,
                      FOREIGN KEY (list_id) REFERENCES list(list_id) ON DELETE CASCADE
                      )")
-  
-  ;; 检查是否需要添加默认列表
-  (define list-count (query-value conn "SELECT COUNT(*) FROM list"))
-  (when (= list-count 0)
-    (query-exec conn "INSERT INTO list (list_name) VALUES ('工作'), ('生活')")))
+    
+    ;; Check if default lists need to be added
+    (define list-count (query-value conn "SELECT COUNT(*) FROM list"))
+    (when (= list-count 0)
+      (query-exec conn "INSERT INTO list (list_name) VALUES ('Work'), ('Personal')"))))
 
 ;; ------------------------
-;; 列表相关操作
+;; List-related operations
 ;; ------------------------
 
-;; 获取所有列表
+;; Get all lists
+;; Returns list of lists with id and name
 (define (get-all-lists)
-  (define conn (current-db-connection))
-  (query-rows conn "SELECT list_id, list_name FROM list ORDER BY list_id"))
+  (with-handlers ([exn:fail? (lambda (e) 
+                               (eprintf "Error getting all lists: ~a\n" (exn-message e))
+                               '())])
+    (define conn (current-db-connection))
+    (if conn
+        (query-rows conn "SELECT list_id, list_name FROM list ORDER BY list_id")
+        '())))
 
-;; 添加列表
+;; Add a new list
+;; Returns the ID of the newly created list
 (define (add-list list-name)
-  (define conn (current-db-connection))
-  (query-exec conn "INSERT INTO list (list_name) VALUES (?)
-                   " list-name)
-  (query-value conn "SELECT last_insert_rowid()"))
+  (with-handlers ([exn:fail? (lambda (e) 
+                               (eprintf "Error adding list: ~a\n" (exn-message e))
+                               #f)])
+    (define conn (current-db-connection))
+    (if conn
+        (begin
+          (query-exec conn "INSERT INTO list (list_name) VALUES (?)
+                           " list-name)
+          (query-value conn "SELECT last_insert_rowid()"))
+        #f)))
 
-;; 更新列表名称
+;; Update list name
+;; Returns #t on success, #f on failure
 (define (update-list list-id new-name)
-  (define conn (current-db-connection))
-  (query-exec conn "UPDATE list SET list_name = ? WHERE list_id = ?
-                   " new-name list-id))
+  (with-handlers ([exn:fail? (lambda (e) 
+                               (eprintf "Error updating list: ~a\n" (exn-message e))
+                               #f)])
+    (define conn (current-db-connection))
+    (if conn
+        (begin
+          (query-exec conn "UPDATE list SET list_name = ? WHERE list_id = ?
+                           " new-name list-id)
+          #t)
+        #f)))
 
-;; 删除列表
+;; Delete list
+;; Returns #t on success, #f on failure
 (define (delete-list list-id)
-  (define conn (current-db-connection))
-  (query-exec conn "DELETE FROM list WHERE list_id = ?" list-id))
+  (with-handlers ([exn:fail? (lambda (e) 
+                               (eprintf "Error deleting list: ~a\n" (exn-message e))
+                               #f)])
+    (define conn (current-db-connection))
+    (if conn
+        (begin
+          (query-exec conn "DELETE FROM list WHERE list_id = ?" list-id)
+          #t)
+        #f)))
 
-;; 获取列表名称
+;; Get list name by ID
+;; Returns list name or #f if not found
 (define (get-list-name list-id)
-  (define conn (current-db-connection))
-  (query-value conn "SELECT list_name FROM list WHERE list_id = ?" list-id))
+  (with-handlers ([exn:fail? (lambda (e) 
+                               (eprintf "Error getting list name: ~a\n" (exn-message e))
+                               #f)])
+    (define conn (current-db-connection))
+    (if conn
+        (query-value conn "SELECT list_name FROM list WHERE list_id = ?" list-id)
+        #f)))
 
 ;; ------------------------
-;; 任务相关操作
+;; Task-related operations
 ;; ------------------------
 
-;; 获取所有任务
+;; Get all tasks
+;; Returns list of all tasks
 (define (get-all-tasks)
-  (define conn (current-db-connection))
-  (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
-                   FROM task
-                   ORDER BY due_date NULLS LAST, created_at"))
+  (with-handlers ([exn:fail? (lambda (e) 
+                               (eprintf "Error getting all tasks: ~a\n" (exn-message e))
+                               '())])
+    (define conn (current-db-connection))
+    (if conn
+        (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
+                         FROM task
+                         ORDER BY due_date NULLS LAST, created_at")
+        '())))
 
-;; 获取指定列表的任务
+;; Get tasks by list ID
+;; Returns list of tasks for the specified list
 (define (get-tasks-by-list list-id)
-  (define conn (current-db-connection))
-  (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
-                   FROM task
-                   WHERE list_id = ? AND is_completed = 0
-                   ORDER BY due_date NULLS LAST, created_at
-                   " list-id))
+  (with-handlers ([exn:fail? (lambda (e) 
+                               (eprintf "Error getting tasks by list: ~a\n" (exn-message e))
+                               '())])
+    (define conn (current-db-connection))
+    (if conn
+        (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
+                         FROM task
+                         WHERE list_id = ? AND is_completed = 0
+                         ORDER BY due_date NULLS LAST, created_at
+                         " list-id)
+        '())))
 
-;; 获取未完成的任务
+;; Get incomplete tasks
+;; Returns list of incomplete tasks
 (define (get-incomplete-tasks)
-  (define conn (current-db-connection))
-  (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
-                   FROM task
-                   WHERE is_completed = 0
-                   ORDER BY due_date NULLS LAST, created_at"))
+  (with-handlers ([exn:fail? (lambda (e) 
+                               (eprintf "Error getting incomplete tasks: ~a\n" (exn-message e))
+                               '())])
+    (define conn (current-db-connection))
+    (if conn
+        (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
+                         FROM task
+                         WHERE is_completed = 0
+                         ORDER BY due_date NULLS LAST, created_at")
+        '())))
 
-;; 获取已完成的任务
+;; Get completed tasks
+;; Returns list of completed tasks
 (define (get-completed-tasks)
-  (define conn (current-db-connection))
-  (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
-                   FROM task
-                   WHERE is_completed = 1
-                   ORDER BY due_date NULLS LAST, created_at"))
+  (with-handlers ([exn:fail? (lambda (e) 
+                               (eprintf "Error getting completed tasks: ~a\n" (exn-message e))
+                               '())])
+    (define conn (current-db-connection))
+    (if conn
+        (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
+                         FROM task
+                         WHERE is_completed = 1
+                         ORDER BY due_date NULLS LAST, created_at")
+        '())))
 
-;; 获取今天的任务
+;; Get today's tasks
+;; Returns list of tasks due today
 (define (get-today-tasks today-str)
-  (define conn (current-db-connection))
-  ;; 使用 LIKE 匹配日期部分，支持带时间的日期字符串
-  (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
-                   FROM task
-                   WHERE due_date LIKE ? AND is_completed = 0
-                   ORDER BY due_date NULLS LAST, created_at
-                   " (string-append today-str "%")))
+  (with-handlers ([exn:fail? (lambda (e) 
+                               (eprintf "Error getting today's tasks: ~a\n" (exn-message e))
+                               '())])
+    (define conn (current-db-connection))
+    (if conn
+        ;; Use LIKE to match date part, supports date strings with time
+        (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
+                         FROM task
+                         WHERE due_date LIKE ? AND is_completed = 0
+                         ORDER BY due_date NULLS LAST, created_at
+                         " (string-append today-str "%"))
+        '())))
 
-;; 获取有截止日期的任务
+;; Get planned tasks (with due date)
+;; Returns list of tasks with due date
 (define (get-planned-tasks)
-  (define conn (current-db-connection))
-  (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
-                   FROM task
-                   WHERE due_date IS NOT NULL AND due_date != '' AND is_completed = 0
-                   ORDER BY due_date NULLS LAST, created_at"))
+  (with-handlers ([exn:fail? (lambda (e) 
+                               (eprintf "Error getting planned tasks: ~a\n" (exn-message e))
+                               '())])
+    (define conn (current-db-connection))
+    (if conn
+        (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
+                         FROM task
+                         WHERE due_date IS NOT NULL AND due_date != '' AND is_completed = 0
+                         ORDER BY due_date NULLS LAST, created_at")
+        '())))
 
-;; 添加任务 - 向后兼容版本
+;; Add task - backward compatible version
+;; Returns #t on success, #f on failure
 (define (add-task list-id task-text due-date [created-at (number->string (current-seconds))])
-  (define conn (current-db-connection))
-  (define sql-due-date (if due-date due-date sql-null))
-  (define actual-created-at (if (number? created-at)
-                               (number->string created-at)
-                               created-at))
-  (query-exec conn "INSERT INTO task (list_id, task_text, due_date, is_completed, created_at)
-                   VALUES (?, ?, ?, 0, ?)
-                   " list-id task-text sql-due-date actual-created-at))
+  (with-handlers ([exn:fail? (lambda (e) 
+                               (eprintf "Error adding task: ~a\n" (exn-message e))
+                               #f)])
+    (define conn (current-db-connection))
+    (if conn
+        (let (
+              (sql-due-date (if due-date due-date sql-null))
+              (actual-created-at (if (number? created-at)
+                                   (number->string created-at)
+                                   created-at)))
+          (query-exec conn "INSERT INTO task (list_id, task_text, due_date, is_completed, created_at)
+                           VALUES (?, ?, ?, 0, ?)
+                           " list-id task-text sql-due-date actual-created-at)
+          #t)
+        #f)))
 
-;; 更新任务
+;; Update task
+;; Returns #t on success, #f on failure
 (define (update-task task-id list-id task-text due-date)
-  (define conn (current-db-connection))
-  (define sql-due-date (if due-date due-date sql-null))
-  (query-exec conn "UPDATE task SET list_id = ?, task_text = ?, due_date = ?
-                   WHERE task_id = ?
-                   " list-id task-text sql-due-date task-id))
+  (with-handlers ([exn:fail? (lambda (e) 
+                               (eprintf "Error updating task: ~a\n" (exn-message e))
+                               #f)])
+    (define conn (current-db-connection))
+    (if conn
+        (let (
+              (sql-due-date (if due-date due-date sql-null)))
+          (query-exec conn "UPDATE task SET list_id = ?, task_text = ?, due_date = ?
+                           WHERE task_id = ?
+                           " list-id task-text sql-due-date task-id)
+          #t)
+        #f)))
 
-;; 切换任务完成状态
+;; Toggle task completed status
+;; Returns #t on success, #f on failure
 (define (toggle-task-completed task-id)
-  (define conn (current-db-connection))
-  (query-exec conn "UPDATE task SET is_completed = 1 - is_completed
-                   WHERE task_id = ?
-                   " task-id))
+  (with-handlers ([exn:fail? (lambda (e) 
+                               (eprintf "Error toggling task status: ~a\n" (exn-message e))
+                               #f)])
+    (define conn (current-db-connection))
+    (if conn
+        (begin
+          (query-exec conn "UPDATE task SET is_completed = 1 - is_completed
+                           WHERE task_id = ?
+                           " task-id)
+          #t)
+        #f)))
 
-;; 删除任务
+;; Delete task
+;; Returns #t on success, #f on failure
 (define (delete-task task-id)
-  (define conn (current-db-connection))
-  (query-exec conn "DELETE FROM task WHERE task_id = ?" task-id))
+  (with-handlers ([exn:fail? (lambda (e) 
+                               (eprintf "Error deleting task: ~a\n" (exn-message e))
+                               #f)])
+    (define conn (current-db-connection))
+    (if conn
+        (begin
+          (query-exec conn "DELETE FROM task WHERE task_id = ?" task-id)
+          #t)
+        #f)))
 
-;; 搜索任务
+;; Search tasks
+;; Returns list of tasks matching the keyword
 (define (search-tasks keyword)
-  (define conn (current-db-connection))
-  (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
-                   FROM task
-                   WHERE task_text LIKE ?
-                   ORDER BY due_date NULLS LAST, created_at
-                   " (string-append "%" keyword "%")))
+  (with-handlers ([exn:fail? (lambda (e) 
+                               (eprintf "Error searching tasks: ~a\n" (exn-message e))
+                               '())])
+    (define conn (current-db-connection))
+    (if conn
+        (query-rows conn "SELECT task_id, list_id, task_text, due_date, is_completed, created_at
+                         FROM task
+                         WHERE task_text LIKE ?
+                         ORDER BY due_date NULLS LAST, created_at
+                         " (string-append "%" keyword "%"))
+        '())))

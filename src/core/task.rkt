@@ -1,7 +1,7 @@
 #lang racket
 
-;; 任务核心模块，定义任务结构体和任务操作函数
-;; 包含任务查询、添加、编辑、删除等功能
+;; Task core module - defines task structure and task operation functions
+;; Includes task query, add, edit, delete, and other functionality
 
 (require db
          (only-in db sql-null?)
@@ -26,14 +26,14 @@
          get-tasks-by-view
          group-tasks-by-list)
 
-;; 任务结构体定义
+;; Task structure definition
 (struct task (id list-id text due-date completed? created-at list-name) #:transparent)
 
-;; 将数据库查询结果转换为任务结构体
+;; Convert database query result to task structure
 (define (row->task row)
   (define list-id (vector-ref row 1)) ; list_id
   (define list-name 
-    (with-handlers ([exn:fail? (lambda (e) "未知列表")])
+    (with-handlers ([exn:fail? (lambda (e) "Unknown List")])
       (db:get-list-name list-id)))
   
   (task (vector-ref row 0)  ; task_id
@@ -41,67 +41,67 @@
         (vector-ref row 2)  ; task_text
         (if (sql-null? (vector-ref row 3)) #f (vector-ref row 3))  ; due_date
         (= (vector-ref row 4) 1)  ; is_completed
-        (string->number (vector-ref row 5))  ; created_at (转换为数字)
+        (string->number (vector-ref row 5))  ; created_at (convert to number)
         list-name))
 
-;; 将多个数据库查询结果转换为任务结构体列表
+;; Convert multiple database query results to task structure list
 (define (rows->tasks rows)
   (map row->task rows))
 
 ;; ------------------------
-;; 任务查询功能
+;; Task query functionality
 ;; ------------------------
 
-;; 获取所有任务
+;; Get all tasks
 (define (get-all-tasks)
   (rows->tasks (db:get-all-tasks)))
 
-;; 获取特定列表的任务
+;; Get tasks for specific list
 (define (get-tasks-by-list list-id)
   (rows->tasks (db:get-tasks-by-list list-id)))
 
-;; 获取今天的任务
+;; Get today's tasks
 (define (get-today-tasks)
   (rows->tasks (db:get-today-tasks (get-current-date-string))))
 
-;; 获取计划任务（有截止日期且未完成）
+;; Get planned tasks (with due date and not completed)
 (define (get-planned-tasks)
   (rows->tasks (db:get-planned-tasks)))
 
-;; 获取所有未完成任务
+;; Get all incomplete tasks
 (define (get-all-incomplete-tasks)
   (rows->tasks (db:get-incomplete-tasks)))
 
-;; 获取所有已完成任务
+;; Get all completed tasks
 (define (get-all-completed-tasks)
   (rows->tasks (db:get-completed-tasks)))
 
 ;; ------------------------
-;; 任务操作功能
+;; Task operation functionality
 ;; ------------------------
 
-;; 添加任务 - 向后兼容版本
+;; Add task - backward compatible version
 (define (add-task list-id task-text due-date)
   (define created-at (current-seconds))
   (db:add-task list-id task-text due-date created-at))
 
-;; 编辑任务 - 向后兼容版本
+;; Edit task - backward compatible version
 (define (edit-task task-id list-id task-text due-date)
   (db:update-task task-id list-id task-text due-date))
 
-;; 切换任务完成状态
+;; Toggle task completion status
 (define (toggle-task-completed task-id)
   (db:toggle-task-completed task-id))
 
-;; 删除任务
+;; Delete task
 (define (delete-task task-id)
   (db:delete-task task-id))
 
-;; 搜索任务
+;; Search tasks
 (define (search-tasks keyword)
   (rows->tasks (db:search-tasks keyword)))
 
-;; 根据视图类型获取任务
+;; Get tasks by view type
 (define (get-tasks-by-view view-type [list-id #f] [keyword #f])
   (cond
     [(string=? view-type "today") (get-today-tasks)]
@@ -112,15 +112,15 @@
     [(string=? view-type "search") (if keyword (search-tasks keyword) '())]
     [else '()]))
 
-;; 按列表分组任务
+;; Group tasks by list
 (define (group-tasks-by-list tasks)
   (define groups (make-hash))
   
-  ;; 将任务按列表分组
+  ;; Group tasks by list
   (for ([task tasks])
     (define list-name (task-list-name task))
     (hash-set! groups list-name 
                (cons task (hash-ref groups list-name '()))))
   
-  ;; 转换为有序列表
+  ;; Convert to ordered list
   (hash->list groups))

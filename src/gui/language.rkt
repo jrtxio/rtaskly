@@ -1,6 +1,6 @@
 #lang racket/gui
 
-;; 语言管理模块
+;; Language management module
 
 (require ffi/unsafe ffi/unsafe/define
          "../utils/path.rkt")
@@ -13,32 +13,32 @@
          load-language-setting
          get-system-language)
 
-;; 当前语言参数 - 支持 "zh" 和 "en"
+;; Current language parameter - supports "zh" and "en"
 (define current-language (make-parameter "zh"))
 
-;; 获取系统默认语言 (跨平台实现)
+;; Get system default language (cross-platform implementation)
 (define (get-system-language)
   (case (system-type)
-    [(windows)  ;; Windows平台 - 使用API调用
+    [(windows)  ;; Windows platform - use API call
      (define kernel32 (ffi-lib "kernel32"))
      (define GetUserDefaultUILanguage (get-ffi-obj "GetUserDefaultUILanguage" kernel32 (_fun -> _uint)))
      (define id (GetUserDefaultUILanguage))
      (cond
-       [(= id #x0804) "zh"]  ;; 中文 (中国)
-       [(= id #x0409) "en"]  ;; 英语 (美国)
-       [else "en"])]  ;; 默认英语
-    [(macosx)  ;; macOS平台 - 使用环境变量或默认值
+       [(= id #x0804) "zh"]  ;; Chinese (China)
+       [(= id #x0409) "en"]  ;; English (US)
+       [else "en"])]  ;; Default to English
+    [(macosx)  ;; macOS platform - use environment variable or default
      (let ([lang (getenv "LANG")])
        (if (and lang (regexp-match? #rx"^zh" lang))
            "zh"
            "en"))]
-    [else  ;; 其他平台 - 默认英语
+    [else  ;; Other platforms - default to English
      "en"]))
 
-;; 语言映射表
+;; Language mapping table
 (define translations
   (hash
-   ;; 主框架
+   ;; Main frame
    "Taskly" (hash "zh" "Taskly" "en" "Taskly")
    "文件" (hash "zh" "文件" "en" "File")
    "新建数据库" (hash "zh" "新建数据库" "en" "New Database")
@@ -52,7 +52,7 @@
    "数据库连接成功" (hash "zh" "数据库连接成功" "en" "Database connected successfully")
    "数据库已关闭" (hash "zh" "数据库已关闭" "en" "Database closed")
    
-   ;; 新建数据库对话框
+   ;; New database dialog
    "新建数据库文件" (hash "zh" "新建数据库文件" "en" "New Database File")
    "请输入新数据库文件的路径和名称。" (hash "zh" "请输入新数据库文件的路径和名称。" "en" "Please enter the path and name for the new database file.")
    "浏览..." (hash "zh" "浏览..." "en" "Browse...")
@@ -60,16 +60,16 @@
    "确定" (hash "zh" "确定" "en" "OK")
    "取消" (hash "zh" "取消" "en" "Cancel")
    
-   ;; 打开数据库对话框
+   ;; Open database dialog
    "选择数据库文件" (hash "zh" "选择数据库文件" "en" "Select Database File")
    
-   ;; 关于对话框
+   ;; About dialog
    "关于 Taskly" (hash "zh" "关于 Taskly" "en" "About Taskly")
    "V1.0.0" (hash "zh" "V1.0.0" "en" "V1.0.0")
    "极简本地任务管理工具" (hash "zh" "极简本地任务管理工具" "en" "Minimalist Local Task Management Tool")
    "完全本地化，用户掌控数据" (hash "zh" "完全本地化，用户掌控数据" "en" "Fully Localized, User Controls Data")
    
-   ;; 侧边栏
+   ;; Sidebar
    "今天" (hash "zh" "今天" "en" "Today")
    "计划" (hash "zh" "计划" "en" "Planned")
    "全部" (hash "zh" "全部" "en" "All")
@@ -85,7 +85,7 @@
    "否" (hash "zh" "否" "en" "No")
    "删除" (hash "zh" "删除" "en" "Delete")
    
-   ;; 任务面板
+   ;; Task panel
    "欢迎使用 Taskly！" (hash "zh" "欢迎使用 Taskly！" "en" "Welcome to Taskly!")
    "欢迎来到 Taskly" (hash "zh" "欢迎来到 Taskly" "en" "Welcome to Taskly")
    "请选择或创建任务数据库" (hash "zh" "请选择或创建任务数据库" "en" "Please select or create a task database")
@@ -102,7 +102,7 @@
    "确认删除" (hash "zh" "确认删除" "en" "Confirm Delete")
    "确定要删除任务\"~a\"吗？" (hash "zh" "确定要删除任务\"~a\"吗？" "en" "Are you sure you want to delete the task \"~a\"?")
    
-   ;; 添加/编辑任务对话框
+   ;; Add/edit task dialog
    "添加新任务" (hash "zh" "添加新任务" "en" "Add New Task")
    "编辑任务" (hash "zh" "编辑任务" "en" "Edit Task")
    "任务描述:" (hash "zh" "任务描述:" "en" "Task Description:")
@@ -112,34 +112,34 @@
    "日期格式错误" (hash "zh" "日期格式错误" "en" "Invalid Date Format")
    "请输入正确的日期格式，例如: +1d, @10am, 2025-08-07" (hash "zh" "请输入正确的日期格式，例如: +1d, @10am, 2025-08-07" "en" "Please enter a valid date format, e.g.: +1d, @10am, 2025-08-07")
    
-   ;; 设置菜单
+   ;; Settings menu
    "设置" (hash "zh" "设置" "en" "Settings")
    "语言" (hash "zh" "语言" "en" "Language")
    "中文" (hash "zh" "中文" "en" "Chinese")
    "English" (hash "zh" "English" "en" "English")
    ))
 
-;; 翻译函数
+;; Translation function
 (define (translate key . args)
   (define lang (current-language))
   (define translation (hash-ref (hash-ref translations key (hash "zh" key "en" key)) lang key))
   (apply format translation args))
 
-;; 设置语言
+;; Set language
 (define (set-language! lang)
   (when (or (equal? lang "zh") (equal? lang "en"))
     (current-language lang)))
 
-;; 获取语言选项
+;; Get language options
 (define (get-language-options)
   (list (cons "zh" (translate "中文"))
         (cons "en" (translate "English"))))
 
-;; 保存语言设置
+;; Save language setting
 (define (save-language-setting)
   (set-config "language" (current-language)))
 
-;; 加载语言设置
+;; Load language setting
 (define (load-language-setting)
   (let ((lang (get-config "language" #f)))
     (if lang

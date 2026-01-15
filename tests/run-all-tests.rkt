@@ -105,9 +105,6 @@
 (define (main)
   (displayln "\n=== 运行所有测试 ===\n")
   
-  ;; 切换到测试目录
-  (current-directory "tests")
-  
   ;; 自动发现测试文件
   (define test-files (find-test-files))
   (displayln (format "发现 ~a 个测试文件" (length test-files)))
@@ -121,10 +118,7 @@
   (show-summary results)
   
   ;; 清理临时文件
-  (dynamic-require "./cleanup-temp-files.rkt" #f)
-  
-  ;; 恢复原始目录
-  (current-directory ".."))
+  (dynamic-require "./cleanup-temp-files.rkt" #f))
 
 ;; 运行主函数
 (main)
