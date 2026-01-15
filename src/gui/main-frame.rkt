@@ -364,20 +364,20 @@
       (update-title)
       
       ;; Update menu labels
-      (send file-menu set-label (translate "File"))
-      (send settings-menu set-label (translate "Settings"))
-      (send language-menu set-label (translate "Language"))
-      (send help-menu set-label (translate "Help"))
+      (send file-menu set-label (translate "文件"))
+      (send settings-menu set-label (translate "设置"))
+      (send language-menu set-label (translate "语言"))
+      (send help-menu set-label (translate "帮助"))
       
       ;; Define menu label mappings
       (define file-menu-mapping
-        '("New Database" "Open Database" "Close Database" "Exit"))
+        '("新建数据库" "打开数据库" "关闭数据库" "退出"))
       
       (define help-menu-mapping
-        '("About"))
+        '("关于"))
       
       (define language-menu-mapping
-        '("Chinese" "English"))
+        '("中文" "English"))
       
       ;; Update file menu items
       (let ([items (send file-menu get-items)]

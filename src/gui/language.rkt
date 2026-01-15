@@ -120,6 +120,7 @@
    
    ;; Test
    "Test Button" (hash "zh" "测试按钮" "en" "Test Button")
+   "Add new task..." (hash "zh" "添加新任务..." "en" "Add new task...")
    ))
 
 ;; Translation function
