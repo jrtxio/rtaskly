@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.0.27] - 2026-01-15
+### Changed
+- 发布：更新版本号至0.0.27 / Release: Bump version to 0.0.27
+
 ## [0.0.26] - 2026-01-13
 ### Changed
 - 优化：更新构建脚本，添加版本号处理逻辑 / Optimized: Updated build scripts, added version handling logic
