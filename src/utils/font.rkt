@@ -24,6 +24,13 @@
          create-bold-large-font
          create-bold-xlarge-font
          
+         ;; 组件专用字体
+         create-status-bar-font
+         create-button-font
+         create-task-input-font
+         create-task-text-font
+         create-meta-info-font
+         
          ;; 应用字体函数
          make-app-font)
 
@@ -72,6 +79,29 @@
 ;; 创建粗体特大字体
 (define (create-bold-xlarge-font)
   (send the-font-list find-or-create-font xlarge-font-size 'default 'normal 'bold))
+
+;; 创建状态条字体
+(define (create-status-bar-font)
+  (make-app-font 11))
+
+;; 创建按钮字体
+(define (create-button-font)
+  (make-app-font default-font-size))
+
+;; 创建任务输入框字体
+(define (create-task-input-font)
+  (make-app-font default-font-size))
+
+;; 创建任务文本字体
+(define (create-task-text-font [completed? #f])
+  (define size (if (eq? (system-type 'os) 'windows)
+                   10.5
+                   11))
+  (make-app-font size (if completed? 'normal 'bold)))
+
+;; 创建元信息字体
+(define (create-meta-info-font)
+  (make-app-font 9))
 
 ;; 获取当前平台的默认字体
 (define (get-platform-default-font)

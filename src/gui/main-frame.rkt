@@ -9,6 +9,7 @@
          "dialogs.rkt"
          "../core/database.rkt"
          "../utils/path.rkt"
+         "../utils/font.rkt"
          racket/runtime-path)
 
 ;; Define runtime path for icons directory
@@ -205,7 +206,7 @@
     (define status-message-label (new message%
                                [parent status-bar]
                                [label (translate "Ready")]
-                               [font (make-font #:size 11 #:family 'modern)]
+                               [font (create-status-bar-font)]
                                [stretchable-width #t]))
     
     ;; Show new database dialog
@@ -343,10 +344,10 @@
       
       (define panel (new vertical-panel% [parent dialog] [spacing 15] [border 20] [alignment '(center center)]))
       
-      (new message% [parent panel] [label (translate "Taskly")] [font (make-font #:weight 'bold #:size 18)])
-      (new message% [parent panel] [label (format "V~a" (get-app-version))])
-      (new message% [parent panel] [label (translate "Minimal local task management tool")])
-      (new message% [parent panel] [label (translate "Fully localized, user controls data")])
+      (new message% [parent panel] [label (translate "Taskly")] [font (create-bold-xlarge-font)])
+      (new message% [parent panel] [label (format "V~a" (get-app-version))] [font (create-medium-font)])
+      (new message% [parent panel] [label (translate "Minimal local task management tool")] [font (create-medium-font)])
+      (new message% [parent panel] [label (translate "Fully localized, user controls data")] [font (create-medium-font)])
       
       (define button-panel (new horizontal-panel% [parent panel] [spacing 10] [alignment '(center center)]))
       

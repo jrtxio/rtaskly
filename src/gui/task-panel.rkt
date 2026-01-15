@@ -46,8 +46,8 @@
                              (make-object color% 30 30 30)))
       (send dc set-text-foreground text-color)
       
-      ;; On Windows, 10.5 or 11pt YaHei is usually most sharp
-      (send dc set-font (make-app-font 10.5 (if task-completed? 'normal 'bold)))
+      ;; 使用统一的任务文本字体
+      (send dc set-font (create-task-text-font task-completed?))
       
       (define lines (get-lines dc w task-text))
       (define line-h 24)
@@ -87,7 +87,7 @@
     (define showing-placeholder? #t)
     
     ;; Set font
-    (define font (create-default-font))
+    (define font (create-task-input-font))
     
     (define text (new text%))
     (send this set-editor text)
@@ -268,7 +268,7 @@
       (new message% 
            [parent welcome-panel] 
            [label (translate "Welcome to Taskly!")] 
-           [font (send the-font-list find-or-create-font 24 'default 'bold 'normal)])
+           [font (create-bold-xlarge-font)])
       (new message% 
            [parent welcome-panel] 
            [label (translate "Please create or open a database file to get started")] 
@@ -330,7 +330,7 @@
       (when (task:task-due-date task-data)
         (new message% [parent meta-panel]
              [label (format "📅 ~a" (date:format-date-for-display (task:task-due-date task-data)))]
-             [font (make-app-font 9)]))
+             [font (create-meta-info-font)]))
       
       ;; Create action area
       (define action-panel (new vertical-panel% [parent task-item]

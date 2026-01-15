@@ -82,7 +82,7 @@
            [label (translate "Today")]
            [min-width 100]
            [min-height 36]
-           [font (create-default-font)]
+           [font (create-button-font)]
            [callback (lambda (btn evt) 
                        (set-selected-button btn #f (translate "Today"))
                        (view-change-callback "today" #f (translate "Today")))]))
@@ -94,7 +94,7 @@
            [label (translate "Planned")]
            [min-width 100]
            [min-height 36]
-           [font (create-default-font)]
+           [font (create-button-font)]
            [callback (lambda (btn evt) 
                        (set-selected-button btn #f (translate "Planned"))
                        (view-change-callback "planned" #f (translate "Planned")))]))
@@ -114,7 +114,7 @@
            [label (translate "All")]
            [min-width 100]
            [min-height 36]
-           [font (create-default-font)]
+           [font (create-button-font)]
            [callback (lambda (btn evt) 
                        (set-selected-button btn #f (translate "All"))
                        (view-change-callback "all" #f (translate "All")))]))
@@ -126,7 +126,7 @@
            [label (translate "Completed")]
            [min-width 100]
            [min-height 36]
-           [font (create-default-font)]
+           [font (create-button-font)]
            [callback (lambda (btn evt) 
                        (set-selected-button btn #f (translate "Completed"))
                        (view-change-callback "completed" #f (translate "Completed")))]))
@@ -167,7 +167,7 @@
            [label "+"]
            [min-width 40]
            [min-height 32]
-           [font (create-default-font)]
+           [font (create-button-font)]
            [callback (lambda (btn evt) (void))]))
     
     ;; Create delete list button
@@ -177,7 +177,7 @@
            [label "-"]
            [min-width 40]
            [min-height 32]
-           [font (create-default-font)]
+           [font (create-button-font)]
            [callback (lambda (btn evt) (void))]))
     
     ;; Refresh lists
@@ -207,7 +207,7 @@
              [min-width 120]
              [min-height 32]
              [stretchable-width #t]
-             [font (create-default-font)]
+             [font (create-button-font)]
              [callback (lambda (btn evt) 
                          (set-selected-button btn list-id list-name)
                          (view-change-callback "list" list-id list-name))]))
