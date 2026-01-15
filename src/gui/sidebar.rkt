@@ -83,6 +83,7 @@
            [min-width 100]
            [min-height 36]
            [font (create-button-font)]
+           [stretchable-width #t]
            [callback (lambda (btn evt) 
                        (set-selected-button btn #f (translate "Today"))
                        (view-change-callback "today" #f (translate "Today")))]))
@@ -95,6 +96,7 @@
            [min-width 100]
            [min-height 36]
            [font (create-button-font)]
+           [stretchable-width #t]
            [callback (lambda (btn evt) 
                        (set-selected-button btn #f (translate "Planned"))
                        (view-change-callback "planned" #f (translate "Planned")))]))
@@ -115,6 +117,7 @@
            [min-width 100]
            [min-height 36]
            [font (create-button-font)]
+           [stretchable-width #t]
            [callback (lambda (btn evt) 
                        (set-selected-button btn #f (translate "All"))
                        (view-change-callback "all" #f (translate "All")))]))
@@ -127,6 +130,7 @@
            [min-width 100]
            [min-height 36]
            [font (create-button-font)]
+           [stretchable-width #t]
            [callback (lambda (btn evt) 
                        (set-selected-button btn #f (translate "Completed"))
                        (view-change-callback "completed" #f (translate "Completed")))]))
