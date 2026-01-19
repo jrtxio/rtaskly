@@ -421,7 +421,7 @@
       (send task-panel update-tasks (current-view) (current-list-id) (current-list-name))
       
       ;; Update status bar
-      (show-status-message (translate "Ready")))
+      (show-status-message (translate "就绪")))
     
     ;; Initialize application
     (define/public (init-app)

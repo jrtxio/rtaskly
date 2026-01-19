@@ -280,13 +280,13 @@
     ;; Public method: update language elements
     (define/public (update-language)
       ;; Update smart list buttons
-      (send today-btn set-original-label! (translate "Today"))
-      (send planned-btn set-original-label! (translate "Planned"))
-      (send all-btn set-original-label! (translate "All"))
-      (send completed-btn set-original-label! (translate "Completed"))
+      (send today-btn set-original-label! (translate "今天"))
+      (send planned-btn set-original-label! (translate "计划"))
+      (send all-btn set-original-label! (translate "全部"))
+      (send completed-btn set-original-label! (translate "完成"))
       
       ;; Update my lists label
-      (send my-lists-label set-label (translate "My Lists")))
+      (send my-lists-label set-label (translate "我的列表")))
     
     (void)
   )

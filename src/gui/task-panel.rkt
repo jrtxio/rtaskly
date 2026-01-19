@@ -401,4 +401,4 @@
     ;; Public method: update language elements
     (define/public (update-language)
       ;; Update task input placeholder
-      (send quick-task-input set-placeholder (translate "Add new task...")))))
+      (send quick-task-input set-placeholder (translate "添加新任务...")))))
