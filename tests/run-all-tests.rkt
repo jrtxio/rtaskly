@@ -118,7 +118,7 @@
   (show-summary results)
   
   ;; 清理临时文件
-  (dynamic-require "./cleanup-temp-files.rkt" #f))
+  (dynamic-require "./tests/cleanup-temp-files.rkt" #f))
 
 ;; 运行主函数
 (main)

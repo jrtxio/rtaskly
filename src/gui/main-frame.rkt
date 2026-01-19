@@ -18,7 +18,7 @@
 (provide main-frame%)
 
 ;; Version number
-(define (get-app-version) "0.0.26")
+(define (get-app-version) "0.0.28")
 
 ;; Main window class
 (define main-frame%
