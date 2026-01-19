@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.0.29] - 2026-01-19
+### Changed
+- 发布：更新版本号至0.0.29 / Release: Bump version to 0.0.29
+
 ## [0.0.28] - 2026-01-19
 ### Changed
 - 发布：更新版本号至0.0.28 / Release: Bump version to 0.0.28
