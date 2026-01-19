@@ -7,9 +7,54 @@
          (prefix-in task: "../core/task.rkt")
          "language.rkt"
          "../utils/path.rkt"
-         "../utils/font.rkt")
+         "../utils/font.rkt"
+         racket/draw)
 
 (provide sidebar%)
+
+;; Custom button class with selected state support
+(define custom-button%
+  (class button%
+    (init parent
+          [label ""]
+          [callback (lambda (btn evt) (void))]
+          [min-width 0]
+          [min-height 0]
+          [font #f])
+    
+    (super-new [parent parent]
+               [label label]
+               [callback callback]
+               [min-width min-width]
+               [min-height min-height]
+               [font font]
+               [stretchable-width #t])
+    
+    ;; Original label without selection indicator
+    (define original-label label)
+    
+    ;; Selected state
+    (define selected? #f)
+    
+    ;; Get selected state
+    (define/public (is-selected?)
+      selected?)
+    
+    ;; Set selected state
+    (define/public (set-selected! state)
+      (set! selected? state)
+      ;; Update button label with or without selection indicator
+      (if selected?
+          (send this set-label (string-append "→ " original-label))
+          (send this set-label original-label)))
+    
+    ;; Set original label
+    (define/public (set-original-label! new-label)
+      (set! original-label new-label)
+      ;; Update current label with selection indicator if needed
+      (send this set-selected! selected?))
+  )
+)
 
 ;; Sidebar class
 (define sidebar%
@@ -44,20 +89,20 @@
     
     ;; Set selected button
     (define/public (set-selected-button btn [list-id #f] [list-name #f])
-      ;; Restore previous selected button's label if exists
+      ;; Restore previous selected button's state
       (when current-selected-btn
-        (when current-selected-original-label
-          (send current-selected-btn set-label current-selected-original-label)))
+        (send current-selected-btn set-selected! #f)
+        (send current-selected-btn refresh))
       
       ;; Set new selected button
       (set! current-selected-btn btn)
       (set! current-selected-list-id list-id)
       (set! current-selected-list-name list-name)
       
-      ;; Save original label and set selected style if button exists
+      ;; Set selected style if button exists
       (when btn
-        (set! current-selected-original-label (send btn get-label))
-        (send btn set-label (string-append "→ " current-selected-original-label)))
+        (send btn set-selected! #t)
+        (send btn refresh))
     )
     
     ;; Create smart lists panel
@@ -73,30 +118,28 @@
                                   [stretchable-height #f]
                                   [spacing 4]
                                   [stretchable-width #t]
-                                  [alignment '(center center)]))
+                                  [alignment '(left center)]))
     
     ;; Today button
     (define today-btn
-      (new button%
+      (new custom-button%
            [parent smart-lists-row1]
            [label (translate "Today")]
-           [min-width 100]
+           [min-width 120]
            [min-height 36]
            [font (create-button-font)]
-           [stretchable-width #t]
            [callback (lambda (btn evt) 
                        (set-selected-button btn #f (translate "Today"))
                        (view-change-callback "today" #f (translate "Today")))]))
     
     ;; Planned button
     (define planned-btn
-      (new button%
+      (new custom-button%
            [parent smart-lists-row1]
            [label (translate "Planned")]
-           [min-width 100]
+           [min-width 120]
            [min-height 36]
            [font (create-button-font)]
-           [stretchable-width #t]
            [callback (lambda (btn evt) 
                        (set-selected-button btn #f (translate "Planned"))
                        (view-change-callback "planned" #f (translate "Planned")))]))
@@ -107,30 +150,28 @@
                                   [stretchable-height #f]
                                   [spacing 4]
                                   [stretchable-width #t]
-                                  [alignment '(center center)]))
+                                  [alignment '(left center)]))
     
     ;; All button
     (define all-btn
-      (new button%
+      (new custom-button%
            [parent smart-lists-row2]
            [label (translate "All")]
-           [min-width 100]
+           [min-width 120]
            [min-height 36]
            [font (create-button-font)]
-           [stretchable-width #t]
            [callback (lambda (btn evt) 
                        (set-selected-button btn #f (translate "All"))
                        (view-change-callback "all" #f (translate "All")))]))
     
     ;; Completed button
     (define completed-btn
-      (new button%
+      (new custom-button%
            [parent smart-lists-row2]
            [label (translate "Completed")]
-           [min-width 100]
+           [min-width 120]
            [min-height 36]
            [font (create-button-font)]
-           [stretchable-width #t]
            [callback (lambda (btn evt) 
                        (set-selected-button btn #f (translate "Completed"))
                        (view-change-callback "completed" #f (translate "Completed")))]))
@@ -189,7 +230,7 @@
       ;; Clear custom lists container
       (send lists-container change-children (lambda (children) '()))
       
-
+      
       
       ;; Try to get lists with detailed error handling
       (define all-lists '())
@@ -197,20 +238,19 @@
                                    '())])
         (set! all-lists (core:get-all-lists)))
       
-
+      
       
       ;; Add custom list buttons
       (for ([lst all-lists])
         (define list-id (core:todo-list-id lst))
         (define list-name (core:todo-list-name lst))
         
-
         
-        (new button% [parent lists-container]
+        
+        (new custom-button% [parent lists-container]
              [label list-name]
              [min-width 120]
              [min-height 32]
-             [stretchable-width #t]
              [font (create-button-font)]
              [callback (lambda (btn evt) 
                          (set-selected-button btn list-id list-name)
@@ -240,13 +280,13 @@
     ;; Public method: update language elements
     (define/public (update-language)
       ;; Update smart list buttons
-      (send today-btn set-label (translate "今天"))
-      (send planned-btn set-label (translate "计划"))
-      (send all-btn set-label (translate "全部"))
-      (send completed-btn set-label (translate "完成"))
+      (send today-btn set-original-label! (translate "Today"))
+      (send planned-btn set-original-label! (translate "Planned"))
+      (send all-btn set-original-label! (translate "All"))
+      (send completed-btn set-original-label! (translate "Completed"))
       
       ;; Update my lists label
-      (send my-lists-label set-label (translate "我的列表")))
+      (send my-lists-label set-label (translate "My Lists")))
     
     (void)
   )
