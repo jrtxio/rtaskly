@@ -401,4 +401,6 @@
     ;; Public method: update language elements
     (define/public (update-language)
       ;; Update task input placeholder
-      (send quick-task-input set-placeholder (translate "添加新任务...")))))
+      (send quick-task-input set-placeholder (translate "添加新任务..."))
+      ;; Update title label based on current view
+      (send title-label set-label (current-list-name)))))

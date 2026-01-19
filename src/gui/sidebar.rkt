@@ -122,30 +122,30 @@
     
     ;; Today button
     (define today-btn
-      (new custom-button%
+      (new custom-button% 
            [parent smart-lists-row1]
-           [label (translate "Today")]
+           [label (translate "今天")]
            [min-width 120]
            [min-height 36]
            [font (create-button-font)]
            [callback (lambda (btn evt) 
-                       (set-selected-button btn #f (translate "Today"))
-                       (view-change-callback "today" #f (translate "Today")))]))
+                       (set-selected-button btn #f (translate "今天"))
+                       (view-change-callback "today" #f (translate "今天")))]))
     
     ;; Planned button
     (define planned-btn
-      (new custom-button%
+      (new custom-button% 
            [parent smart-lists-row1]
-           [label (translate "Planned")]
+           [label (translate "计划")]
            [min-width 120]
            [min-height 36]
            [font (create-button-font)]
            [callback (lambda (btn evt) 
-                       (set-selected-button btn #f (translate "Planned"))
-                       (view-change-callback "planned" #f (translate "Planned")))]))
+                       (set-selected-button btn #f (translate "计划"))
+                       (view-change-callback "planned" #f (translate "计划")))]))
     
     ;; Create second row horizontal panel
-    (define smart-lists-row2 (new horizontal-panel%
+    (define smart-lists-row2 (new horizontal-panel% 
                                   [parent smart-lists-panel]
                                   [stretchable-height #f]
                                   [spacing 4]
@@ -154,27 +154,27 @@
     
     ;; All button
     (define all-btn
-      (new custom-button%
+      (new custom-button% 
            [parent smart-lists-row2]
-           [label (translate "All")]
+           [label (translate "全部")]
            [min-width 120]
            [min-height 36]
            [font (create-button-font)]
            [callback (lambda (btn evt) 
-                       (set-selected-button btn #f (translate "All"))
-                       (view-change-callback "all" #f (translate "All")))]))
+                       (set-selected-button btn #f (translate "全部"))
+                       (view-change-callback "all" #f (translate "全部")))]))
     
     ;; Completed button
     (define completed-btn
-      (new custom-button%
+      (new custom-button% 
            [parent smart-lists-row2]
-           [label (translate "Completed")]
+           [label (translate "完成")]
            [min-width 120]
            [min-height 36]
            [font (create-button-font)]
            [callback (lambda (btn evt) 
-                       (set-selected-button btn #f (translate "Completed"))
-                       (view-change-callback "completed" #f (translate "Completed")))]))
+                       (set-selected-button btn #f (translate "完成"))
+                       (view-change-callback "completed" #f (translate "完成")))]))
     
     ;; Create custom lists panel
     (define my-lists-panel (new vertical-panel% 
