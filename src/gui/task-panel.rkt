@@ -293,9 +293,8 @@
     
     ;; Create single task item
     (define (create-task-item task-data)
-      ;; Create task item wrapper panel
-      (define wrapper (new vertical-panel% [parent task-list-panel] [border 2] [stretchable-height #f]))
-      (define task-item (new horizontal-panel% [parent wrapper]
+      ;; Create task item directly without extra wrapper
+      (define task-item (new horizontal-panel% [parent task-list-panel]
                            [style '(border)]
                            [border 10]
                            [spacing 12]
@@ -323,12 +322,9 @@
            [task-completed? (task:task-completed? task-data)]
            [stretchable-width #t])
       
-      ;; Create metadata display panel
-      (define meta-panel (new horizontal-panel% [parent info-panel] [spacing 15]))
-      
-      ;; Display due date
+      ;; Display due date directly on info panel
       (when (task:task-due-date task-data)
-        (new message% [parent meta-panel]
+        (new message% [parent info-panel]
              [label (format "📅 ~a" (date:format-date-for-display (task:task-due-date task-data)))]
              [font (create-meta-info-font)]))
       
@@ -359,7 +355,8 @@
                        (when (eq? result 'yes)
                          (task:delete-task (task:task-id task-data))
                          (task-updated-callback)))])
-      )
+      
+      task-item)
     
     ;; Update task list
     (define/public (update-tasks view-type [list-id #f] [list-name #f] [keyword #f])
@@ -377,9 +374,6 @@
         [else
          (send title-label set-label (or list-name ""))])
       
-      ;; Clear task list
-      (send task-list-panel change-children (lambda (children) '()))
-      
       ;; Try to get tasks, handle possible database connection errors
       (define tasks
         (with-handlers ([exn:fail? (lambda (e) #f)])
@@ -387,11 +381,14 @@
       
       (if tasks
           ;; Show task list
-          (begin
+          (let ()
             (enable-interface)
-            ;; Show tasks
-            (for ([task-data tasks])
-              (create-task-item task-data)))
+            ;; Batch create task items to avoid frequent repaints
+            (define task-items
+              (for/list ([task-data tasks])
+                (create-task-item task-data)))
+            ;; Clear and update task list panel at once
+            (send task-list-panel change-children (lambda (children) task-items)))
           ;; Show welcome message
           (show-welcome-message))
     )
