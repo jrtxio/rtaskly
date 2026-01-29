@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [0.0.30] - 2026-01-29
+### Changed
+- 重构：全面重构 GitHub Actions 工作流 / Refactor: Overhaul GitHub Actions workflows
+- 修复：Windows 构建不再删除必要的运行时文件 / Fix: Windows build no longer deletes necessary runtime files
+- 修复：macOS 应用程序包添加了 Info.plist 和图标 / Fix: macOS app bundle now includes Info.plist and icon
+- 优化：直接发布 .exe/.dmg/.deb 产物，不再使用 zip 包装 / Optimize: Release .exe/.dmg/.deb artifacts directly without zip packaging
+- 新增：添加 CI 工作流进行自动化测试和编译检查 / Add: CI workflow for automated testing and compilation checks
+
 ## [0.0.29] - 2026-01-19
 ### Changed
 - 发布：更新版本号至0.0.29 / Release: Bump version to 0.0.29
