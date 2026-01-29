@@ -52,24 +52,28 @@ jobs:
         with:
           version: ${{ matrix.racket-version }}
           architecture: ${{ matrix.arch }}
+          variant: 'CS'
       
       - name: Show environment info
         shell: bash
         run: |
           echo "Runner OS: ${{ runner.os }}"
           echo "Runner Architecture: ${{ runner.arch }}"
-          echo "Runner OS Version: ${{ runner.osVersion }}"
           echo "Matrix OS: ${{ matrix.os }}"
       
       - name: Run tests
-        run: racket ./tests/run-all-tests.rkt
+        # Windows 上使用 powershell 或者 bash 都可以，统一用 bash 方便
+        shell: bash
+        run: |
+          cd tests
+          racket run-all-tests.rkt
       
       - name: Get version
         id: get_version
+        shell: bash
         run: |
           VERSION=$(racket build/get-version.rkt)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-        shell: bash
       
       - name: Build executable
         shell: bash
@@ -78,9 +82,14 @@ jobs:
           OS=${{ matrix.os }}
           VERSION=${{ env.VERSION }}
           
+          # 更新 main-frame.rkt 中的版本号 (仅临时修改用于构建)
+          cp src/gui/main-frame.rkt src/gui/main-frame.rkt.bak
+          # 使用 sed 替换版本号，注意跨平台兼容性
+          sed -i.tmp "s|(define (get-app-version) \"[0-9]\+\.[0-9]\+\.[0-9]\+\")|(define (get-app-version) \"$VERSION\")|g" src/gui/main-frame.rkt || sed -i "s|(define (get-app-version) \"[0-9]\+\.[0-9]\+\.[0-9]\+\")|(define (get-app-version) \"$VERSION\")|g" src/gui/main-frame.rkt
+          
           case "$OS" in
             linux)
-              # Native build on both x64 and arm64 runners
+              # Native build
               raco exe -o taskly src/taskly.rkt
               raco distribute taskly-dist taskly
               
@@ -105,19 +114,14 @@ jobs:
               
               # Build deb package
               dpkg-deb --build "${DEB_DIR}" "taskly-${VERSION}-${OS}-${ARCH}.deb"
-              
-              # Compress deb file into ZIP for consistent distribution across platforms
-              zip -r "taskly-${VERSION}-${OS}-${ARCH}.zip" "taskly-${VERSION}-${OS}-${ARCH}.deb"
-              # Remove the standalone deb file, only keep the ZIP package
-              rm "taskly-${VERSION}-${OS}-${ARCH}.deb"
               ;;
+              
             macos)
-              # For macOS, use the runner's architecture
               echo "Building on macOS ${{ runner.arch }}"
               raco exe -o taskly src/taskly.rkt
               raco distribute taskly-dist taskly
               
-              # Install create-dmg tool
+              # Install create-dmg
               brew install create-dmg
               
               # Create application bundle structure
@@ -126,6 +130,25 @@ jobs:
               
               # Copy executable and resources
               cp -r taskly-dist/* Taskly.app/Contents/MacOS/
+              
+              # Copy and configure Info.plist
+              cp .github/macos/Info.plist Taskly.app/Contents/Info.plist
+              sed -i.bak "s|0.0.1|$VERSION|g" Taskly.app/Contents/Info.plist
+              rm Taskly.app/Contents/Info.plist.bak
+              
+              # Create ICNS from PNG (requires iconutil which is standard on macOS)
+              mkdir taskly.iconset
+              sips -z 16 16     icons/taskly.png --out taskly.iconset/icon_16x16.png
+              sips -z 32 32     icons/taskly.png --out taskly.iconset/icon_16x16@2x.png
+              sips -z 32 32     icons/taskly.png --out taskly.iconset/icon_32x32.png
+              sips -z 64 64     icons/taskly.png --out taskly.iconset/icon_32x32@2x.png
+              sips -z 128 128   icons/taskly.png --out taskly.iconset/icon_128x128.png
+              sips -z 256 256   icons/taskly.png --out taskly.iconset/icon_128x128@2x.png
+              sips -z 256 256   icons/taskly.png --out taskly.iconset/icon_256x256.png
+              sips -z 512 512   icons/taskly.png --out taskly.iconset/icon_256x256@2x.png
+              sips -z 512 512   icons/taskly.png --out taskly.iconset/icon_512x512.png
+              iconutil -c icns taskly.iconset
+              cp taskly.icns Taskly.app/Contents/Resources/
               
               # Create DMG file
               create-dmg \
@@ -138,59 +161,32 @@ jobs:
                 --hide-extension "Taskly.app" \
                 --app-drop-link 600 185 \
                 "taskly-${VERSION}-${OS}-${ARCH}.dmg" \
-                "Taskly.app" 
-              
-              # Compress DMG file into ZIP for consistent distribution across platforms
-              zip -r "taskly-${VERSION}-${OS}-${ARCH}.zip" "taskly-${VERSION}-${OS}-${ARCH}.dmg"
-              # Remove the standalone DMG file, only keep the ZIP package
-              rm "taskly-${VERSION}-${OS}-${ARCH}.dmg"
+                "Taskly.app"
               ;;
+            
             windows)
-              # Native build on both x64 and arm64 runners
-              raco exe --gui --embed-dlls --ico icons/48x48.ico -o taskly.exe src/taskly.rkt
-              raco distribute taskly-dist taskly.exe
-              # 清理重复文件和目录，减小包体积
-              cd taskly-dist
-              # 删除重复的ert目录（包含重复的DLL文件）
-              rm -rf ert exts lib/plt/taskly/exts plt/taskly/exts taskly/exts
-              # 删除重复的r0和r1目录
-              rm -rf r0 r1
-              # 删除重复的bundles目录
-              rm -rf bundles
-              # 删除空目录
-              find . -type d -empty -delete
-              # 使用PowerShell的Get-ChildItem命令获取所有文件，然后压缩
-              powershell "Get-ChildItem -Path . -Recurse | Compress-Archive -DestinationPath ../taskly-${VERSION}-${OS}-${ARCH}.zip -Force"
-              cd ..
+              # Build standalone executable with embedded DLLs
+              # 注意：--embed-dlls 尝试将所有依赖打包进 exe
+              raco exe --gui --embed-dlls --ico icons/48x48.ico -o "taskly-${VERSION}-${OS}-${ARCH}.exe" src/taskly.rkt
               ;;
           esac
-      
+          
+          # 恢复原始文件
+          mv src/gui/main-frame.rkt.bak src/gui/main-frame.rkt
+
       - name: List build artifacts
         shell: bash
         run: |
-          ls -la
-          file taskly 2>/dev/null || file taskly.exe 2>/dev/null
-      
-      - name: Verify build artifacts
-        shell: bash
-        run: |
-          echo "Checking build artifacts..."
-          ls -la taskly-*.zip taskly-*.deb 2>/dev/null || echo "No artifacts found"
+          ls -la *.deb *.dmg *.exe 2>/dev/null || echo "No artifacts found"
       
       - name: Get CHANGELOG content
         id: get_changelog
         run: |
-          # 提取CHANGELOG.md中当前版本的内容
           if grep -q "## \[${{ env.VERSION }}\]" CHANGELOG.md; then
-            # 使用兼容所有平台的方式提取当前版本的变更日志
-            # 1. 提取从当前版本开始的所有行
-            # 2. 使用awk删除最后一行（下一个版本的标题）
             CHANGELOG_CONTENT=$(sed -n "/## \[${{ env.VERSION }}\]/,/## \[/p" CHANGELOG.md | awk 'NR>1 {print prev} {prev=$0}')
           else
-            # 如果找不到当前版本，使用默认内容
             CHANGELOG_CONTENT="## Release v${{ env.VERSION }}\n\nNo changes listed in CHANGELOG.md."
           fi
-          # 将内容输出到环境变量，保留换行符
           echo "CHANGELOG_CONTENT<<EOF" >> $GITHUB_ENV
           echo "$CHANGELOG_CONTENT" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
@@ -200,8 +196,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            taskly-*.zip
-            taskly-*.deb
+            *.deb
+            *.dmg
+            *.exe
           name: Release v${{ env.VERSION }}
           generate_release_notes: true
           body: |
