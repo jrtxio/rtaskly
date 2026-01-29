@@ -98,7 +98,7 @@
       (set! current-selected-btn btn)
       (set! current-selected-list-id list-id)
       (set! current-selected-list-name list-name)
-      (set! current-selected-original-label list-name)
+      (set! current-selected-original-label (or list-name (and btn (send btn get-label))))
 
       ;; Set selected style if button exists
       (when btn
