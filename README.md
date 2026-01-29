@@ -37,7 +37,7 @@
 
 Taskly is a simple and intuitive task management tool built with Racket. It provides a clean graphical interface for efficiently creating, organizing, and tracking tasks. Whether you're managing personal to-dos or team projects, Taskly helps you stay organized and focused.
 
-For end-user documentation, please visit our [GitHub Pages](https://taskly.jrtx.site).
+For end-user documentation, please visit our [GitHub Pages](https://jrtxio.github.io/rtaskly).
 
 ## Features
 
