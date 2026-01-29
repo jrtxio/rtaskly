@@ -18,10 +18,10 @@ jobs:
         version: '8.18'
         variant: 'CS'
         
+    - name: Compile
+      run: raco make src/taskly.rkt
+
     - name: Run tests
       run: |
         cd tests
-        racket run-all-tests.rkt
-      
-    - name: Compile check
-      run: raco make src/taskly.rkt
+        xvfb-run -a racket run-all-tests.rkt

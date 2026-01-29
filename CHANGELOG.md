@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [0.0.31] - 2026-01-29
+### Fixed
+- 修复：GitHub Actions CI 在 Linux 环境下 GUI 测试失败的问题 (添加 `xvfb-run` 支持) / Fix: CI GUI test failure on Linux (add `xvfb-run` support)
+- 优化：调整 CI 步骤顺序，先编译再运行测试 / Optimize: Reorder CI steps to compile before running tests
+
 ## [0.0.30] - 2026-01-29
 ### Changed
 - 重构：全面重构 GitHub Actions 工作流 / Refactor: Overhaul GitHub Actions workflows

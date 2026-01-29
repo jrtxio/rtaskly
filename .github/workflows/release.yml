@@ -62,11 +62,14 @@ jobs:
           echo "Matrix OS: ${{ matrix.os }}"
       
       - name: Run tests
-        # Windows 上使用 powershell 或者 bash 都可以，统一用 bash 方便
         shell: bash
         run: |
           cd tests
-          racket run-all-tests.rkt
+          if [ "${{ runner.os }}" == "Linux" ]; then
+            xvfb-run -a racket run-all-tests.rkt
+          else
+            racket run-all-tests.rkt
+          fi
       
       - name: Get version
         id: get_version
