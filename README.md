@@ -2,15 +2,8 @@
   <h1>Taskly</h1>
   <p>📝 A Simple and Intuitive Task Manager Built with Racket</p>
   
-  <!-- GitHub Badges -->
-  <div style="margin: 1rem 0;">
-    <a href="https://github.com/jrtxio/taskly/blob/main/LICENSE"><img src="https://img.shields.io/github/license/jrtxio/taskly.svg" alt="License"></a>
-    <a href="https://github.com/jrtxio/taskly/stargazers"><img src="https://img.shields.io/github/stars/jrtxio/taskly.svg?style=social" alt="GitHub Stars"></a>
-    <a href="https://github.com/jrtxio/taskly/forks"><img src="https://img.shields.io/github/forks/jrtxio/taskly.svg?style=social" alt="GitHub Forks"></a>
-    <a href="https://github.com/jrtxio/taskly"><img src="https://img.shields.io/badge/GitHub-Project-blue.svg" alt="GitHub Project"></a>
-    <a href="README.md"><img src="https://img.shields.io/badge/Language-English-blue.svg" alt="English"></a>
-    <a href="README.zh-CN.md"><img src="https://img.shields.io/badge/%E8%AF%AD%E8%A8%80-%E4%B8%AD%E6%96%87-gray.svg" alt="中文"></a>
-  </div>
+  <a href="README.md"><img src="https://img.shields.io/badge/Language-English-blue.svg" alt="English"></a>
+  <a href="README.zh-CN.md"><img src="https://img.shields.io/badge/%E8%AF%AD%E8%A8%80-%E4%B8%AD%E6%96%87-gray.svg" alt="中文"></a>
 </div>
 
 ## Table of Contents
